@@ -1,4 +1,4 @@
-// NotaR333 - Main Application Controller v4.2 (Final)
+// NotaR333 - Main Application Controller v4.3 (Final Logic Fix)
 
 const domElements = {};
 
@@ -37,7 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAllUI();
         checkForSavedSession();
         showScreen('home');
-        console.log("NotaR333 v4.2 Initialized and Ready.");
+        // --- FIX: Call this one last time to ensure dot visibility is correct on load ---
+        updateNotificationIndicator();
+        console.log("NotaR333 v4.3 Initialized and Ready.");
     }
 
     function addEventListeners() {
@@ -51,12 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("DEBUG: +1000 points added.");
                 const previousRank = getCurrentRank();
                 state.totalPoints += 1000;
+                updateAllUI(); // Update UI to show points change immediately
                 const newRank = getCurrentRank();
                 if (newRank.name !== previousRank.name) {
                     celebrationQueue.unshift({ type: 'rankup', rank: newRank });
                     processCelebrationQueue();
                 }
-                updateAllUI();
                 saveState();
             }
         });
@@ -65,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.backToHomeFromResultsBtn.addEventListener('click', goHome);
         domElements.backToHomeFromDashBtn.addEventListener('click', goHome);
         domElements.finishReviewBtn.addEventListener('click', goHome);
-
         domElements.startDrillBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('drill', 20); });
         domElements.startExamSimBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('exam_sim', 40); });
         domElements.reviewWeakSpotsBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('weak_spots'); });
@@ -77,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.discardSessionBtn.addEventListener('click', () => {
             if (confirm('Discard your saved session?')) { triggerVibration('click'); clearSavedSession(); checkForSavedSession(); }
         });
-
         domElements.pauseQuizBtn.addEventListener('click', () => { triggerVibration('open'); pauseTimer(); togglePopup('pause', true); });
         domElements.answerButtons.addEventListener('click', e => { if (e.target.matches('.answer-btn')) selectAnswer(e.target); });
         domElements.continueQuizBtn.addEventListener('click', () => { triggerVibration('click'); handleNextQuestion(); });
@@ -86,23 +86,18 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.abandonExitBtn.addEventListener('click', () => {
             if (confirm('Abandon this quiz attempt?')) { triggerVibration('click'); clearSavedSession(); goHome(); togglePopup('pause', false); }
         });
-
         domElements.reviewMissionBtn.addEventListener('click', () => { triggerVibration('click'); startReview(); });
         domElements.prevReviewBtn.addEventListener('click', () => { if (quizState.reviewIndex > 0) { triggerVibration('click'); quizState.reviewIndex--; loadReviewItem(); } });
         domElements.nextReviewBtn.addEventListener('click', () => { if (quizState.reviewIndex < quizState.incorrectQuestions.length - 1) { triggerVibration('click'); quizState.reviewIndex++; loadReviewItem(); } });
-        
         domElements.dashboardBtn.addEventListener('click', () => { triggerVibration('open'); openDashboard(); });
         domElements.settingsBtn.addEventListener('click', () => { triggerVibration('open'); togglePopup('settings', true); });
-        
         domElements.topCatzWrapper.addEventListener('click', () => { 
             triggerVibration('open'); 
             if (state.newlyUnlockedCats.length > 0) {
-                // We don't clear the individual dots here, only the main dot
                 domElements.topCatzWrapper.classList.remove('has-new-rewards');
             }
             openCatalogModal(); 
         });
-
         domElements.closeSettingsBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('settings', false); });
         domElements.hapticsToggle.addEventListener('click', () => {
             state.settings.haptics = !state.settings.haptics;
@@ -122,24 +117,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(err => alert(`Error: ${err.message}`));
             else document.exitFullscreen();
         });
-
         domElements.closeCatalogBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('catalog', false); });
         domElements.rewardCloseBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('reward', false); });
-        
         domElements.catalogGrid.addEventListener('click', (e) => {
             const target = e.target;
             const catFile = target.dataset.catfile;
             if (!catFile) return;
-
-            // When a new item is interacted with, remove it from the "new" list
             if (state.newlyUnlockedCats.includes(catFile)) {
                 state.newlyUnlockedCats = state.newlyUnlockedCats.filter(c => c !== catFile);
                 saveState();
-                // Find the wrapper and remove the .is-new class for instant feedback
                 const wrapper = target.closest('.catalog-item-wrapper');
                 if (wrapper) wrapper.classList.remove('is-new');
             }
-
             if (target.matches('.info-icon')) {
                 e.stopPropagation();
                 triggerVibration('open');
@@ -161,12 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 openCatalogModal();
             }
         });
-        
         domElements.rewardSelectBtn.addEventListener('click', (e) => {
             triggerVibration('click');
             const catFile = e.target.dataset.catfile;
             if (!catFile) return;
-            // Clear the "new" status when selecting from the details modal too
             if (state.newlyUnlockedCats.includes(catFile)) {
                 state.newlyUnlockedCats = state.newlyUnlockedCats.filter(c => c !== catFile);
             }
@@ -196,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
             domElements.themeSelector.appendChild(btn);
         });
     }
-
     function openDashboard() { renderMasteryChart(); renderPersonalBests(); renderNemesisQuestion(); showScreen('dashboard'); }
     function renderMasteryChart() { 
         domElements.masteryChartContainer.innerHTML = ''; 

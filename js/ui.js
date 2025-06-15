@@ -1,4 +1,4 @@
-// NotaR333_OS - UI Management v3.5 (Final)
+// NotaR333_OS - UI Management v4.3 (Final Fix)
 
 function showScreen(screenName) {
     for (const key in domElements.screens) {
@@ -22,12 +22,13 @@ function applySettings() {
     }
 }
 
-/**
- * NEW: Checks for new rewards and shows/hides the notification dot.
- */
 function updateNotificationIndicator() {
     const hasNew = state.newlyUnlockedCats && state.newlyUnlockedCats.length > 0;
-    domElements.topCatzBar.classList.toggle('has-new-rewards', hasNew);
+    // --- FIX: Target the wrapper, not the bar itself ---
+    if (domElements.topCatzWrapper) {
+        domElements.topCatzWrapper.classList.toggle('has-new-rewards', hasNew);
+    }
+    console.log(`UI: Notification indicator updated. Has new rewards: ${hasNew}`);
 }
 
 function updateAllUI() {
@@ -37,7 +38,7 @@ function updateAllUI() {
     updateXpBar();
     updateWeakSpotsCounter();
     renderTopCatz();
-    updateNotificationIndicator(); // <-- ADD THIS CALL
+    updateNotificationIndicator(); 
 }
 
 function updateXpBar() {
@@ -97,11 +98,18 @@ function openCatalogModal() {
         const isUnlocked = state.unlockedCats.includes(catFile);
         const wrapper = document.createElement('div');
         wrapper.className = 'catalog-item-wrapper';
+
+        // --- FIX: Add individual notification dot logic ---
+        if (state.newlyUnlockedCats.includes(catFile)) {
+            wrapper.classList.add('is-new');
+        }
+
         const img = document.createElement('img');
         img.src = `images/${catFile}`;
         img.className = 'catalog-item';
         img.dataset.catfile = catFile;
         wrapper.appendChild(img);
+
         if (isUnlocked) {
             if (state.selectedCats.includes(catFile)) {
                 img.classList.add('selected');

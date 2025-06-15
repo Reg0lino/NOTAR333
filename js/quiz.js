@@ -1,4 +1,4 @@
-// NotaR333_OS - Quiz Engine v3.9 (Celebration Queue Update)
+// NotaR333_OS - Quiz Engine v4.3 (Final Logic Fix)
 
 let timerInterval;
 let nextPunMilestone = 250;
@@ -132,35 +132,45 @@ function showResults() {
     pauseTimer();
     const previousRank = getCurrentRank();
     
+    // --- RE-ORDERED LOGIC ---
+    // 1. Add points from the quiz questions first.
     state.totalPoints += quizState.sessionPoints;
+    
+    // 2. Update session counters
     state.stats.completedQuizCount++;
     if(quizState.mode === 'drill') state.stats.completedDrills++;
     if(quizState.mode === 'exam_sim') state.stats.completedExams++;
     if(quizState.mode === 'weak_spots') state.stats.completedReviews++;
     if (state.weakSpotIds.length >= 5) state.stats.hadFiveWeakSpots = true;
     
-    const score = quizState.questions.length - quizState.incorrectQuestions.length;
-    if (score > state.stats.personalBestScore) state.stats.personalBestScore = score;
+    // 3. Check for achievements. This process now adds bonus points directly to state.totalPoints.
+    checkAllCheevos();
     
-    domElements.resultsSummaryText.textContent = `You scored ${score} out of ${quizState.questions.length}`;
-    domElements.pointsEarnedText.textContent = `+${quizState.sessionPoints} Points!`;
-    if (quizState.sessionPoints > 0) triggerVibration('success');
-    
+    // 4. NOW, with the FINAL point total calculated, check for a rank up.
     const newRank = getCurrentRank();
     if (newRank.name !== previousRank.name) {
-        // --- UPDATE: Add Rank Up to the celebration queue ---
-        celebrationQueue.push({ type: 'rankup', rank: newRank });
-        console.log(`Queued Rank Up: ${newRank.name}`);
-    } else if (state.totalPoints >= nextPunMilestone) {
-        // Puns can still show immediately as they are simple toasts
+        // Add Rank Up to the front of the queue to give it priority.
+        celebrationQueue.unshift({ type: 'rankup', rank: newRank });
+        console.log(`QUEUE: Rank Up event added to front of queue for ${newRank.name}.`);
+    } else if (quizState.sessionPoints > 0 && state.totalPoints >= nextPunMilestone) {
+        // Puns are not major celebrations, they can still fire independently.
         const pun = puns[Math.floor(Math.random() * puns.length)];
         setTimeout(() => showToast(`😻 ${pun}`), 500);
         nextPunMilestone = Math.floor(state.totalPoints / 250 + 1) * 250;
     }
     
-    // Check for achievements and start the queue processor
-    checkAllCheevos();
+    // 5. Start processing the celebration queue (which now has Rank Up at the front if it happened).
+    processCelebrationQueue();
     
+    // 6. Update UI and save the final state
+    const score = quizState.questions.length - quizState.incorrectQuestions.length;
+    if (score > state.stats.personalBestScore) {
+        state.stats.personalBestScore = score;
+    }
+    domElements.resultsSummaryText.textContent = `You scored ${score} out of ${quizState.questions.length}`;
+    domElements.pointsEarnedText.textContent = `+${quizState.sessionPoints} Points!`;
+    if (quizState.sessionPoints > 0) triggerVibration('success');
+
     saveState();
     updateAllUI();
     domElements.reviewMissionBtn.classList.toggle('hidden', quizState.incorrectQuestions.length === 0);

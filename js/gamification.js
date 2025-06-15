@@ -1,4 +1,4 @@
-// NotaR333_OS - Gamification Engine v4.2 (Final)
+// NotaR333_OS - Gamification Engine v4.3 (Final Fix)
 
 let celebrationQueue = [];
 let isProcessingCelebration = false;
@@ -8,9 +8,11 @@ function getCurrentRank() {
 }
 
 function displayRankUpModal(rankData) {
+    console.log(`CELEBRATION: Displaying Rank Up for ${rankData.name} with celebrating_cat.gif`);
     triggerVibration('rankUp');
     domElements.rankUpText.textContent = `You are now a ${rankData.name}!`;
     togglePopup('rankUp', true);
+
     if (domElements.particleCelebrationContainer) {
         triggerConfetti({ 
             sourceElement: domElements.rankUpContent,
@@ -18,6 +20,7 @@ function displayRankUpModal(rankData) {
             container: domElements.particleCelebrationContainer
         });
     }
+    
     setTimeout(() => {
         togglePopup('rankUp', false);
     }, 4000);
@@ -26,6 +29,8 @@ function displayRankUpModal(rankData) {
 function displayCheevoNotification(cheevoId) {
     const cheevo = cheevoData.find(c => c.id === cheevoId);
     if (!cheevo) return;
+    
+    console.log(`CELEBRATION: Displaying Cheevo toast for ${cheevo.title}`);
     const toastMessage = `${cheevo.icon} Achievement: ${cheevo.title}!`;
     showToast(toastMessage);
     triggerVibration('cheevoUnlock');
@@ -34,9 +39,15 @@ function displayCheevoNotification(cheevoId) {
 }
 
 function processCelebrationQueue() {
-    if (isProcessingCelebration || celebrationQueue.length === 0) return;
+    if (isProcessingCelebration || celebrationQueue.length === 0) {
+        if (!isProcessingCelebration) console.log("QUEUE: Processing complete.");
+        return;
+    }
     isProcessingCelebration = true;
+
     const event = celebrationQueue.shift();
+    console.log(`QUEUE: Processing event type "${event.type}"`);
+    
     if (event.type === 'rankup') {
         displayRankUpModal(event.rank);
         setTimeout(() => {
@@ -116,5 +127,5 @@ function unlockCheevo(cheevoId) {
     }
     
     celebrationQueue.push({ type: 'cheevo', id: cheevoId });
-    console.log(`Queued Cheevo: ${cheevo.title}`);
+    console.log(`QUEUE: Added Cheevo event for ${cheevo.title}`);
 }
