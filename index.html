@@ -26,15 +26,24 @@
             </div>
             <h1 id="main-title" class="shimmer">NotaR333_OS</h1>
             <div id="user-stats">
-                <span id="rank-display">//Rank: Cyber-Cadet</span>
+                <span id="rank-display">//Rank: Novice Notary</span>
                 <span id="score-display">//Points: 0</span>
+            </div>
+
+            <!-- NEW: XP Progression Bar -->
+            <div id="xp-bar-container">
+                <div id="xp-bar-label">Next Rank:</div>
+                <div id="xp-bar-track">
+                    <div id="xp-bar-fill"></div>
+                    <div id="xp-bar-text">0 / 500</div>
+                </div>
             </div>
         </header>
 
-        <!-- Home Screen -->
+        <!-- The rest of the screens -->
         <div id="home-screen" class="screen active">
             <div id="resume-session-container" class="hidden">
-                <h2>// SESSION_DETECTED_</h2>
+                 <h2>// SESSION_DETECTED_</h2>
                 <button id="resume-session-btn" class="btn btn-primary">> Resume Session</button>
                 <button id="discard-session-btn" class="btn btn-secondary">> Discard & Start New</button>
             </div>
@@ -46,8 +55,6 @@
                 <p id="weak-spots-counter" class="info-text"></p>
             </div>
         </div>
-
-        <!-- Quiz Screen -->
         <div id="quiz-screen" class="screen">
             <div id="quiz-header">
                 <button id="pause-quiz-btn" class="pause-btn" title="Pause">||</button>
@@ -60,8 +67,6 @@
             </div>
             <div id="answer-buttons" class="btn-grid"></div>
         </div>
-        
-        <!-- Results Screen -->
         <div id="results-screen" class="screen">
             <h2>// MISSION_COMPLETE_</h2>
             <p id="results-summary-text" class="final-score"></p>
@@ -73,8 +78,6 @@
             <button id="review-mission-btn" class="btn btn-primary hidden">> Begin After-Action Review</button>
             <button id="back-to-home-from-results-btn" class="btn btn-secondary">> Back to Main Menu</button>
         </div>
-
-        <!-- After-Action Review Screen -->
         <div id="review-screen" class="screen">
              <h2 id="review-title">// AFTER-ACTION_REVIEW_</h2>
             <div id="review-content"></div>
@@ -85,8 +88,6 @@
             </div>
             <button id="finish-review-btn" class="btn btn-primary">> Mission Debriefed</button>
         </div>
-        
-        <!-- Dashboard Screen -->
         <div id="dashboard-screen" class="screen">
             <h2>// USER_DASHBOARD_</h2>
             <div class="dashboard-section">
@@ -104,7 +105,7 @@
             <button id="back-to-home-from-dash-btn" class="btn btn-primary">> Back to Main Menu</button>
         </div>
 
-        <!-- Universal Popups / Modals -->
+        <!-- Popups & Modals -->
         <div id="explanation-popup" class="popup-overlay">
             <div class="popup-content">
                 <h3 id="explanation-title"></h3>
@@ -139,8 +140,6 @@
                 <button id="close-settings-btn" class="btn btn-primary">> Close</button>
             </div>
         </div>
-        
-        <!-- Celebration Modals -->
         <div id="toast-notification">
             <p id="toast-text"></p>
         </div>

@@ -1,5 +1,5 @@
-// NotaR333_OS - Cozy Synthwave Engine v5.0
-// Final, complete, and unabridged version. This is the full OS.
+// NotaR333_OS - Final Engine v5.1 (XP Bar Integration)
+// This version is confirmed to match the final HTML and CSS.
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -132,10 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function getCurrentRank() { return ranks.slice().reverse().find(r => state.totalPoints >= r.points); }
 
     function updateXpBar() {
-        if (!xpBarContainer) return; // Exit if the XP bar isn't on the page
+        if (!xpBarContainer) return;
         const currentRank = getCurrentRank();
         const currentRankIndex = ranks.findIndex(r => r.name === currentRank.name);
-        
         if (currentRankIndex >= ranks.length - 1) {
             xpBarLabel.textContent = "// RANK MAX //";
             xpBarFill.style.width = '100%';
@@ -144,8 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const nextRank = ranks[currentRankIndex + 1];
             const pointsForNextRank = nextRank.points - currentRank.points;
             const pointsIntoCurrentRank = state.totalPoints - currentRank.points;
-            const progressPercent = (pointsIntoCurrentRank / pointsForNextRank) * 100;
-
+            const progressPercent = Math.max(0, (pointsIntoCurrentRank / pointsForNextRank) * 100);
             xpBarLabel.textContent = `Next Rank:`;
             xpBarFill.style.width = `${progressPercent}%`;
             xpBarText.textContent = `${pointsIntoCurrentRank} / ${pointsForNextRank}`;
@@ -166,28 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen('quiz');
         loadQuestion();
     }
-    
-    function resumeSavedQuiz() {
-        quizState = JSON.parse(localStorage.getItem('notaR333_savedSession'));
-        if (!quizState) return;
-        if (quizState.mode === 'exam_sim') startTimer(quizState.timeLeft);
-        clearSavedSession(); checkForSavedSession();
-        showScreen('quiz');
-        loadQuestion();
-    }
-
-    function startTimer(duration) {
-        clearInterval(timerInterval);
-        quizState.timeLeft = duration;
-        timerDisplay.classList.remove('hidden');
-        timerInterval = setInterval(() => {
-            quizState.timeLeft--;
-            let minutes = Math.floor(quizState.timeLeft / 60);
-            let seconds = quizState.timeLeft % 60;
-            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            if (quizState.timeLeft <= 0) { clearInterval(timerInterval); showResults(); }
-        }, 1000);
-    }
+    function resumeSavedQuiz() { quizState = JSON.parse(localStorage.getItem('notaR333_savedSession')); if (!quizState) return; if (quizState.mode === 'exam_sim') startTimer(quizState.timeLeft); clearSavedSession(); checkForSavedSession(); showScreen('quiz'); loadQuestion(); }
+    function startTimer(duration) { clearInterval(timerInterval); quizState.timeLeft = duration; timerDisplay.classList.remove('hidden'); timerInterval = setInterval(() => { quizState.timeLeft--; let minutes = Math.floor(quizState.timeLeft / 60); let seconds = quizState.timeLeft % 60; timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`; if (quizState.timeLeft <= 0) { clearInterval(timerInterval); showResults(); } }, 1000); }
     function pauseTimer() { clearInterval(timerInterval); }
     function resumeTimer() { if (quizState.mode === 'exam_sim' && quizState.timeLeft > 0) startTimer(quizState.timeLeft); }
 
@@ -264,13 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerPunMilestone() { const pun = puns[Math.floor(Math.random() * puns.length)]; toastText.textContent = `😻 ${pun}`; toastNotification.classList.add('show'); setTimeout(() => toastNotification.classList.remove('show'), 3000); }
     function createPartyPoppers() { const container = document.getElementById('particle-celebration-container'); if (!container) return; container.innerHTML = ''; for (let i = 0; i < 50; i++) { const particle = document.createElement('div'); particle.className = 'particle'; const x = (Math.random() - 0.5) * window.innerWidth * 1.5; const y = (Math.random() - 0.5) * window.innerHeight * 1.5; const color = ['var(--primary-neon)', 'var(--secondary-neon)', 'var(--accent-color)'][Math.floor(Math.random() * 3)]; particle.style.setProperty('--transform-end', `translate(${x}px, ${y}px)`); particle.style.background = color; container.appendChild(particle); } }
     function startReview() { quizState.reviewIndex = 0; loadReviewItem(); showScreen('review'); }
-    function loadReviewItem() {
-        const item = quizState.incorrectQuestions[quizState.reviewIndex];
-        reviewContent.innerHTML = `<div class="review-item"><h3>${item.emoji} ${item.question}</h3><p class="review-your-answer"><strong>Your Answer:</strong> ${item.selectedAnswerText}</p><p class="review-correct-answer"><strong>Correct Answer:</strong> ${item.options[item.correct]}</p><div class="review-explanation"><strong>Explanation:</strong> ${item.explanation}</div></div>`;
-        reviewCounter.textContent = `${quizState.reviewIndex + 1} / ${quizState.incorrectQuestions.length}`;
-        prevReviewBtn.disabled = quizState.reviewIndex === 0;
-        nextReviewBtn.disabled = quizState.reviewIndex === quizState.incorrectQuestions.length - 1;
-    }
+    function loadReviewItem() { const item = quizState.incorrectQuestions[quizState.reviewIndex]; reviewContent.innerHTML = `<div class="review-item"><h3>${item.emoji} ${item.question}</h3><p class="review-your-answer"><strong>Your Answer:</strong> ${item.selectedAnswerText}</p><p class="review-correct-answer"><strong>Correct Answer:</strong> ${item.options[item.correct]}</p><div class="review-explanation"><strong>Explanation:</strong> ${item.explanation}</div></div>`; reviewCounter.textContent = `${quizState.reviewIndex + 1} / ${quizState.incorrectQuestions.length}`; prevReviewBtn.disabled = quizState.reviewIndex === 0; nextReviewBtn.disabled = quizState.reviewIndex === quizState.incorrectQuestions.length - 1; }
 
     // --- Dashboard & Settings Logic ---
     function openDashboard() { renderMasteryChart(); renderPersonalBests(); renderNemesisQuestion(); showScreen('dashboard'); }

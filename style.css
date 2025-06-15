@@ -174,3 +174,50 @@ body.low-power * { animation: none !important; transition: none !important; }
     #main-title { font-size: 2.5rem; }
     #question-text { font-size: 1.2rem; }
 }
+
+/* --- NEW: XP PROGRESSION BAR STYLES --- */
+
+#xp-bar-container {
+    margin: 20px 5px 30px 5px; /* Added top margin */
+}
+
+#xp-bar-label {
+    font-family: var(--font-header);
+    color: var(--secondary-neon);
+    text-align: left;
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+#xp-bar-track {
+    height: 30px;
+    background-color: rgba(0,0,0,0.4);
+    border: 2px solid var(--primary-neon);
+    border-radius: 5px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Ensures fill stays within rounded corners */
+}
+
+#xp-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%; /* This will be controlled by JavaScript */
+    background-color: var(--primary-neon);
+    box-shadow: var(--glow-primary);
+    border-radius: 2px;
+    transition: width 0.5s ease-in-out;
+}
+
+#xp-bar-text {
+    position: relative; /* Sits on top of the fill */
+    z-index: 2;
+    font-family: var(--font-body);
+    font-weight: 700;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+}
