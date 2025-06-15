@@ -1,5 +1,5 @@
-// NotaR333_OS - Final Functional Engine v2.0
-// Re-integrating all features onto the proven, stable foundation.
+// NotaR333_OS - Final Engine v3.0
+// Fully featured, stable OS with gamification, settings, and dashboard.
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements (Full Set) ---
@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioToggle = document.getElementById('audio-toggle');
     const fullscreenToggle = document.getElementById('fullscreen-toggle');
     const lowPowerToggle = document.getElementById('low-power-toggle');
-    const fontSizeSelector = document.getElementById('font-size-selector');
     const themeSelector = document.getElementById('theme-selector');
     const clearWeakSpotsBtn = document.getElementById('clear-weak-spots-btn');
     const factoryResetBtn = document.getElementById('factory-reset-btn');
@@ -61,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let state = {};
     let quizState = {};
     let timerInterval;
-    const defaultState = { totalPoints: 0, weakSpotIds: [], masteredIds: [], questionStats: {}, settings: { audio: true, lowPower: false, fontSize: 'font-size-medium', theme: 'theme-pink', mascot: '(^._.^)ﾉ' }, stats: { personalBestScore: 0 } };
-    const ranks = [ { points: 0, name: "Cyber-Cadet" }, { points: 250, name: "Notary-Nomad" }, { points: 500, name: "Code-Clerk" }, { points: 1000, name: "Synth-Signer" }];
+    const defaultState = { totalPoints: 0, weakSpotIds: [], masteredIds: [], questionStats: {}, settings: { audio: true, lowPower: false, theme: 'theme-pink' }, stats: { personalBestScore: 0 } };
+    const ranks = [ { points: 0, name: "Cyber-Cadet" }, { points: 250, name: "Notary-Nomad" }, { points: 500, name: "Code-Clerk" }, { points: 1000, name: "Synth-Signer" }, { points: 1500, name: "Data-Deacon" }, { points: 2500, name: "Matrix-Magistrate" }, { points: 4000, name: "Neon-Notary Prime ✨" }];
 
     // --- Audio ---
     const sounds = { click: new Audio('click.mp3'), correct: new Audio('correct.mp3'), incorrect: new Audio('incorrect.mp3'), win: new Audio('win.mp3'), pause: new Audio('pause.mp3'), open: new Audio('open.mp3') };
@@ -76,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         checkForSavedSession();
         addEventListeners();
         showScreen('home');
+        console.log("NotaR333_OS Final Engine Initialized.");
     }
 
     function showScreen(screenName) {
@@ -94,12 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function saveState() { localStorage.setItem('notaR333_state', JSON.stringify(state)); }
     function applySettings() {
-        body.className = `${state.settings.theme} ${state.settings.fontSize}`;
+        body.className = `${state.settings.theme}`;
         body.classList.toggle('low-power', state.settings.lowPower);
         audioToggle.textContent = state.settings.audio ? '🔊' : '🔇';
         lowPowerToggle.classList.toggle('active', state.settings.lowPower);
-        document.querySelectorAll('.font-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.size === state.settings.fontSize));
-        mascotContainer.innerHTML = `<pre>${state.settings.mascot}</pre>`;
     }
     
     // --- Session Management ---
@@ -282,29 +280,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
     function addEventListeners() {
+        // Main Navigation
         settingsBtn.addEventListener('click', () => { playSound('open'); openSettings(); });
         dashboardBtn.addEventListener('click', () => { playSound('open'); openDashboard(); });
         const goHome = () => { playSound('click'); checkForSavedSession(); updateStatsUI(); showScreen('home'); };
         backToHomeFromResultsBtn.addEventListener('click', goHome);
         backToHomeFromDashBtn.addEventListener('click', goHome);
         finishReviewBtn.addEventListener('click', goHome);
+        // Home Screen
         startDrillBtn.addEventListener('click', () => { playSound('click'); startQuiz('drill', 20); });
         startExamSimBtn.addEventListener('click', () => { playSound('click'); startQuiz('exam_sim', 40); });
         reviewWeakSpotsBtn.addEventListener('click', () => { playSound('click'); startQuiz('weak_spots'); });
         resumeSessionBtn.addEventListener('click', () => { playSound('click'); resumeSavedQuiz(); });
         discardSessionBtn.addEventListener('click', () => { playSound('click'); if (confirm('Discard your saved session?')) { clearSavedSession(); checkForSavedSession(); } });
+        // Quiz Screen
         pauseQuizBtn.addEventListener('click', () => { playSound('pause'); pauseTimer(); popups.pause.classList.add('visible'); });
         answerButtons.addEventListener('click', e => { if (e.target.matches('.answer-btn')) selectAnswer(parseInt(e.target.dataset.index)); });
+        // Popups
         continueQuizBtn.addEventListener('click', handleNextQuestion);
         resumeQuizBtn.addEventListener('click', () => { playSound('click'); popups.pause.classList.remove('visible'); resumeTimer(); });
         saveExitBtn.addEventListener('click', () => { playSound('click'); saveSession(); goHome(); popups.pause.classList.remove('visible'); });
         abandonExitBtn.addEventListener('click', () => { playSound('click'); if (confirm('Abandon this quiz attempt?')) { clearSavedSession(); goHome(); popups.pause.classList.remove('visible'); } });
+        // Review Screen
         prevReviewBtn.addEventListener('click', () => { playSound('click'); if (quizState.reviewIndex > 0) { quizState.reviewIndex--; loadReviewItem(); } });
         nextReviewBtn.addEventListener('click', () => { playSound('click'); if (quizState.reviewIndex < quizState.incorrectQuestions.length - 1) { quizState.reviewIndex++; loadReviewItem(); } });
+        // Settings
         closeSettingsBtn.addEventListener('click', () => { playSound('click'); popups.settings.classList.remove('visible'); });
         audioToggle.addEventListener('click', () => { state.settings.audio = !state.settings.audio; applySettings(); saveState(); playSound('click'); });
         lowPowerToggle.addEventListener('click', () => { playSound('click'); state.settings.lowPower = !state.settings.lowPower; applySettings(); saveState(); });
-        fontSizeSelector.addEventListener('click', e => { if (e.target.matches('.font-btn')) { playSound('click'); state.settings.fontSize = e.target.dataset.size; applySettings(); saveState(); } });
         clearWeakSpotsBtn.addEventListener('click', () => { if (confirm('Are you sure you want to clear your weak spots list?')) { playSound('click'); state.weakSpotIds = []; state.masteredIds = []; state.questionStats = {}; saveState(); updateStatsUI(); alert('Weak spots cleared.'); } });
         factoryResetBtn.addEventListener('click', () => { if (confirm('DANGER: Reset all points, ranks, and stats? This cannot be undone.')) { playSound('click'); localStorage.removeItem('notaR333_state'); localStorage.removeItem('notaR333_savedSession'); loadState(); applySettings(); updateStatsUI(); checkForSavedSession(); alert('System reset to default.'); } });
         fullscreenToggle.addEventListener('click', () => {
