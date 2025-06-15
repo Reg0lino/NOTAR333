@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openDashboard() { renderMasteryChart(); renderPersonalBests(); renderNemesisQuestion(); showScreen('dashboard'); }
+
     function renderMasteryChart() { 
         domElements.masteryChartContainer.innerHTML = ''; 
         const categories = [...new Set(quizData.map(q => q.category))].sort(); 
@@ -207,11 +208,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const masteryPercent = total > 0 ? (mastered / total) * 100 : 0; 
             const item = document.createElement('div'); 
             item.className = 'chart-bar-item'; 
+            // Set initial width to 0 for the animation
             item.innerHTML = `<span class="chart-bar-label">${cat}</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width: 0%"></div></div>`; 
-            masteryChartContainer.appendChild(item); 
-            // THIS LINE WAS DELETED
-    setTimeout(() => { item.querySelector('.chart-bar-fill').style.width = `${masteryPercent}%`; }, 100);
-}); 
+            domElements.masteryChartContainer.appendChild(item);
+            setTimeout(() => { 
+                item.querySelector('.chart-bar-fill').style.width = `${masteryPercent}%`; 
+            }, 100);
+        }); 
     }
     function renderPersonalBests() { domElements.personalBestsContainer.innerHTML = `<p><strong>Best Score:</strong> ${state.stats.personalBestScore} questions correct.</p>`; }
     function renderNemesisQuestion() { 
