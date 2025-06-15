@@ -199,22 +199,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openDashboard() { renderMasteryChart(); renderPersonalBests(); renderNemesisQuestion(); showScreen('dashboard'); }
 
-    function renderMasteryChart() { 
-        domElements.masteryChartContainer.innerHTML = ''; 
-        const categories = [...new Set(quizData.map(q => q.category))].sort(); 
-        categories.forEach(cat => { 
-            const total = quizData.filter(q => q.category === cat).length; 
-            const mastered = state.masteredIds.filter(id => quizData.find(q=>q.id===id)?.category === cat).length; 
-            const masteryPercent = total > 0 ? (mastered / total) * 100 : 0; 
-            const item = document.createElement('div'); 
-            item.className = 'chart-bar-item'; 
-            // Set initial width to 0 for the animation
-            item.innerHTML = `<span class="chart-bar-label">${cat}</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width: 0%"></div></div>`; 
+    function renderMasteryChart() {
+        domElements.masteryChartContainer.innerHTML = ''; // Clear previous chart
+        const categories = [...new Set(quizData.map(q => q.category))].sort();
+        categories.forEach(cat => {
+            // --- Create elements one by one ---
+            const item = document.createElement('div');
+            item.className = 'chart-bar-item';
+    
+            const label = document.createElement('span');
+            label.className = 'chart-bar-label';
+            label.textContent = cat;
+    
+            const barBg = document.createElement('div');
+            barBg.className = 'chart-bar-bg';
+    
+            const barFill = document.createElement('div');
+            barFill.className = 'chart-bar-fill';
+            barFill.style.width = '0%'; // Start at 0 for animation
+    
+            // --- Assemble the elements ---
+            barBg.appendChild(barFill);
+            item.appendChild(label);
+            item.appendChild(barBg);
+    
+            // --- Append to the DOM ---
             domElements.masteryChartContainer.appendChild(item);
-            setTimeout(() => { 
-                item.querySelector('.chart-bar-fill').style.width = `${masteryPercent}%`; 
+    
+            // --- Calculate and Animate ---
+            const total = quizData.filter(q => q.category === cat).length;
+            const mastered = state.masteredIds.filter(id => quizData.find(q=>q.id===id)?.category === cat).length;
+            const masteryPercent = total > 0 ? (mastered / total) * 100 : 0;
+            
+            // Use setTimeout to allow the element to render before animating the width
+            setTimeout(() => {
+                barFill.style.width = `${masteryPercent}%`;
             }, 100);
-        }); 
+        });
     }
     function renderPersonalBests() { domElements.personalBestsContainer.innerHTML = `<p><strong>Best Score:</strong> ${state.stats.personalBestScore} questions correct.</p>`; }
     function renderNemesisQuestion() { 
