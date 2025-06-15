@@ -3,62 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYS Notary Study Guide - NotaR333_OS</title>
-    <!-- Link to the main app's stylesheet -->
+    <title>NYS Notary Study Guide - NotaR333</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&family=VT323&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- THEME FIX: This script now correctly adds the "theme-" prefix -->
-    <script>
-        try {
-            const savedState = JSON.parse(localStorage.getItem('notaR333_state'));
-            if (savedState && savedState.settings && savedState.settings.theme) {
-                // The fix is here: 'theme-' + savedState.settings.theme
-                document.body.className = 'theme-' + savedState.settings.theme;
-            } else {
-                 document.body.className = 'theme-pink'; // Default fallback
-            }
-        } catch (e) {
-            // If anything goes wrong, default to pink.
-            document.body.className = 'theme-pink';
-        }
-    </script>
     <style>
-        /* Scoped styles for the study guide content to look good in the new theme */
-        .study-guide-content { padding: 15px; text-align: left; }
-        .study-guide-content h2, .study-guide-content h3, .study-guide-content h4 {
-            font-family: var(--font-header);
-            color: var(--primary-neon);
-        }
-        .study-guide-content h2 { font-size: 2rem; border-bottom: 2px solid var(--secondary-neon); margin-bottom: 20px; padding-bottom: 10px; text-align: center; }
-        .study-guide-content h3 { font-size: 1.5rem; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px dashed var(--secondary-neon); padding-bottom: 5px; }
-        .study-guide-content h4 { font-size: 1.2rem; color: var(--secondary-neon); }
-        .study-guide-content p, .study-guide-content li { line-height: 1.6; }
-        .study-guide-content ul { list-style-position: inside; padding-left: 10px; }
-        .study-guide-content strong { color: var(--accent-color); }
+        /* Scoped styles for the study guide content */
+        .scrollable-content { padding: 15px; text-align: left; }
+        .scrollable-content h3, .scrollable-content h4 { font-family: var(--font-header); color: var(--primary-neon); }
+        .scrollable-content h3 { font-size: 1.5rem; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px dashed var(--secondary-neon); padding-bottom: 5px; }
+        .scrollable-content h4 { font-size: 1.2rem; color: var(--secondary-neon); }
+        .scrollable-content p, .scrollable-content li { line-height: 1.6; }
+        .scrollable-content ul { list-style: none; padding-left: 0; }
+        .scrollable-content strong { color: var(--accent-color); }
         .info-card { background: rgba(0,0,0,0.2); border-left: 4px solid var(--accent-color); padding: 15px; margin-bottom: 20px; border-radius: 5px; }
         details { background: rgba(0,0,0,0.1); border: 1px solid var(--secondary-neon); padding: 15px; border-radius: 5px; margin-bottom: 10px; }
         details summary { font-family: var(--font-header); font-size: 1.3rem; cursor: pointer; color: var(--secondary-neon); }
-        .glossary-item { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px 0; }
+        .glossary-item, .link-item { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; }
+        .link-item a { color: var(--secondary-neon); text-decoration: none; }
+        .link-item a:hover { text-decoration: underline; }
     </style>
 </head>
-<body class="theme-pink">
+<body>
 
-    <!-- The main app container to match the look and feel -->
+    <!-- This script runs at the end to apply the theme after the body exists -->
     <div id="app-container">
-        <div class="study-guide-content">
-            
-            <!-- Dashboard Section -->
+        <!-- NEW HEADER FOR THIS PAGE -->
+        <header class="page-header">
+            <h2>// NYS Notary Public Briefing</h2>
+        </header>
+
+        <!-- NEW SCROLLABLE MAIN CONTENT AREA -->
+        <main class="scrollable-content">
             <section id="dashboard">
-                <h2>// NYS Notary Public Briefing</h2>
                 <div class="info-card">
                     <p><strong>Key Focus Area:</strong> Since your commission lapsed for over six months, you must retake the full exam. Pay close attention to the major updates effective from January 2023 regarding <strong>Electronic Notarization (REN)</strong> and <strong>Mandatory Journaling</strong>.</p>
                 </div>
-
                 <h3>At a Glance: Current & Pending Rules (June 2025)</h3>
-                <!-- Cards have been simplified for the new theme -->
                 <p><strong>✔ Mandatory Notary Journal:</strong> Effective Law (Jan 25, 2023). All notaries must maintain a detailed journal for 10 years.</p>
                 <p><strong>✔ Electronic Notarization (REN):</strong> Effective Law (Jan 25, 2023). Authorized with specific registration and tech requirements.</p>
                 <p><strong>✖️ Remote Ink Notarization (RIN):</strong> Prohibited (Jan 31, 2023). No longer permitted.</p>
@@ -207,61 +189,28 @@
                     <div class="glossary-item"><h4>Will</h4><p>A legal document for property distribution at death. Notaries are cautioned not to execute an acknowledgment of a will's execution as it's not a valid attestation.</p></div>
                 </div>
             </section>
-<!-- Helpful Links Section -->
+
             <section id="helpful-links">
                 <h3>Helpful Links & Official Sources</h3>
                 <div id="links-content">
                     <p>Use these official resources from the NYS Department of State and the NYS Legislature to verify information, download forms, and check the status of pending laws.</p>
                     <ul>
-                        <li class="glossary-item">
-                            <a href="https://dos.ny.gov/system/files/documents/2023/01/notary-public-license-law_01.2023.pdf" target="_blank" rel="noopener noreferrer">
-                                <strong>Official Notary Public License Law (PDF)</strong>
-                            </a>
-                            <p>This is the primary source and required reading for the exam. It contains the controlling statutes and general information.</p>
-                        </li>
-                        <li class="glossary-item">
-                            <a href="https://dos.ny.gov/notary-public" target="_blank" rel="noopener noreferrer">
-                                <strong>NYS Department of State - Notary Public Main Page</strong>
-                            </a>
-                            <p>The central hub for all official forms (renewal, name change), FAQs, license lookup, and important announcements.</p>
-                        </li>
-                        <li class="glossary-item">
-                            <a href="https://dos.ny.gov/notary-public-walk-examination-schedule" target="_blank" rel="noopener noreferrer">
-                                <strong>Official Notary Public Exam Schedule</strong>
-                            </a>
-                            <p>Find dates, times, and locations for walk-in examinations across the state.</p>
-                        </li>
-                        <li class="glossary-item">
-                            <a href="https://businessexpress.ny.gov/" target="_blank" rel="noopener noreferrer">
-                                <strong>New York Business Express (Online Renewals & Applications)</strong>
-                            </a>
-                            <p>The official state portal used for submitting online renewal applications and initial registrations.</p>
-                        </li>
-                        <li class="glossary-item">
-                            <a href="https://www.nysenate.gov/legislation/laws/EXC/P6-A" target="_blank" rel="noopener noreferrer">
-                                <strong>Direct Link to NYS Executive Law § 130-144</strong>
-                            </a>
-                            <p>For advanced study, this provides direct access to the controlling statutes for Notaries Public.</p>
-                        </li>
-                        <li class="glossary-item">
-                            <a href="https://www.nysenate.gov/legislation/search" target="_blank" rel="noopener noreferrer">
-                                <strong>NYS Senate Bill Search</strong>
-                            </a>
-                            <p>Track the status of pending legislation that may affect notary laws (e.g., S.398 for real property rules, S.6268 for fee increases).</p>
-                        </li>
+                        <li class="link-item"> <a href="https://dos.ny.gov/system/files/documents/2023/01/notary-public-license-law_01.2023.pdf" target="_blank" rel="noopener noreferrer"> <strong>Official Notary Public License Law (PDF)</strong> </a> <p>This is the primary source and required reading for the exam.</p> </li>
+                        <li class="link-item"> <a href="https://dos.ny.gov/notary-public" target="_blank" rel="noopener noreferrer"> <strong>NYS DoS - Notary Public Main Page</strong> </a> <p>The central hub for all official forms, FAQs, and announcements.</p> </li>
+                        <li class="link-item"> <a href="https://dos.ny.gov/notary-public-walk-examination-schedule" target="_blank" rel="noopener noreferrer"> <strong>Official Notary Public Exam Schedule</strong> </a> <p>Find dates, times, and locations for walk-in examinations.</p> </li>
+                        <li class="link-item"> <a href="https://www.nysenate.gov/legislation/search" target="_blank" rel="noopener noreferrer"> <strong>NYS Senate Bill Search</strong> </a> <p>Track the status of pending legislation (e.g., S.398, S.6268).</p> </li>
                     </ul>
                 </div>
             </section>
-
-        </div>
+        </main>
     </div>
     <script>
         try {
             const savedState = JSON.parse(localStorage.getItem('notaR333_state'));
             const theme = savedState?.settings?.theme || 'pink';
-            document.body.classList.add('theme-' + theme);
+            document.body.className = 'theme-' + theme;
         } catch (e) {
-            document.body.classList.add('theme-pink');
+            document.body.className = 'theme-pink';
         }
     </script>
 </body>

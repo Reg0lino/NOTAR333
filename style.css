@@ -142,6 +142,25 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
     padding-right: 5px; /* prevent content from touching scrollbar */
 }
 
+
+/* --- Styles for General.html Layout --- */
+.page-header {
+    padding: 15px 15px 0 15px;
+    text-align: center;
+    flex-shrink: 0; /* Prevents the header from shrinking */
+}
+.page-header h2 {
+    font-size: 2rem;
+    border-bottom: 2px solid var(--secondary-neon);
+    margin: 0;
+    padding-bottom: 10px;
+}
+
+.scrollable-content {
+    flex-grow: 1; /* Allows this area to take up all remaining space */
+    overflow-y: auto; /* Adds a scrollbar ONLY if content is too tall */
+    padding: 15px;
+}
 #home-screen, #results-screen { text-align: center; }
 .btn { font-family: var(--font-body); font-weight: 700; font-size: 1rem; padding: 15px 20px; border: 2px solid; border-radius: 5px; background-color: transparent; cursor: pointer; margin: 10px 5px; transition: all 0.2s ease-in-out; display: block; width: calc(100% - 10px); text-decoration: none; text-align: center; }
 .btn-primary { color: var(--primary-neon); border-color: var(--primary-neon); }
@@ -228,3 +247,36 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
 .catalog-item-wrapper.is-new::after { content: '●'; position: absolute; top: 2px; right: 2px; font-size: 1.2rem; color: var(--accent-color); text-shadow: 0 0 5px var(--accent-color); z-index: 5; }
 .rank-up-content { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 @media (max-width: 480px) { #main-title { font-size: 2.5rem; } #question-text { font-size: 1.2rem; } .top-cat { width: 40px; height: 40px; } .header-icons { gap: 10px; } }
+
+/* ==========================================================================
+   9. Themed Scrollbar Styles
+   ========================================================================== */
+
+/* This targets the scrollbar in any element that has one (like our screens) */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+/* The track (the background of the scrollbar) */
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+}
+
+/* The handle (the draggable part) */
+::-webkit-scrollbar-thumb {
+    background-color: var(--secondary-neon);
+    border-radius: 10px;
+    border: 3px solid transparent;
+    background-clip: content-box; /* Ensures the border is transparent, not colored */
+}
+
+/* The handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-neon);
+}
+
+/* The corner where horizontal and vertical scrollbars meet */
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
