@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         checkForSavedSession();
         showScreen('home');
         updateNotificationIndicator();
+        initializeStarfield();
         console.log("NotaR333 v4.7 Initialized and Ready.");
     }
 

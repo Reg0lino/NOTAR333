@@ -10,37 +10,25 @@
     --font-question: 'Exo 2', sans-serif;
 }
 
-body.theme-pink { --bg-color: #0d0514; --primary-neon: #ff00ff; --secondary-neon: #00ffc6; --text-color: #f0f0f0; --accent-color: #ffff00; --error-color: #ff3366; --success-color: #66ff66; --container-bg: rgba(18, 16, 25, 0.8); }
-body.theme-green { --bg-color: #0d1a14; --primary-neon: #00ff7f; --secondary-neon: #faff00; --text-color: #e0f5e9; --accent-color: #ff8c00; --error-color: #ff4757; --success-color: #2ed573; --container-bg: rgba(13, 26, 20, 0.8); }
-body.theme-orange { --bg-color: #1a100a; --primary-neon: #ff8c00; --secondary-neon: #a96bff; --text-color: #ffe8d6; --accent-color: #00e5ff; --error-color: #ff4d4d; --success-color: #7dff8e; --container-bg: rgba(26, 16, 10, 0.8); }
-body.theme-blue { --bg-color: #0a0f1f; --primary-neon: #00bfff; --secondary-neon: #d900ff; --text-color: #e0e8ff; --accent-color: #ffd700; --error-color: #ff3366; --success-color: #39ff14; --container-bg: rgba(10, 15, 31, 0.8); }
-body.theme-solar { --bg-color: #1f0a0a; --primary-neon: #ff4500; --secondary-neon: #ffff00; --text-color: #fff0e0; --accent-color: #00ffff; --error-color: #ff1100; --success-color: #adff2f; --container-bg: rgba(31, 10, 10, 0.8); }
-body.theme-matrix { --bg-color: #050a05; --primary-neon: #00ff41; --secondary-neon: #abff00; --text-color: #dfffe5; --accent-color: #ffffff; --error-color: #ff4757; --success-color: #00ff41; --container-bg: rgba(5, 15, 5, 0.8); }
+/* --- THEME DEFINITIONS --- */
+/* MODIFIED: Alpha value for --container-bg changed from 0.8 to 0.7 to increase transparency */
+body.theme-pink { --bg-color: #0d0514; --primary-neon: #ff00ff; --secondary-neon: #00ffc6; --text-color: #f0f0f0; --accent-color: #ffff00; --error-color: #ff3366; --success-color: #66ff66; --container-bg: rgba(18, 16, 25, 0.7); }
+body.theme-green { --bg-color: #0d1a14; --primary-neon: #00ff7f; --secondary-neon: #faff00; --text-color: #e0f5e9; --accent-color: #ff8c00; --error-color: #ff4757; --success-color: #2ed573; --container-bg: rgba(13, 26, 20, 0.7); }
+body.theme-orange { --bg-color: #1a100a; --primary-neon: #ff8c00; --secondary-neon: #a96bff; --text-color: #ffe8d6; --accent-color: #00e5ff; --error-color: #ff4d4d; --success-color: #7dff8e; --container-bg: rgba(26, 16, 10, 0.7); }
+body.theme-blue { --bg-color: #0a0f1f; --primary-neon: #00bfff; --secondary-neon: #d900ff; --text-color: #e0e8ff; --accent-color: #ffd700; --error-color: #ff3366; --success-color: #39ff14; --container-bg: rgba(10, 15, 31, 0.7); }
+body.theme-solar { --bg-color: #1f0a0a; --primary-neon: #ff4500; --secondary-neon: #ffff00; --text-color: #fff0e0; --accent-color: #00ffff; --error-color: #ff1100; --success-color: #adff2f; --container-bg: rgba(31, 10, 10, 0.7); }
+body.theme-matrix { --bg-color: #050a05; --primary-neon: #00ff41; --secondary-neon: #abff00; --text-color: #dfffe5; --accent-color: #ffffff; --error-color: #ff4757; --success-color: #00ff41; --container-bg: rgba(5, 15, 5, 0.7); }
+
+
+/* --- BASE & UTILITY STYLES --- */
+body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-body); margin: 0; padding: 25px 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; box-sizing: border-box; transition: background-color 0.5s ease; overflow: hidden; /* Prevent scrollbars from effects */ }
+.hidden { display: none !important; }
 
 /* ==========================================================================
-   2. Base & Global Styles
+   NEW: Starfield Background Styles
    ========================================================================== */
 
-body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    font-family: var(--font-body);
-    margin: 0;
-    padding: 25px 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center; 
-    min-height: 100vh;
-    box-sizing: border-box;
-    transition: background-color 0.5s ease;
-    overflow-x: hidden;
-}
-.hidden { 
-    display: none !important; 
-}
-
-#particle-container, 
-#particle-celebration-container {
+#particle-container {
     position: fixed;
     top: 0;
     left: 0;
@@ -50,9 +38,61 @@ body {
     overflow: hidden;
     pointer-events: none;
 }
-#rank-up-modal #particle-celebration-container {
-    z-index: 1; /* Sits behind rank-up content, but above overlay */
+#rank-up-modal #particle-celebration-container { z-index: 1; position: absolute; }
+
+/* Layer 1: Distant Stars (Pure CSS) */
+@function create-shadows($n, $color) {
+    $value: '#{random(2000)}px #{random(2000)}px #{$color}';
+    @for $i from 2 through $n {
+        $value: '#{$value} , #{random(2000)}px #{random(2000)}px #{$color}';
+    }
+    @return unquote($value);
 }
+
+#stars1, #stars2, #stars3 {
+    position: absolute;
+    border-radius: 50%;
+    background: transparent;
+    animation: twinkle 10s infinite linear;
+}
+#stars1 { width: 1px; height: 1px; box-shadow: create-shadows(700, var(--text-color)); opacity: 0.7; }
+#stars2 { width: 2px; height: 2px; box-shadow: create-shadows(200, var(--secondary-neon)); animation-duration: 15s; }
+#stars3 { width: 3px; height: 3px; box-shadow: create-shadows(100, var(--primary-neon)); opacity: 0.5; animation-duration: 20s; }
+
+@keyframes twinkle { 
+    0% { transform: translateY(0px); opacity: 0.7; }
+    50% { opacity: 0.4; }
+    100% { transform: translateY(-100px); opacity: 0.7; }
+}
+
+/* Layer 2: Hero Stars (JS created, CSS animated) */
+.hero-star {
+    position: absolute;
+    border-radius: 50%;
+    animation-name: drift;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes drift {
+    from { transform: translateX(-20vw); }
+    to { transform: translateX(120vw); }
+}
+
+/* Layer 3: Shooting Stars (JS created, CSS animated) */
+.shooting-star {
+    position: absolute;
+    width: 2px;
+    height: 150px;
+    background: linear-gradient(to top, transparent, var(--accent-color));
+    animation: shoot 2s ease-in forwards;
+}
+
+@keyframes shoot {
+    0% { transform: translateY(0) rotate(var(--angle)); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(var(--angle)); opacity: 0; }
+}
+
 
 /* ==========================================================================
    3. Main App Layout & Header
