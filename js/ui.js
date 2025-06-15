@@ -1,9 +1,5 @@
-// NotaR333_OS - UI Management v3.2 (Reward Modal Update)
+// NotaR333_OS - UI Management v3.3 (Info Icon Update)
 
-/**
- * Switches the visible screen in the app.
- * @param {string} screenName - The key for the screen to show (e.g., 'home', 'quiz').
- */
 function showScreen(screenName) {
     for (const key in domElements.screens) {
         domElements.screens[key]?.classList.remove('active');
@@ -11,19 +7,10 @@ function showScreen(screenName) {
     domElements.screens[screenName]?.classList.add('active');
 }
 
-/**
- * Shows or hides a popup/modal.
- * @param {string} popupName - The key for the popup to show/hide.
- * @param {boolean} show - True to show, false to hide.
- */
 function togglePopup(popupName, show) {
     domElements.popups[popupName]?.classList.toggle('visible', show);
 }
 
-
-/**
- * Applies visual settings from the state object.
- */
 function applySettings() {
     domElements.body.className = `theme-${state.settings.theme}`;
     domElements.body.classList.toggle('low-power', state.settings.lowPower);
@@ -35,9 +22,6 @@ function applySettings() {
     }
 }
 
-/**
- * Updates all static UI elements like rank, score, and XP bar.
- */
 function updateAllUI() {
     const currentRank = getCurrentRank();
     domElements.rankDisplay.textContent = `//Rank: ${currentRank.name}`;
@@ -48,14 +32,11 @@ function updateAllUI() {
     renderTopCatz();
 }
 
-/**
- * Updates the XP progression bar.
- */
 function updateXpBar() {
     const currentRank = getCurrentRank();
     const currentRankIndex = ranks.findIndex(r => r.name === currentRank.name);
 
-    if (currentRankIndex >= ranks.length - 1) { // Max rank
+    if (currentRankIndex >= ranks.length - 1) {
         domElements.xpBarLabel.textContent = "// RANK MAX //";
         domElements.xpBarFill.style.width = '100%';
         domElements.xpBarText.textContent = '✨ Complete! ✨';
@@ -71,9 +52,6 @@ function updateXpBar() {
     }
 }
 
-/**
- * Updates the text counter for weak spots on the home screen.
- */
 function updateWeakSpotsCounter() {
     const count = state.weakSpotIds.length;
     domElements.weakSpotsCounter.textContent = count > 0 
@@ -82,10 +60,6 @@ function updateWeakSpotsCounter() {
     domElements.reviewWeakSpotsBtn.classList.toggle('hidden', count === 0);
 }
 
-/**
- * Displays a toast notification.
- * @param {string} message - The text to display in the toast.
- */
 function showToast(message) {
     domElements.toastText.innerHTML = message;
     domElements.toastNotification.className = "show";
@@ -94,15 +68,11 @@ function showToast(message) {
     }, 3000);
 }
 
-
 // --- Gamification & Reward UI ---
 
-/**
- * Renders the three cat images in the header bar.
- */
 function renderTopCatz() {
     const catzBar = domElements.topCatzBar;
-    catzBar.innerHTML = ''; // Clear existing cats
+    catzBar.innerHTML = ''; 
     for (let i = 0; i < 3; i++) {
         const catSrc = state.selectedCats[i];
         const img = document.createElement('img');
@@ -110,15 +80,12 @@ function renderTopCatz() {
         img.alt = `Custom Mascot ${i + 1}`;
         img.className = 'top-cat';
         if (!catSrc) {
-            img.classList.add('empty-slot'); // Apply special class for styling placeholders
+            img.classList.add('empty-slot');
         }
         catzBar.appendChild(img);
     }
 }
 
-/**
- * Opens and renders the content of the achievements modal.
- */
 function openCheevosModal() {
     const grid = domElements.cheevosGrid;
     grid.innerHTML = ''; 
@@ -135,34 +102,43 @@ function openCheevosModal() {
     togglePopup('cheevos', true);
 }
 
-/**
- * Opens and renders the content of the Cat-alog modal.
- */
 function openCatalogModal() {
     const grid = domElements.catalogGrid;
     grid.innerHTML = '';
+    
     allCatGifs.forEach(catFile => {
         const isUnlocked = state.unlockedCats.includes(catFile);
+        
+        // --- NEW: Create a wrapper for the image and info icon ---
+        const wrapper = document.createElement('div');
+        wrapper.className = 'catalog-item-wrapper';
+
         const img = document.createElement('img');
         img.src = `images/${catFile}`;
         img.className = 'catalog-item';
         img.dataset.catfile = catFile;
-        if (!isUnlocked) {
-            img.classList.add('locked');
-        } else {
+
+        wrapper.appendChild(img);
+        
+        if (isUnlocked) {
             if (state.selectedCats.includes(catFile)) {
                 img.classList.add('selected');
             }
+            // Add the info icon only if the cat is unlocked
+            const infoIcon = document.createElement('span');
+            infoIcon.className = 'info-icon';
+            infoIcon.textContent = 'i';
+            infoIcon.dataset.catfile = catFile; // Carry over data for easy lookup
+            wrapper.appendChild(infoIcon);
+        } else {
+            img.classList.add('locked');
         }
-        grid.appendChild(img);
+
+        grid.appendChild(wrapper);
     });
     togglePopup('catalog', true);
 }
 
-/**
- * Shows the reward details modal for a specific cat.
- * @param {string} catFile - The filename of the cat image.
- */
 function showRewardDetails(catFile) {
     const cheevo = cheevoData.find(c => c.catImage === catFile);
     if (!cheevo) return;
@@ -170,7 +146,7 @@ function showRewardDetails(catFile) {
     domElements.rewardImage.src = `images/${catFile}`;
     domElements.rewardTitle.textContent = cheevo.title;
     domElements.rewardDescription.textContent = cheevo.description;
-    domElements.rewardSelectBtn.dataset.catfile = catFile; // Pass the filename to the button
+    domElements.rewardSelectBtn.dataset.catfile = catFile;
     
     togglePopup('reward', true);
 }
