@@ -1,4 +1,4 @@
-// NotaR333_OS - Haptics Engine v3.0
+// NotaR333_OS - Haptics Engine v3.2 (Refined)
 
 const hapticPatterns = {
     // A very short, quick tap for simple UI interactions.
@@ -7,15 +7,27 @@ const hapticPatterns = {
     correct: [40, 60, 40],
     // A longer, more distinct buzz for an incorrect answer.
     incorrect: [200],
-    // A strong, multi-pulse pattern for major events.
-    success: [100, 80, 100, 80, 100],
     // A short, sharp vibration for opening modals or popups.
     open: [70],
-    // A special, powerful vibration for the "Weakness Eliminated" event.
-    shatter: [20, 150, 20, 150]
+    
+    // --- REFINED PATTERNS ---
+    
+    // A rhythmic "da-da-DUM" for unlocking an achievement.
+    cheevoUnlock: [80, 60, 150],
+    
+    // A drumroll-like pattern leading to a strong finish for ranking up.
+    rankUp: [50, 100, 50, 100, 50, 200],
+    
+    // A very distinctive, jagged pulse for eliminating a weak spot.
+    shatter: [20, 200, 20, 200]
 };
 
 function triggerVibration(patternKey) {
+    // Check if the user is in low power mode first
+    if (state && state.settings.lowPower) {
+        return;
+    }
+    
     // Check if the Vibration API is supported by the browser.
     if ('vibrate' in navigator) {
         // Find the vibration pattern from the key provided.

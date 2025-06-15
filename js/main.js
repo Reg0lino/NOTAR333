@@ -1,90 +1,36 @@
-// NotaR333_OS - Main Application Controller v3.0
+// NotaR333_OS - Main Application Controller v3.2 (Final Polish)
 
-// --- GLOBAL DOM ELEMENTS ---
-// Centralizing all DOM element selections here.
 const domElements = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- DOM Element Population ---
-    // (This part remains unchanged)
-    domElements.body = document.body;
-    domElements.screens = { 
-        home: document.getElementById('home-screen'), 
-        quiz: document.getElementById('quiz-screen'), 
-        results: document.getElementById('results-screen'), 
-        review: document.getElementById('review-screen'), 
-        dashboard: document.getElementById('dashboard-screen'), 
-    };
-    domElements.popups = { 
-        explanation: document.getElementById('explanation-popup'), 
-        pause: document.getElementById('pause-modal'), 
-        settings: document.getElementById('settings-modal'), 
-        rankUp: document.getElementById('rank-up-modal'),
-        cheevos: document.getElementById('cheevos-modal'),
-        catalog: document.getElementById('catalog-modal'),
-    };
-    domElements.mascotContainer = document.getElementById('mascot-container'); // Re-add mascot container
-    domElements.topCatzBar = document.getElementById('top-catz-bar');
-    domElements.studyGuideBtn = document.getElementById('study-guide-btn');
-    domElements.cheevosBtn = document.getElementById('cheevos-btn');
-    domElements.dashboardBtn = document.getElementById('dashboard-btn');
-    domElements.settingsBtn = document.getElementById('settings-btn');
-    domElements.rankDisplay = document.getElementById('rank-display');
-    domElements.scoreDisplay = document.getElementById('score-display');
-    domElements.xpBarContainer = document.getElementById('xp-bar-container');
-    domElements.xpBarLabel = document.getElementById('xp-bar-label');
-    domElements.xpBarFill = document.getElementById('xp-bar-fill');
-    domElements.xpBarText = document.getElementById('xp-bar-text');
-    domElements.resumeSessionContainer = document.getElementById('resume-session-container');
-    domElements.newSessionContainer = document.getElementById('new-session-container');
-    domElements.resumeSessionBtn = document.getElementById('resume-session-btn');
-    domElements.discardSessionBtn = document.getElementById('discard-session-btn');
-    domElements.startDrillBtn = document.getElementById('start-drill-btn');
-    domElements.startExamSimBtn = document.getElementById('start-exam-sim-btn');
-    domElements.reviewWeakSpotsBtn = document.getElementById('review-weak-spots-btn');
-    domElements.weakSpotsCounter = document.getElementById('weak-spots-counter');
-    domElements.pauseQuizBtn = document.getElementById('pause-quiz-btn');
-    domElements.progressText = document.getElementById('progress-text');
-    domElements.timerDisplay = document.getElementById('timer-display');
-    domElements.progressBar = document.getElementById('progress-bar');
-    domElements.qEmoji = document.getElementById('q-emoji');
-    domElements.qText = document.getElementById('q-text');
-    domElements.weakSpotIndicator = document.getElementById('weak-spot-indicator');
-    domElements.answerButtons = document.getElementById('answer-buttons');
-    domElements.explanationTitle = document.getElementById('explanation-title');
-    domElements.explanationText = document.getElementById('explanation-text');
-    domElements.continueQuizBtn = document.getElementById('continue-quiz-btn');
-    domElements.saveExitBtn = document.getElementById('save-exit-btn');
-    domElements.abandonExitBtn = document.getElementById('abandon-exit-btn');
-    domElements.resumeQuizBtn = document.getElementById('resume-quiz-btn');
-    domElements.resultsSummaryText = document.getElementById('results-summary-text');
-    domElements.pointsEarnedText = document.getElementById('points-earned-text');
-    domElements.reviewMissionBtn = document.getElementById('review-mission-btn');
-    domElements.backToHomeFromResultsBtn = document.getElementById('back-to-home-from-results-btn');
-    domElements.reviewContent = document.getElementById('review-content');
-    domElements.prevReviewBtn = document.getElementById('prev-review-btn');
-    domElements.nextReviewBtn = document.getElementById('next-review-btn');
-    domElements.reviewCounter = document.getElementById('review-counter');
-    domElements.finishReviewBtn = document.getElementById('finish-review-btn');
-    domElements.masteryChartContainer = document.getElementById('mastery-chart-container');
-    domElements.personalBestsContainer = document.getElementById('personal-bests-container');
-    domElements.nemesisQuestionContainer = document.getElementById('nemesis-question-container');
-    domElements.backToHomeFromDashBtn = document.getElementById('back-to-home-from-dash-btn');
-    domElements.closeSettingsBtn = document.getElementById('close-settings-btn');
-    domElements.fullscreenToggle = document.getElementById('fullscreen-toggle');
-    domElements.lowPowerToggle = document.getElementById('low-power-toggle');
-    domElements.themeSelector = document.getElementById('theme-selector');
-    domElements.clearWeakSpotsBtn = document.getElementById('clear-weak-spots-btn');
-    domElements.factoryResetBtn = document.getElementById('factory-reset-btn');
-    domElements.cheevosGrid = document.getElementById('cheevos-grid');
-    domElements.closeCheevosBtn = document.getElementById('close-cheevos-btn');
-    domElements.catalogGrid = document.getElementById('catalog-grid');
-    domElements.closeCatalogBtn = document.getElementById('close-catalog-btn');
-    domElements.toastNotification = document.getElementById('toast-notification');
-    domElements.toastText = document.getElementById('toast-text');
-    domElements.rankUpText = document.getElementById('rank-up-text');
+    // A more streamlined way to populate the domElements object
+    const ids = [
+        'home-screen', 'quiz-screen', 'results-screen', 'review-screen', 'dashboard-screen',
+        'explanation-popup', 'pause-modal', 'settings-modal', 'rank-up-modal', 'cheevos-modal', 'catalog-modal', 'reward-modal',
+        'mascot-container', 'top-catz-bar', 'study-guide-btn', 'cheevos-btn', 'dashboard-btn', 'settings-btn',
+        'rank-display', 'score-display', 'xp-bar-container', 'xp-bar-label', 'xp-bar-fill', 'xp-bar-text',
+        'resume-session-container', 'new-session-container', 'resume-session-btn', 'discard-session-btn',
+        'start-drill-btn', 'start-exam-sim-btn', 'review-weak-spots-btn', 'weak-spots-counter', 'pause-quiz-btn',
+        'progress-text', 'timer-display', 'progress-bar', 'q-emoji', 'q-text', 'weak-spot-indicator', 'answer-buttons',
+        'explanation-title', 'explanation-text', 'continue-quiz-btn', 'save-exit-btn', 'abandon-exit-btn', 'resume-quiz-btn',
+        'results-summary-text', 'points-earned-text', 'review-mission-btn', 'back-to-home-from-results-btn',
+        'review-content', 'prev-review-btn', 'next-review-btn', 'review-counter', 'finish-review-btn',
+        'mastery-chart-container', 'personal-bests-container', 'nemesis-question-container', 'back-to-home-from-dash-btn',
+        'close-settings-btn', 'fullscreen-toggle', 'low-power-toggle', 'theme-selector', 'clear-weak-spots-btn', 'factory-reset-btn',
+        'cheevos-grid', 'close-cheevos-btn', 'catalog-grid', 'close-catalog-btn', 'toast-notification', 'toast-text',
+        'rank-up-text', 'reward-image', 'reward-title', 'reward-description', 'reward-select-btn', 'reward-close-btn'
+    ];
     
-    // --- INITIALIZATION ---
+    domElements.body = document.body;
+    ids.forEach(id => {
+        const camelCaseId = id.replace(/-(\w)/g, (match, letter) => letter.toUpperCase());
+        domElements[camelCaseId] = document.getElementById(id);
+    });
+    
+    // Group screens and popups for easier access
+    domElements.screens = { home: domElements.homeScreen, quiz: domElements.quizScreen, results: domElements.resultsScreen, review: domElements.reviewScreen, dashboard: domElements.dashboardScreen };
+    domElements.popups = { explanation: domElements.explanationPopup, pause: domElements.pauseModal, settings: domElements.settingsModal, rankUp: domElements.rankUpModal, cheevos: domElements.cheevosModal, catalog: domElements.catalogModal, reward: domElements.rewardModal };
+
     function initialize() {
         loadState();
         buildThemeSelector();
@@ -93,12 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
         checkForSavedSession();
         addEventListeners();
         showScreen('home');
-        console.log("NotaR333_OS v3.1 (Theming Update) Initialized");
+        console.log("NotaR333_OS v3.2 Initialized");
     }
 
-    // --- EVENT LISTENERS ---
-    // (This section remains unchanged from the last update)
     function addEventListeners() {
+        // --- DEBUG MODE LISTENER ---
         document.addEventListener('keyup', (e) => {
             if (e.key.toLowerCase() === 'd') {
                 if (domElements.screens.quiz.classList.contains('active')) {
@@ -109,45 +54,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+
+        // --- CORE NAVIGATION ---
         const goHome = () => { triggerVibration('click'); checkForSavedSession(); updateAllUI(); showScreen('home'); };
         domElements.backToHomeFromResultsBtn.addEventListener('click', goHome);
         domElements.backToHomeFromDashBtn.addEventListener('click', goHome);
         domElements.finishReviewBtn.addEventListener('click', goHome);
+
+        // --- HOME SCREEN ---
         domElements.startDrillBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('drill', 20); });
         domElements.startExamSimBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('exam_sim', 40); });
         domElements.reviewWeakSpotsBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('weak_spots'); });
-        domElements.resumeSessionBtn.addEventListener('click', () => { 
+        domElements.resumeSessionBtn.addEventListener('click', () => {
             triggerVibration('click');
             quizState = loadSavedSession();
-            if(quizState) {
-                clearSavedSession();
-                checkForSavedSession();
-                showScreen('quiz');
-                loadQuestion();
-                resumeTimer();
-            }
+            if (quizState) { clearSavedSession(); checkForSavedSession(); showScreen('quiz'); loadQuestion(); resumeTimer(); }
         });
-        domElements.discardSessionBtn.addEventListener('click', () => { 
+        domElements.discardSessionBtn.addEventListener('click', () => {
             triggerVibration('click');
-            if (confirm('Discard your saved session?')) { 
-                clearSavedSession(); 
-                checkForSavedSession(); 
-            }
+            if (confirm('Discard your saved session?')) { clearSavedSession(); checkForSavedSession(); }
         });
+
+        // --- QUIZ SCREEN & POPUPS ---
         domElements.pauseQuizBtn.addEventListener('click', () => { triggerVibration('open'); pauseTimer(); togglePopup('pause', true); });
         domElements.answerButtons.addEventListener('click', e => { if (e.target.matches('.answer-btn')) selectAnswer(e.target); });
         domElements.continueQuizBtn.addEventListener('click', () => { triggerVibration('click'); handleNextQuestion(); });
         domElements.resumeQuizBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('pause', false); resumeTimer(); });
         domElements.saveExitBtn.addEventListener('click', () => { triggerVibration('click'); saveSession(); goHome(); togglePopup('pause', false); });
-        domElements.abandonExitBtn.addEventListener('click', () => { 
+        domElements.abandonExitBtn.addEventListener('click', () => {
             triggerVibration('click');
-            if (confirm('Abandon this quiz attempt?')) { 
-                clearSavedSession(); goHome(); togglePopup('pause', false); 
-            }
+            if (confirm('Abandon this quiz attempt?')) { clearSavedSession(); goHome(); togglePopup('pause', false); }
         });
+
+        // --- RESULTS & REVIEW ---
         domElements.reviewMissionBtn.addEventListener('click', () => { triggerVibration('click'); startReview(); });
         domElements.prevReviewBtn.addEventListener('click', () => { if (quizState.reviewIndex > 0) { triggerVibration('click'); quizState.reviewIndex--; loadReviewItem(); } });
         domElements.nextReviewBtn.addEventListener('click', () => { if (quizState.reviewIndex < quizState.incorrectQuestions.length - 1) { triggerVibration('click'); quizState.reviewIndex++; loadReviewItem(); } });
+        
+        // --- HEADER BUTTONS ---
         domElements.dashboardBtn.addEventListener('click', () => { triggerVibration('open'); openDashboard(); });
         domElements.settingsBtn.addEventListener('click', () => { triggerVibration('open'); togglePopup('settings', true); });
         domElements.cheevosBtn.addEventListener('click', () => { 
@@ -156,9 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
             openCheevosModal(); 
         });
         domElements.topCatzBar.addEventListener('click', () => { triggerVibration('open'); openCatalogModal(); });
+
+        // --- SETTINGS MODAL ---
         domElements.closeSettingsBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('settings', false); });
         domElements.lowPowerToggle.addEventListener('click', () => { triggerVibration('click'); state.settings.lowPower = !state.settings.lowPower; applySettings(); saveState(); });
-        domElements.clearWeakSpotsBtn.addEventListener('click', () => { 
+        domElements.clearWeakSpotsBtn.addEventListener('click', () => {
             if (confirm('Are you sure? This will reset your Weak Spots, Mastered Questions, and Nemesis stats.')) { 
                 triggerVibration('incorrect'); 
                 state.weakSpotIds = []; state.masteredIds = []; state.questionStats = {}; 
@@ -166,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         domElements.factoryResetBtn.addEventListener('click', () => { if (confirm('DANGER: Reset all points, ranks, and stats? This cannot be undone.')) { triggerVibration('incorrect'); factoryReset(); } });
-        domElements.fullscreenToggle.addEventListener('click', () => { 
+        domElements.fullscreenToggle.addEventListener('click', () => {
             triggerVibration('click');
             if (!document.fullscreenElement) { 
                 document.documentElement.requestFullscreen().catch(err => alert(`Error: ${err.message}`)); 
@@ -174,59 +120,63 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.exitFullscreen(); 
             }
         });
+
+        // --- GAMIFICATION MODALS ---
         domElements.closeCheevosBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('cheevos', false); });
         domElements.closeCatalogBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('catalog', false); });
+        domElements.closeRewardBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('reward', false); });
+        
+        // --- EVENT DELEGATION FOR DYNAMIC CONTENT ---
         domElements.catalogGrid.addEventListener('click', (e) => {
-            const target = e.target;
-            if (target.matches('.catalog-item') && !target.matches('.locked')) {
-                triggerVibration('click');
-                const catFile = target.dataset.catfile;
-                const selectedIndex = state.selectedCats.indexOf(catFile);
-                if (selectedIndex > -1) {
-                    state.selectedCats[selectedIndex] = null;
-                } else {
-                    const emptySlotIndex = state.selectedCats.indexOf(null);
-                    if (emptySlotIndex > -1) {
-                        state.selectedCats[emptySlotIndex] = catFile;
-                    } else {
-                        showToast("Crew is full! Deselect a cat first.");
-                        return;
-                    }
-                }
-                checkDirectActionCheevo('customizeCrew');
-                saveState();
-                renderTopCatz();
-                openCatalogModal();
+            if (e.target.matches('.catalog-item') && !e.target.matches('.locked')) {
+                triggerVibration('open');
+                showRewardDetails(e.target.dataset.catfile);
             }
+        });
+        
+        domElements.rewardSelectBtn.addEventListener('click', (e) => {
+            triggerVibration('click');
+            const catFile = e.target.dataset.catfile;
+            if (!catFile) return;
+
+            const selectedIndex = state.selectedCats.indexOf(catFile);
+            
+            if (selectedIndex > -1) {
+                // If it's already selected, deselect it
+                state.selectedCats[selectedIndex] = null;
+            } else {
+                // If not selected, add it to the first empty slot
+                const emptySlotIndex = state.selectedCats.indexOf(null);
+                if (emptySlotIndex > -1) {
+                    state.selectedCats[emptySlotIndex] = catFile;
+                } else {
+                    showToast("Crew is full! Deselect another cat first.");
+                    return; // Stop if no empty slots
+                }
+            }
+
+            checkDirectActionCheevo('customizeCrew');
+            saveState();
+            renderTopCatz();
+            togglePopup('reward', false);
+            // Re-render the catalog to show the change in selection status
+            openCatalogModal();
         });
     }
 
-    // --- HELPER FUNCTIONS for main.js ---
-    /**
-     * Finds and replaces the function buildThemeSelector() in js/main.js
-     * with this updated version.
-     */
+    // --- HELPER FUNCTIONS ---
     function buildThemeSelector() {
         domElements.themeSelector.innerHTML = '';
-        // UPDATE: Added new themes to the array
         const themeNames = ['pink', 'green', 'orange', 'blue', 'solar', 'matrix'];
-        
+        const colors = { 
+            'pink': '#ff00ff', 'green': '#00ff7f', 'orange': '#ff8c00', 
+            'blue': '#00bfff', 'solar': '#ff4500', 'matrix': '#00ff41' 
+        };
         themeNames.forEach(themeName => {
             const btn = document.createElement('button');
             btn.className = 'theme-select-btn';
             btn.dataset.theme = themeName;
-            
-            // UPDATE: Added new theme colors for the swatch buttons
-            const colors = { 
-                'pink': '#ff00ff', 
-                'green': '#00ff7f', 
-                'orange': '#ff8c00',
-                'blue': '#00bfff',
-                'solar': '#ff4500',
-                'matrix': '#00ff41'
-            };
             btn.style.backgroundColor = colors[themeName];
-
             btn.onclick = () => { 
                 triggerVibration('click'); 
                 state.settings.theme = themeName; 
@@ -264,7 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function renderNemesisQuestion() { 
-        let nemesisId = null, maxWrong = 0; 
+        let nemesisId = null;
+        let maxWrong = 0;
         for (const qid in state.questionStats) { 
             if (state.questionStats[qid].wrong > maxWrong) { 
                 maxWrong = state.questionStats[qid].wrong; 

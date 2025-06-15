@@ -1,6 +1,4 @@
-// NotaR333_OS - UI Management v3.0
-
-// This module assumes DOM elements are globally available from main.js
+// NotaR333_OS - UI Management v3.2 (Reward Modal Update)
 
 /**
  * Switches the visible screen in the app.
@@ -31,7 +29,6 @@ function applySettings() {
     domElements.body.classList.toggle('low-power', state.settings.lowPower);
     domElements.lowPowerToggle.classList.toggle('active', state.settings.lowPower);
 
-    // Update the theme selector buttons
     const themeButtons = domElements.themeSelector.children;
     for(const btn of themeButtons) {
         btn.classList.toggle('active', btn.dataset.theme === state.settings.theme);
@@ -79,11 +76,9 @@ function updateXpBar() {
  */
 function updateWeakSpotsCounter() {
     const count = state.weakSpotIds.length;
-    if (count > 0) {
-        domElements.weakSpotsCounter.textContent = `You have ${count} weak spot(s) to review.`;
-    } else {
-        domElements.weakSpotsCounter.textContent = "Your weak spots list is clear! Great job!";
-    }
+    domElements.weakSpotsCounter.textContent = count > 0 
+        ? `You have ${count} weak spot(s) to review.` 
+        : "Your weak spots list is clear! Great job!";
     domElements.reviewWeakSpotsBtn.classList.toggle('hidden', count === 0);
 }
 
@@ -92,7 +87,7 @@ function updateWeakSpotsCounter() {
  * @param {string} message - The text to display in the toast.
  */
 function showToast(message) {
-    domElements.toastText.innerHTML = message; // Use innerHTML to support emojis
+    domElements.toastText.innerHTML = message;
     domElements.toastNotification.className = "show";
     setTimeout(() => {
         domElements.toastNotification.className = domElements.toastNotification.className.replace("show", "");
@@ -100,7 +95,7 @@ function showToast(message) {
 }
 
 
-// --- Gamification UI ---
+// --- Gamification & Reward UI ---
 
 /**
  * Renders the three cat images in the header bar.
@@ -111,12 +106,11 @@ function renderTopCatz() {
     for (let i = 0; i < 3; i++) {
         const catSrc = state.selectedCats[i];
         const img = document.createElement('img');
-        // Use a placeholder image for empty slots
-        img.src = catSrc ? `images/${catSrc}` : 'images/placeholder_empty.png'; 
+        img.src = catSrc ? `images/${catSrc}` : 'images/placeholder_empty.png';
         img.alt = `Custom Mascot ${i + 1}`;
         img.className = 'top-cat';
         if (!catSrc) {
-            img.classList.add('empty-slot');
+            img.classList.add('empty-slot'); // Apply special class for styling placeholders
         }
         catzBar.appendChild(img);
     }
@@ -127,21 +121,17 @@ function renderTopCatz() {
  */
 function openCheevosModal() {
     const grid = domElements.cheevosGrid;
-    grid.innerHTML = ''; // Clear old content
-    
+    grid.innerHTML = ''; 
     cheevoData.forEach(cheevo => {
         const item = document.createElement('div');
         item.className = 'cheevo-item';
         item.textContent = cheevo.icon;
-        item.title = `${cheevo.title}: ${cheevo.description}`; // Tooltip
-        
-        const isUnlocked = state.unlockedCheevos.includes(cheevo.id);
-        if (!isUnlocked) {
+        item.title = `${cheevo.title}: ${cheevo.description}`;
+        if (!state.unlockedCheevos.includes(cheevo.id)) {
             item.classList.add('locked');
         }
         grid.appendChild(item);
     });
-    
     togglePopup('cheevos', true);
 }
 
@@ -150,26 +140,37 @@ function openCheevosModal() {
  */
 function openCatalogModal() {
     const grid = domElements.catalogGrid;
-    grid.innerHTML = ''; // Clear old content
-    
+    grid.innerHTML = '';
     allCatGifs.forEach(catFile => {
         const isUnlocked = state.unlockedCats.includes(catFile);
-        
         const img = document.createElement('img');
         img.src = `images/${catFile}`;
         img.className = 'catalog-item';
         img.dataset.catfile = catFile;
-        
         if (!isUnlocked) {
             img.classList.add('locked');
         } else {
-             // Add selected class if this cat is in the top bar
             if (state.selectedCats.includes(catFile)) {
                 img.classList.add('selected');
             }
         }
         grid.appendChild(img);
     });
-    
     togglePopup('catalog', true);
+}
+
+/**
+ * Shows the reward details modal for a specific cat.
+ * @param {string} catFile - The filename of the cat image.
+ */
+function showRewardDetails(catFile) {
+    const cheevo = cheevoData.find(c => c.catImage === catFile);
+    if (!cheevo) return;
+
+    domElements.rewardImage.src = `images/${catFile}`;
+    domElements.rewardTitle.textContent = cheevo.title;
+    domElements.rewardDescription.textContent = cheevo.description;
+    domElements.rewardSelectBtn.dataset.catfile = catFile; // Pass the filename to the button
+    
+    togglePopup('reward', true);
 }
