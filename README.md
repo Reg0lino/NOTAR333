@@ -1,6 +1,6 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/reg0lino/NOTAR333/main/images/cat.gif" alt="NotaR333 Mascot" width="150">
-  <h1>NotaR333</h1>
+  <h1>NotaREEE</h1>
   <h2>A Gamified Study Tool for the NYS Notary Public Exam</h2>
 </div>
 
@@ -14,15 +14,15 @@
 
 ---
 
-## What is NotaR333?
+## What is NotaREEE?
 
-NotaR333 is a free, interactive, and gamified web application designed to help you cram for and pass the **New York State Notary Public License Exam**. It's built with a focus on "Pawsitive Reinforcement," turning the tedious process of studying into a fun and rewarding experience.
+NotaREEE is a free, interactive, and gamified web application designed to help you cram for and pass the **New York State Notary Public License Exam**. It's built with a focus on "Pawsitive Reinforcement," turning the tedious process of studying into a fun and rewarding experience.
 
 This tool is fully updated with the latest information relevant for the **June 2025 NYS Notary Exam**, including critical topics like Electronic Notarization (REN) and mandatory journal requirements.
 
 ### ► Key Features: The "Pawsitive Reinforcement" Engine
 
-This isn't just another practice test. NotaR333 is built with a smart learning engine designed to maximize your study efficiency.
+This isn't just another practice test. NotaREEE is built with a smart learning engine designed to maximize your study efficiency.
 
 - **🧠 Smart Weak Spot Tracking:** The app doesn't just tell you what you got wrong; it learns *what you struggle with most*. The "Review Weak Spots" mode uses a weighted algorithm to show you your personal "nemesis" questions more frequently, ensuring you master the toughest topics.
 - **🏆 Achievement-Based Rewards:** Unlock over 15 unique achievements for performance, persistence, and accuracy. Each "Cheevo" grants you bonus points and unlocks new cat mascots for your collection.
