@@ -9,17 +9,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&family=VT323&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Tiny script to apply the theme from localStorage -->
+    
+    <!-- THEME FIX: This script now correctly adds the "theme-" prefix -->
     <script>
         try {
             const savedState = JSON.parse(localStorage.getItem('notaR333_state'));
             if (savedState && savedState.settings && savedState.settings.theme) {
+                // The fix is here: 'theme-' + savedState.settings.theme
                 document.body.className = 'theme-' + savedState.settings.theme;
             } else {
                  document.body.className = 'theme-pink'; // Default fallback
             }
         } catch (e) {
-            document.body.className = 'theme-pink'; // Default fallback
+            // If anything goes wrong, default to pink.
+            document.body.className = 'theme-pink';
         }
     </script>
     <style>
