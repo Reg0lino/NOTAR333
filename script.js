@@ -1,5 +1,5 @@
-// NotaR333_OS - Final Engine v3.0
-// Fully featured, stable OS with gamification, settings, and dashboard.
+// NotaR333_OS - Diagnostic Engine v3.1
+// Added specific console logs to debug the After-Action Review button.
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements (Full Set) ---
@@ -301,6 +301,19 @@ document.addEventListener('DOMContentLoaded', () => {
         resumeQuizBtn.addEventListener('click', () => { playSound('click'); popups.pause.classList.remove('visible'); resumeTimer(); });
         saveExitBtn.addEventListener('click', () => { playSound('click'); saveSession(); goHome(); popups.pause.classList.remove('visible'); });
         abandonExitBtn.addEventListener('click', () => { playSound('click'); if (confirm('Abandon this quiz attempt?')) { clearSavedSession(); goHome(); popups.pause.classList.remove('visible'); } });
+        
+        // --- DIAGNOSTIC BLOCK FOR REVIEW BUTTON ---
+        if (reviewMissionBtn) {
+            console.log("DIAGNOSTIC: Attaching click listener to reviewMissionBtn.");
+            reviewMissionBtn.addEventListener('click', () => {
+                console.log("DIAGNOSTIC: reviewMissionBtn CLICKED! Running startReview().");
+                playSound('click');
+                startReview();
+            });
+        } else {
+            console.error("DIAGNOSTIC FATAL ERROR: reviewMissionBtn element not found!");
+        }
+        
         // Review Screen
         prevReviewBtn.addEventListener('click', () => { playSound('click'); if (quizState.reviewIndex > 0) { quizState.reviewIndex--; loadReviewItem(); } });
         nextReviewBtn.addEventListener('click', () => { playSound('click'); if (quizState.reviewIndex < quizState.incorrectQuestions.length - 1) { quizState.reviewIndex++; loadReviewItem(); } });
