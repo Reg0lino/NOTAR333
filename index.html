@@ -15,22 +15,27 @@
 
     <div id="app-container">
         <header>
+            <div id="mascot-container">
+                <img src="images/cat.gif" alt="Synthwave Cat Mascot">
+            </div>
+
             <div class="header-top-row">
-                <div id="mascot-container">
-                    <img src="cat.gif" alt="Synthwave Cat Mascot">
+                <div id="top-catz-bar">
+                    <!-- Cat images will be dynamically inserted here by ui.js -->
                 </div>
                 <div class="header-icons">
+                    <a href="general.html" target="_blank" id="study-guide-btn" class="icon-btn" title="Study Guide">📖</a>
+                    <button id="cheevos-btn" class="icon-btn" title="Achievements">🏆</button>
                     <button id="dashboard-btn" class="icon-btn" title="Dashboard">📊</button>
                     <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
                 </div>
             </div>
+
             <h1 id="main-title" class="shimmer">NotaR333_OS</h1>
             <div id="user-stats">
                 <span id="rank-display">//Rank: Novice Notary</span>
                 <span id="score-display">//Points: 0</span>
             </div>
-
-            <!-- NEW: XP Progression Bar -->
             <div id="xp-bar-container">
                 <div id="xp-bar-label">Next Rank:</div>
                 <div id="xp-bar-track">
@@ -40,7 +45,7 @@
             </div>
         </header>
 
-        <!-- The rest of the screens -->
+        <!-- Screens -->
         <div id="home-screen" class="screen active">
             <div id="resume-session-container" class="hidden">
                  <h2>// SESSION_DETECTED_</h2>
@@ -127,7 +132,6 @@
                 <h3>// System Preferences</h3>
                 <div class="settings-section">
                     <h4>AUDIO / VISUAL</h4>
-                    <div class="setting-item"><label for="audio-toggle">Sound FX</label><button id="audio-toggle" class="toggle-btn" data-setting="audio">🔊</button></div>
                     <div class="setting-item"><label for="fullscreen-toggle">Fullscreen</label><button id="fullscreen-toggle" class="toggle-btn">[ ]</button></div>
                     <div class="setting-item"><label for="low-power-toggle">Low-Power Mode</label><button id="low-power-toggle" class="toggle-btn" data-setting="lowPower">⚡</button></div>
                     <div class="setting-item"><label>Theme</label><div id="theme-selector"></div></div>
@@ -146,14 +150,58 @@
         <div id="rank-up-modal" class="popup-overlay">
             <div id="particle-celebration-container"></div>
             <div class="rank-up-content">
-                <img id="rank-up-gif" src="celebrating_cat.gif" alt="Celebrating Cat">
+                <img id="rank-up-gif" src="images/celebrating_cat.gif" alt="Celebrating Cat">
                 <h2 id="rank-up-title">RANK UP!</h2>
                 <p id="rank-up-text">You are now a Notary-Nomad!</p>
             </div>
         </div>
+
+        <!-- Gamification Modals -->
+        <div id="cheevos-modal" class="popup-overlay">
+            <div class="popup-content">
+                <h3>// Achievements</h3>
+                <div id="cheevos-grid" class="cheevos-grid">
+                    <!-- Cheevo icons will be dynamically inserted here by ui.js -->
+                </div>
+                <button id="close-cheevos-btn" class="btn btn-primary">> Close</button>
+            </div>
+        </div>
+
+        <div id="catalog-modal" class="popup-overlay">
+            <div class="popup-content">
+                <h3>// Cat-alog</h3>
+                <p class="info-text">Click a cat to view details. Select up to 3 for your crew!</p>
+                <div id="catalog-grid" class="catalog-grid">
+                     <!-- Cat images for selection will be dynamically inserted here by ui.js -->
+                </div>
+                <button id="close-catalog-btn" class="btn btn-primary">> Done</button>
+            </div>
+        </div>
+
+        <!-- NEW: Reward Details Modal -->
+        <div id="reward-modal" class="popup-overlay">
+            <div class="popup-content reward-popup">
+                <img id="reward-image" src="" alt="Reward Image">
+                <h4 id="reward-title"></h4>
+                <p id="reward-description"></p>
+                <div class="reward-buttons">
+                    <button id="reward-select-btn" class="btn btn-primary">> Select for Crew</button>
+                    <button id="reward-close-btn" class="btn btn-secondary">> Close</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <script src="questions.js"></script>
-    <script src="script.js"></script>
+    <!-- Modular Script Loading -->
+    <script src="js/data.js"></script>
+    <script src="js/questions.js"></script>
+    <script src="js/haptics.js"></script>
+    <script src="js/fx.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/gamification.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
