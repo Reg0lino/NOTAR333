@@ -1,4 +1,4 @@
-// NotaR333_OS - Main Application Controller v3.7 (Final)
+// NotaR333 - Main Application Controller v3.9 (Final)
 
 const domElements = {};
 
@@ -18,15 +18,17 @@ document.addEventListener('DOMContentLoaded', () => {
         'personal-bests-container', 'nemesis-question-container', 'back-to-home-from-dash-btn', 'close-settings-btn', 
         'fullscreen-toggle', 'haptics-toggle', 'theme-selector', 'clear-weak-spots-btn', 'factory-reset-btn', 
         'catalog-grid', 'close-catalog-btn', 'toast-notification', 'toast-text', 'rank-up-text', 'reward-image', 
-        'reward-title', 'reward-description', 'reward-select-btn', 'reward-close-btn',
-        // --- ADDED FOR CELEBRATION EFFECTS ---
-        'particle-celebration-container', 'rank-up-content'
+        'reward-title', 'reward-description', 'reward-select-btn', 'reward-close-btn', 'particle-celebration-container'
     ];
     domElements.body = document.body;
     ids.forEach(id => {
         const camelCaseId = id.replace(/-(\w)/g, (_, letter) => letter.toUpperCase());
         domElements[camelCaseId] = document.getElementById(id);
     });
+    // Manual additions for elements without IDs or with class-based selection
+    domElements.topCatzWrapper = document.querySelector('.top-catz-wrapper');
+    domElements.rankUpContent = document.querySelector('.rank-up-content');
+    
     domElements.screens = { home: domElements.homeScreen, quiz: domElements.quizScreen, results: domElements.resultsScreen, review: domElements.reviewScreen, dashboard: domElements.dashboardScreen };
     domElements.popups = { explanation: domElements.explanationPopup, pause: domElements.pauseModal, settings: domElements.settingsModal, rankUp: domElements.rankUpModal, catalog: domElements.catalogModal, reward: domElements.rewardModal };
 
@@ -38,14 +40,29 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAllUI();
         checkForSavedSession();
         showScreen('home');
-        console.log("NotaR333 v3.7 Initialized and Ready.");
+        console.log("NotaR333 v3.9 Initialized and Ready.");
     }
 
     function addEventListeners() {
         document.addEventListener('keyup', (e) => {
-            if (e.key.toLowerCase() === 'd' && domElements.quizScreen.classList.contains('active')) {
+            const key = e.key.toLowerCase();
+            // Debug key for correct answer
+            if (key === 'd' && domElements.quizScreen.classList.contains('active')) {
                 const btn = domElements.answerButtons.querySelector('[data-correct="true"]');
                 if (btn) btn.classList.toggle('debug-correct-answer');
+            }
+            // Debug key to add points and test rank up
+            if (key === 'f') {
+                console.log("DEBUG: +1000 points added.");
+                const previousRank = getCurrentRank();
+                state.totalPoints += 1000;
+                const newRank = getCurrentRank();
+                if (newRank.name !== previousRank.name) {
+                    celebrationQueue.push({ type: 'rankup', rank: newRank });
+                    processCelebrationQueue();
+                }
+                updateAllUI();
+                saveState();
             }
         });
 
@@ -83,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.dashboardBtn.addEventListener('click', () => { triggerVibration('open'); openDashboard(); });
         domElements.settingsBtn.addEventListener('click', () => { triggerVibration('open'); togglePopup('settings', true); });
         
-        domElements.topCatzBar.addEventListener('click', () => { 
+        domElements.topCatzWrapper.addEventListener('click', () => { 
             triggerVibration('open'); 
             if (state.newlyUnlockedCats.length > 0) {
                 state.newlyUnlockedCats = [];
@@ -101,12 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
             saveState();
         });
         domElements.clearWeakSpotsBtn.addEventListener('click', () => {
-            if (confirm('Are you sure? This will reset your Weak Spots, Mastered Questions, and Nemesis stats.')) { 
+            if (confirm('Are you sure? This will reset your Weak Spots...')) { 
                 triggerVibration('incorrect'); state.weakSpotIds = []; state.masteredIds = []; state.questionStats = {}; 
                 saveState(); updateAllUI(); alert('Weak spots cleared.'); 
             }
         });
-        domElements.factoryResetBtn.addEventListener('click', () => { if (confirm('DANGER: Reset all points, ranks, and stats? This cannot be undone.')) { triggerVibration('incorrect'); factoryReset(); } });
+        domElements.factoryResetBtn.addEventListener('click', () => { if (confirm('DANGER: Reset all progress?')) { triggerVibration('incorrect'); factoryReset(); } });
         domElements.fullscreenToggle.addEventListener('click', () => {
             triggerVibration('click');
             if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(err => alert(`Error: ${err.message}`));
@@ -174,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
             domElements.themeSelector.appendChild(btn);
         });
     }
-
     function openDashboard() { renderMasteryChart(); renderPersonalBests(); renderNemesisQuestion(); showScreen('dashboard'); }
     function renderMasteryChart() { 
         domElements.masteryChartContainer.innerHTML = ''; 

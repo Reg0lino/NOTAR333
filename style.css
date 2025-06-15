@@ -29,7 +29,19 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
 #mascot-container { text-align: center; margin-bottom: 5px; }
 #mascot-container img { width: 90px; height: auto; filter: drop-shadow(0 0 4px var(--secondary-neon)); }
 .header-top-row { display: flex; justify-content: space-between; align-items: center; }
-#top-catz-bar { flex-grow: 1; text-align: left; display: flex; gap: 5px; align-items: center; position: relative; /* CONTEXT FOR NOTIFICATION DOT */ }
+/* This new wrapper is now the positioning context */
+.top-catz-wrapper {
+    position: relative; /* THIS IS THE KEY CHANGE */
+    flex-grow: 1;
+}
+
+/* This bar just handles the cat layout now */
+#top-catz-bar {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    /* It no longer needs flex-grow or position: relative */
+}
 .top-cat { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; border: 2px solid var(--secondary-neon); filter: drop-shadow(0 0 4px var(--secondary-neon)); transition: transform 0.2s ease, filter 0.3s ease; }
 .top-cat.empty-slot { filter: blur(1.5px) opacity(0.5); border-color: rgba(255,255,255,0.2); }
 #top-catz-bar:hover .top-cat { transform: scale(1.05); }
@@ -130,5 +142,15 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
 .answer-btn.debug-correct-answer { box-shadow: 0 0 12px var(--success-color), inset 0 0 10px var(--success-color); border-color: var(--success-color); }
 .confetti-particle { position: absolute; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; animation: confetti-blast 1.2s ease-out forwards; }
 @keyframes confetti-blast { 0% { transform: translate(0, 0) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--x-end), var(--y-end)) rotate(720deg); opacity: 0; } }
-#top-catz-bar.has-new-rewards::after { content: '●'; position: absolute; top: -5px; right: 0px; font-size: 1.5rem; color: var(--accent-color); text-shadow: 0 0 8px var(--accent-color); animation: pulse-glow 1.5s infinite ease-in-out; }
+/* Change this selector... */
+.top-catz-wrapper.has-new-rewards::after {
+    content: '●';
+    position: absolute;
+    top: -5px;
+    right: 0px; /* This will now be relative to the wrapper */
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    text-shadow: 0 0 8px var(--accent-color);
+    animation: pulse-glow 1.5s infinite ease-in-out;
+}
 @keyframes pulse-glow { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }

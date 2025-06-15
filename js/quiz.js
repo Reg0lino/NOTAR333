@@ -1,4 +1,4 @@
-// NotaR333_OS - Quiz Engine v3.2 (FX Update)
+// NotaR333_OS - Quiz Engine v3.9 (Celebration Queue Update)
 
 let timerInterval;
 let nextPunMilestone = 250;
@@ -6,10 +6,7 @@ let nextPunMilestone = 250;
 function startQuiz(mode, questionCount) {
     let questionSet = [];
     if (mode === 'weak_spots') {
-        if (state.weakSpotIds.length === 0) {
-            alert("No weak spots to review!");
-            return;
-        }
+        if (state.weakSpotIds.length === 0) { alert("No weak spots to review!"); return; }
         const weightedPool = [];
         state.weakSpotIds.forEach(id => {
             const question = quizData.find(q => q.id === id);
@@ -25,18 +22,13 @@ function startQuiz(mode, questionCount) {
     } else {
         questionSet = [...quizData].sort(() => 0.5 - Math.random()).slice(0, questionCount);
     }
-
     quizState = {
         mode, questions: questionSet, currentIndex: 0, sessionPoints: 0,
         incorrectQuestions: [], timeLeft: mode === 'exam_sim' ? 3600 : null,
         correctStreak: 0, weaknessJustEliminated: false,
     };
-
-    if (quizState.mode === 'exam_sim') {
-        startTimer(quizState.timeLeft);
-    } else {
-        domElements.timerDisplay.classList.add('hidden');
-    }
+    if (quizState.mode === 'exam_sim') { startTimer(quizState.timeLeft); } 
+    else { domElements.timerDisplay.classList.add('hidden'); }
     showScreen('quiz');
     loadQuestion();
 }
@@ -50,10 +42,7 @@ function startTimer(duration) {
         let minutes = Math.floor(quizState.timeLeft / 60);
         let seconds = quizState.timeLeft % 60;
         domElements.timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        if (quizState.timeLeft <= 0) {
-            clearInterval(timerInterval);
-            showResults();
-        }
+        if (quizState.timeLeft <= 0) { clearInterval(timerInterval); showResults(); }
     }, 1000);
 }
 
@@ -97,7 +86,6 @@ function selectAnswer(selectedBtn) {
             quizState.weaknessJustEliminated = true;
             triggerVibration('shatter');
             domElements.weakSpotIndicator.classList.add('shatter');
-            // --- INTEGRATE CONFETTI ---
             triggerConfetti({ sourceElement: domElements.weakSpotIndicator, count: 30 });
             checkMidQuizCheevos('weakness_eliminated');
         } else {
@@ -143,28 +131,36 @@ function showResults() {
     clearSavedSession();
     pauseTimer();
     const previousRank = getCurrentRank();
+    
     state.totalPoints += quizState.sessionPoints;
     state.stats.completedQuizCount++;
     if(quizState.mode === 'drill') state.stats.completedDrills++;
     if(quizState.mode === 'exam_sim') state.stats.completedExams++;
     if(quizState.mode === 'weak_spots') state.stats.completedReviews++;
     if (state.weakSpotIds.length >= 5) state.stats.hadFiveWeakSpots = true;
+    
     const score = quizState.questions.length - quizState.incorrectQuestions.length;
     if (score > state.stats.personalBestScore) state.stats.personalBestScore = score;
+    
     domElements.resultsSummaryText.textContent = `You scored ${score} out of ${quizState.questions.length}`;
     domElements.pointsEarnedText.textContent = `+${quizState.sessionPoints} Points!`;
     if (quizState.sessionPoints > 0) triggerVibration('success');
     
     const newRank = getCurrentRank();
     if (newRank.name !== previousRank.name) {
-        setTimeout(() => triggerRankUp(newRank), 500);
+        // --- UPDATE: Add Rank Up to the celebration queue ---
+        celebrationQueue.push({ type: 'rankup', rank: newRank });
+        console.log(`Queued Rank Up: ${newRank.name}`);
     } else if (state.totalPoints >= nextPunMilestone) {
+        // Puns can still show immediately as they are simple toasts
         const pun = puns[Math.floor(Math.random() * puns.length)];
         setTimeout(() => showToast(`😻 ${pun}`), 500);
         nextPunMilestone = Math.floor(state.totalPoints / 250 + 1) * 250;
     }
     
+    // Check for achievements and start the queue processor
     checkAllCheevos();
+    
     saveState();
     updateAllUI();
     domElements.reviewMissionBtn.classList.toggle('hidden', quizState.incorrectQuestions.length === 0);
