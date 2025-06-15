@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&family=VT323&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body class="theme-pink font-size-medium">
+<body class="theme-pink">
 
     <div id="particle-container"></div>
 
@@ -137,6 +137,19 @@
                     <button id="factory-reset-btn" class="btn btn-secondary danger">> Factory Reset</button>
                 </div>
                 <button id="close-settings-btn" class="btn btn-primary">> Close</button>
+            </div>
+        </div>
+        
+        <!-- Celebration Modals -->
+        <div id="toast-notification">
+            <p id="toast-text"></p>
+        </div>
+        <div id="rank-up-modal" class="popup-overlay">
+            <div id="particle-celebration-container"></div>
+            <div class="rank-up-content">
+                <img id="rank-up-gif" src="celebrating_cat.gif" alt="Celebrating Cat">
+                <h2 id="rank-up-title">RANK UP!</h2>
+                <p id="rank-up-text">You are now a Notary-Nomad!</p>
             </div>
         </div>
     </div>

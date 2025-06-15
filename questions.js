@@ -1001,5 +1001,505 @@ const quizData = [
         emoji: "✍️",
         points: 10,
         category: "Powers & Duties"
+    },
+    {
+        id: 101,
+        question: "What is the specific maximum definite sentence of imprisonment for a Class A misdemeanor under New York Penal Law?",
+        options: ["Six months", "One year", "Two years", "Four years"],
+        correct: 1,
+        explanation: "Penal Law §70.15 defines the maximum definite sentence for a Class A misdemeanor as one year.",
+        emoji: "⚖️",
+        points: 10,
+        category: "Violations & Penalties"
+    },
+    {
+        id: 102,
+        question: "A New York Notary Public's commission is issued for a term of four years. When does this term typically begin?",
+        options: ["On the date the application is mailed", "On the date the notary passes the exam", "On the date the commission is issued by the Secretary of State", "On January 1st of the following year"],
+        correct: 2,
+        explanation: "The term of appointment for a notary public typically commences on the date the commission is issued by the Secretary of State.",
+        emoji: "🗓️",
+        points: 10,
+        category: "Foundations"
+    },
+    {
+        id: 103,
+        question: "Which of the following describes the geographical extent of a New York Notary Public's jurisdiction?",
+        options: ["Limited to the county of commission", "Co-extensive with the boundaries of New York State", "Extends only to contiguous states", "Limited to the city of residence"],
+        correct: 1,
+        explanation: "The jurisdiction of a Notary Public in New York State is co-extensive with the boundaries of the state.",
+        emoji: "🗺️",
+        points: 10,
+        category: "Foundations"
+    },
+    {
+        id: 104,
+        question: "If a NY Notary moves out of state and does NOT maintain an office in NY, what is the immediate consequence?",
+        options: ["The commission remains valid until expiration", "The commission is suspended for 90 days", "The notary vacates their office as a notary public", "They must file a change of address within 10 days"],
+        correct: 2,
+        explanation: "A notary public who is a resident of New York State and moves out of the state and who does not retain an office or place of business in this State shall vacate his or her office as a notary public.",
+        emoji: "✈️",
+        points: 10,
+        category: "Foundations"
+    },
+    {
+        id: 105,
+        question: "As of June 2025, if a Notary opts to use a seal, what is NOT required on the seal itself?",
+        options: ["The notary's name", "The words 'Notary Public State of New York'", "The notary's home address", "The county of qualification"],
+        correct: 2,
+        explanation: "While NYS does not require a seal, if used, it should clearly identify the notary's name, title, county, and commission expiration. The home address is not a required element.",
+        emoji: "씰",
+        points: 10,
+        category: "Procedures & ID"
+    },
+    {
+        id: 106,
+        question: "In electronic notarization, what technology is mandated for real-time interaction?",
+        options: ["Email correspondence only", "Secure audio-visual communication technology", "Text messaging with photo verification", "Pre-recorded video messages"],
+        correct: 1,
+        explanation: "Electronic notarial acts must be performed using secure audio-video communication technology that allows for real-time interaction between the notary and the signer.",
+        emoji: "💻",
+        points: 10,
+        category: "Electronic Notarization"
+    },
+    {
+        id: 107,
+        question: "Which describes 'satisfactory evidence of identity' for an in-person act if the notary does not personally know the signer?",
+        options: ["A business card", "A current utility bill", "A valid government-issued ID with photo, description, and signature", "A verbal statement from a friend"],
+        correct: 2,
+        explanation: "Satisfactory evidence of identity typically includes a valid, unexpired government-issued identification credential containing the individual's photograph, signature, and physical description.",
+        emoji: "🆔",
+        points: 10,
+        category: "Procedures & ID"
+    },
+    {
+        id: 108,
+        question: "When is a New York Notary Public authorized to administer an oath to a public officer?",
+        options: ["Never, only judges can", "Only if the notary is also a licensed attorney", "Yes, a notary is permitted to administer the oath of a public officer", "Only for state-level officials"],
+        correct: 2,
+        explanation: "Public Officers Law §10 permits a notary public to administer the oath of a public officer.",
+        emoji: "🏛️",
+        points: 10,
+        category: "Powers & Duties"
+    },
+    {
+        id: 109,
+        question: "What is the statutory fee for protesting the non-payment of a note?",
+        options: ["$0.50", "$0.75", "$1.00", "$2.00"],
+        correct: 1,
+        explanation: "A notary public may charge 75 cents for the protest for the non-payment of any note or for the non-acceptance or non-payment of any bill of exchange, check, or draft.",
+        emoji: "📉",
+        points: 10,
+        category: "Fees"
+    },
+    {
+        id: 110,
+        question: "A non-attorney Notary is asked to prepare legal papers for a divorce. What is the appropriate action?",
+        options: ["Assist, but charge a reduced fee", "Decline, as it's the unauthorized practice of law", "Assist, with a signed waiver of liability", "Refer the individual to a court clerk"],
+        correct: 1,
+        explanation: "A non-attorney notary public is prohibited from preparing legal papers such as those for a divorce, as this constitutes the unauthorized practice of law.",
+        emoji: "⚖️",
+        points: 10,
+        category: "Prohibited Conduct"
+    },
+    {
+        id: 111,
+        question: "For the mandatory journal, what is required if ID was based on a government-issued ID?",
+        options: ["Only the name of the issuing agency", "The type of credential used", "The full ID number", "A photograph of the ID"],
+        correct: 1,
+        explanation: "The journal must include the 'type of credential used for identification' (e.g., 'US Passport' or 'NYS Driver's License'). It does not require the full ID number.",
+        emoji: "📓",
+        points: 10,
+        category: "Journaling"
+    },
+    {
+        id: 112,
+        question: "If a document signer for an electronic notarization is outside the U.S., what additional condition applies?",
+        options: ["The notary cannot notarize", "The act is permitted if lawful where the signer is located and not against U.S. law", "The signer must first obtain an Apostille", "The notary must get special permission from the U.S. Dept. of State"],
+        correct: 1,
+        explanation: "An electronic notary may perform an act for a remotely located individual outside the United States if the act is not prohibited in the foreign jurisdiction and does not violate federal law.",
+        emoji: "🌐",
+        points: 10,
+        category: "Electronic Notarization"
+    },
+    {
+        id: 113,
+        question: "What is the fee for a Commissioner of Deeds in NYC to apply for a Notary commission?",
+        options: ["$0 (exempt)", "$15.00", "$60.00", "$100.00"],
+        correct: 2,
+        explanation: "Commissioners of Deeds in New York City are not exempt from the $60 application fee for a Notary Public commission, though they are exempt from the exam.",
+        emoji: "💰",
+        points: 10,
+        category: "Fees"
+    },
+    {
+        id: 114,
+        question: "A notary is an employee and minor stockholder. Can they notarize a company contract they are not a party to?",
+        options: ["No, it's an inherent conflict of interest", "Yes, if not personally a party to the instrument", "Only if they disclose their stockholder status", "Only if the employer pays an additional fee"],
+        correct: 1,
+        explanation: "Executive Law §138 allows notaries who are stockholders or employees of a corporation to take acknowledgments for that corporation, provided they are not an individual party to the instrument.",
+        emoji: "🏢",
+        points: 10,
+        category: "Prohibited Conduct"
+    },
+    {
+        id: 115,
+        question: "What must be attached to an electronic record to detect subsequent alterations?",
+        options: ["The notary's email address", "The notary's electronic signature", "A timestamp of when the document was downloaded", "A link to the notary's website"],
+        correct: 1,
+        explanation: "An electronic signature must be attached to or logically associated with the electronic record in a manner that detects any subsequent alteration to the electronic record.",
+        emoji: "🔒",
+        points: 10,
+        category: "Electronic Notarization"
+    },
+    {
+        id: 116,
+        question: "What is the direct consequence if a Notary performs acts before filing their oath of office?",
+        options: ["The acts are automatically void", "The notary public is guilty of a misdemeanor", "A civil penalty only", "Their commission is suspended"],
+        correct: 1,
+        explanation: "Public Officers Law §15 states that acting before filing an oath of office is a misdemeanor.",
+        emoji: "✋",
+        points: 10,
+        category: "Violations & Penalties"
+    },
+    {
+        id: 117,
+        question: "A notary is asked to notarize by a visually impaired individual who can provide proper ID and give verbal assent. What should the notary do?",
+        options: ["Refuse, as visual signature confirmation is required", "Proceed, ensuring willingness and identity are verified", "Require an additional witness", "Refer the individual to an attorney"],
+        correct: 1,
+        explanation: "A notary should accommodate individuals with disabilities as long as the essential elements of the notarial act (identity verification, willingness, understanding) can be satisfied.",
+        emoji: "🤝",
+        points: 10,
+        category: "Procedures & ID"
+    },
+    {
+        id: 118,
+        question: "What condition can cause an otherwise valid notarial act to be deemed invalid due to a defect in the notary's authority?",
+        options: ["The notary was charging a fee", "The defect was known or apparent on the certificate", "The notarization took place on a holiday", "The notary used blue ink instead of black"],
+        correct: 1,
+        explanation: "Executive Law §142-a states that acts are generally valid 'notwithstanding certain defects' unless the defect was known or apparent on the certificate itself.",
+        emoji: "⚠️",
+        points: 10,
+        category: "Violations & Penalties"
+    },
+    {
+        id: 119,
+        question: "Which is NOT an acceptable form of ID for an in-person notarization where the signer is unknown?",
+        options: ["A United States military ID card", "A NYS non-driver ID card", "A Social Security card", "A valid passport"],
+        correct: 2,
+        explanation: "A Social Security card is generally not accepted as a primary form of identification for notarization as it lacks a photo for visual comparison.",
+        emoji: "🆔",
+        points: 10,
+        category: "Procedures & ID"
+    },
+    {
+        id: 120,
+        question: "What is the fee for each additional notice of protest (up to five) that a Notary may charge?",
+        options: ["$0.05", "$0.10", "$0.25", "$0.50"],
+        correct: 1,
+        explanation: "The statutory fee is 10 cents for each notice of protest, with a limit of five notices.",
+        emoji: "🪙",
+        points: 10,
+        category: "Fees"
+    },
+    {
+        id: 121,
+        question: "What is the purpose of filing a Certificate of Official Character in another county?",
+        options: ["To receive a new commission", "To charge higher fees in that county", "To enable that county's clerk to authenticate the notary's signature", "To enroll in additional training"],
+        correct: 2,
+        explanation: "Filing a Certificate of Official Character in another county allows that county's clerk to authenticate the notary's signature for documents requiring such verification.",
+        emoji: "🗄️",
+        points: 10,
+        category: "Foundations"
+    },
+    {
+        id: 122,
+        question: "A Notary is requested to notarize by a principal who only speaks a language the notary does not. What should the notary do?",
+        options: ["Proceed, assuming the principal understands", "Refuse, as direct communication is required", "Use an online translation tool", "Require a translator who is also a notary"],
+        correct: 1,
+        explanation: "A notary must be able to communicate directly with the signer to ascertain identity, willingness, and understanding. If there's a language barrier, the notary should refuse.",
+        emoji: "🗣️",
+        points: 10,
+        category: "Procedures & ID"
+    },
+    {
+        id: 123,
+        question: "Which section of the NY Executive Law primarily outlines the powers and duties of a Notary Public?",
+        options: ["§130", "§135", "§137", "§142-a"],
+        correct: 1,
+        explanation: "Executive Law §135 specifically details the 'Powers and Duties; in general; of notaries public who are attorneys at law.'",
+        emoji: "📜",
+        points: 10,
+        category: "Powers & Duties"
+    },
+    {
+        id: 124,
+        question: "A notary is asked to certify a copy of a birth certificate. What is the appropriate action?",
+        options: ["Certify the copy as it is a public record", "Refuse, as notaries in NYS cannot certify copies of vital records", "Certify it, but note 'true copy' in the journal", "Refer the individual to the County Clerk"],
+        correct: 1,
+        explanation: "New York Notaries Public are generally not authorized to certify copies of public records such as birth certificates. That is done by the custodian of the original record.",
+        emoji: "🚫",
+        points: 10,
+        category: "Prohibited Conduct"
+    },
+    {
+        id: 125,
+        question: "What is the main reason an electronic notary must maintain sole control of their electronic signature?",
+        options: ["To prevent others from accessing their email", "To ensure the integrity and security of the electronic notarial act", "To limit the number of documents notarized daily", "To comply with digital waste regulations"],
+        correct: 1,
+        explanation: "The electronic signature must be under the sole control of the electronic notary public to ensure the security, integrity, and authenticity of the electronic notarial act.",
+        emoji: "🔒",
+        points: 10,
+        category: "Electronic Notarization"
+    },
+    {
+        id: 126,
+        question: "Which action could lead to disciplinary action by the Secretary of State?",
+        options: ["Charging the maximum allowable fee", "Refusing to notarize due to suspected fraud", "Making a misstatement in the notary application", "Notarizing for a long-time acquaintance"],
+        correct: 2,
+        explanation: "Misstatements, false oaths, or fraud on the notary application or in the performance of duties are grounds for disciplinary action, including suspension or removal.",
+        emoji: "❌",
+        points: 10,
+        category: "Violations & Penalties"
+    },
+    {
+        id: 127,
+        question: "What is a solemn declaration for a person who declines taking an oath but wishes to be legally bound?",
+        options: ["Affidavit", "Attestation", "Affirmation", "Deposition"],
+        correct: 2,
+        explanation: "An affirmation is a solemn declaration, equivalent to an oath, made by a person who conscientiously declines taking an oath.",
+        emoji: "🙏",
+        points: 10,
+        category: "Powers & Duties"
+    },
+    {
+        id: 128,
+        question: "According to the mandatory journal requirements, what is NOT a required detail for each act?",
+        options: ["The type of notarial act", "The approximate time of the act", "The principal's mother's maiden name", "The method used to identify the principal"],
+        correct: 2,
+        explanation: "The journal requirements include date, time, type of act, name/address, credential type, and verification procedures. Sensitive personal data like a mother's maiden name is not required.",
+        emoji: "📓",
+        points: 10,
+        category: "Journaling"
+    },
+    {
+        id: 129,
+        question: "If a Notary's commission has expired for 8 months, what must they do to be re-commissioned?",
+        options: ["Pay a higher renewal fee", "Simply submit a renewal application", "Retake and pass the Notary Public examination", "Complete continuing education hours"],
+        correct: 2,
+        explanation: "If a Notary Public's commission has expired for more than six months, they must retake and pass the Notary Public examination.",
+        emoji: "⏳",
+        points: 10,
+        category: "Exam Logistics"
+    },
+    {
+        id: 130,
+        question: "In electronic notarization, what is the third-party process that validates a government ID via data sources?",
+        options: ["Biometric scanning", "Credential analysis", "Notary certification", "Witness authentication"],
+        correct: 1,
+        explanation: "Credential analysis is a process where a third-party service validates a government-issued identification presented by an individual through a review of public and proprietary data sources.",
+        emoji: "🔍",
+        points: 10,
+        category: "Electronic Notarization"
+    },
+    {
+        id: 131,
+        question: "A Notary is asked to notarize a signature on a document written in a language they do not understand. What should they do?",
+        options: ["Proceed, as long as identity is confirmed", "Refuse, as the notary cannot ascertain the document's content", "Require an official translation", "Advise the signer to find another notary"],
+        correct: 1,
+        explanation: "A notary should refuse to notarize if they cannot understand the document's content, as they cannot confirm the signer's understanding or that the act is appropriate.",
+        emoji: "🗣️",
+        points: 10,
+        category: "Procedures & ID"
+    },
+    {
+        id: 132,
+        question: "What is an Apostille?",
+        options: ["A verification stamp", "A consular seal", "A certificate authenticating a public official's signature for foreign use", "A notarial attestation"],
+        correct: 2,
+        explanation: "An Apostille is a certificate issued by the Secretary of State that authenticates the signature of a public official (like a Notary) for use in countries party to the Hague Apostille Convention.",
+        emoji: "🌍",
+        points: 10,
+        category: "Foundations"
+    },
+    {
+        id: 133,
+        question: "What must be used for secure transfer of electronic records in REN?",
+        options: ["Encrypted email only", "Communication technology that meets state security standards", "Secure postal mail", "Any video conferencing platform"],
+        correct: 1,
+        explanation: "The communication technology used for electronic notarization must ensure the security, integrity, and proper transmission of the electronic record.",
+        emoji: "🔒",
+        points: 10,
+        category: "Electronic Notarization"
+    },
+    {
+        id: 134,
+        question: "A Notary receives notice their application contained a misstatement. What action may the Secretary of State take?",
+        options: ["Issue a civil fine only", "Revoke the commission without a hearing", "Suspend or remove the notary from office after a hearing", "Require the notary to retake the exam"],
+        correct: 2,
+        explanation: "The Secretary of State has the power to suspend or remove a notary public for misstatement in their application after affording the notary due process (e.g., a hearing).",
+        emoji: "❌",
+        points: 10,
+        category: "Violations & Penalties"
+    },
+    {
+        id: 135,
+        question: "What is the fee for a duplicate Notary Public ID card from the NY Department of State?",
+        options: ["$0", "$5.00", "$10.00", "$15.00"],
+        correct: 2,
+        explanation: "A $10.00 non-refundable fee is required for a duplicate lost, destroyed, or damaged ID card.",
+        emoji: "💳",
+        points: 10,
+        category: "Fees"
+    },
+    {
+        id: 136,
+        question: "Which describes the proper procedure for administering an oath?",
+        options: ["Affiant can verbally confirm later", "It must be an unequivocal and present act in the notary's presence", "The notary can administer it over a voice call", "The notary must touch a sacred text"],
+        correct: 1,
+        explanation: "An oath or affirmation must be an unequivocal and present act by which the affiant consciously takes upon themselves the obligation of an oath in the presence of an authorized officer.",
+        emoji: "✋",
+        points: 10,
+        category: "Powers & Duties"
+    },
+    {
+        id: 137,
+        question: "What principle advises a Notary to avoid acting if they have a direct financial interest?",
+        options: ["Pecuniary interest", "Conflict of duty", "Impartiality clause", "Jurisdictional limitation"],
+        correct: 0,
+        explanation: "A notary is disqualified from acting in cases where they are a party to or directly and pecuniarily interested in the transaction.",
+        emoji: "💰",
+        points: 10,
+        category: "Prohibited Conduct"
+    },
+    {
+        id: 138,
+        question: "According to current NYS law, how long are the results of the Notary exam valid?",
+        options: ["Six months", "One year", "Two years", "Four years"],
+        correct: 2,
+        explanation: "Examination results are valid for a period of two years.",
+        emoji: "⏳",
+        points: 10,
+        category: "Exam Logistics"
+    },
+    {
+        id: 139,
+        question: "What is specifically prohibited for a non-attorney Notary when advertising in another language?",
+        options: ["Stating their name and commission expiration", "Using terms like 'notario publico' without a disclaimer", "Advertising their hours", "Listing their fees"],
+        correct: 1,
+        explanation: "Advertising in a foreign language using terms that imply the notary is an attorney (such as 'notario publico') is prohibited without a specific disclaimer stating they are not an attorney.",
+        emoji: "🌐",
+        points: 10,
+        category: "Prohibited Conduct"
+    },
+    {
+        id: 140,
+        question: "In REN, what must be used with credential analysis to confirm identity if the signer is unknown to the notary?",
+        options: ["A personal interview with family", "Identity proofing", "A sworn affidavit from police", "A copy of a credit report"],
+        correct: 1,
+        explanation: "For electronic notarial acts with remotely located individuals not personally known, the notary must use communication technology that facilitates both credential analysis and identity proofing.",
+        emoji: "🕵️",
+        points: 10,
+        category: "Electronic Notarization"
+    },
+    {
+        id: 141,
+        question: "What is the definition of 'jurat' in notarial practice?",
+        options: ["Certifying a copy", "The declaration of a subscribing witness", "The clause in an affidavit stating when, where, and before whom it was sworn", "Authenticating a notary's signature"],
+        correct: 2,
+        explanation: "A jurat is the clause in an affidavit stating when, where, and before whom it was sworn to or affirmed.",
+        emoji: "📄",
+        points: 10,
+        category: "Powers & Duties"
+    },
+    {
+        id: 142,
+        question: "If a Notary knowingly commits forgery in the second degree, what is the felony classification?",
+        options: ["Class A felony", "Class B felony", "Class D felony", "Class E felony"],
+        correct: 2,
+        explanation: "Forgery in the second degree (§170.10 Penal Law) is classified as a Class D felony.",
+        emoji: "⛓️",
+        points: 10,
+        category: "Violations & Penalties"
+    },
+    {
+        id: 143,
+        question: "Which statement is true regarding a NY Notary's duty to keep a journal?",
+        options: ["Optional for traditional notaries", "Mandatory for ALL notarial acts by ALL notaries as of Jan 25, 2023", "Only required if a fee is charged", "Recommended but not legally required"],
+        correct: 1,
+        explanation: "The requirement to maintain a journal became mandatory for all notarial acts performed by all notaries (traditional and electronic) as of January 25, 2023.",
+        emoji: "📓",
+        points: 10,
+        category: "Journaling"
+    },
+    {
+        id: 144,
+        question: "What must a NY Notary affix below their signature, in black ink?",
+        options: ["Name, home address, and signature", "Name, 'Notary Public State of New York,' county, and expiration date", "Notary ID number and document type", "Only their signature and the date"],
+        correct: 1,
+        explanation: "Executive Law §137 requires the notary to affix their name, 'Notary Public State of New York,' county of original qualification, and commission expiration date below their signature.",
+        emoji: "✍️",
+        points: 10,
+        category: "Procedures & ID"
+    },
+    {
+        id: 145,
+        question: "What is the fee for an initial Notary Public application in New York?",
+        options: ["$15.00", "$25.00", "$60.00", "$75.00"],
+        correct: 2,
+        explanation: "The initial application fee for a Notary Public commission is $60.00.",
+        emoji: "💰",
+        points: 10,
+        category: "Fees"
+    },
+    {
+        id: 146,
+        question: "What is the penalty for a NY Notary guilty of 'official misconduct' under Penal Law §195.00?",
+        options: ["A Class D felony", "A Class E felony", "A Class A misdemeanor", "Immediate revocation"],
+        correct: 2,
+        explanation: "Official misconduct (§195.00 Penal Law) is classified as a Class A misdemeanor.",
+        emoji: "⚖️",
+        points: 10,
+        category: "Violations & Penalties"
+    },
+    {
+        id: 147,
+        question: "How far in advance can one typically begin the online renewal process for a Notary commission?",
+        options: ["30 days before expiration", "60 days before expiration", "90 days before expiration", "6 months before expiration"],
+        correct: 2,
+        explanation: "Notary Public commissions can typically be renewed up to 90 days prior to their expiration date through the New York Business Express online portal.",
+        emoji: "⏳",
+        points: 10,
+        category: "Exam Logistics"
+    },
+    {
+        id: 148,
+        question: "What is the required retention period for the audio-visual recording of an electronic notarial act?",
+        options: ["3 years", "5 years", "7 years", "10 years"],
+        correct: 3,
+        explanation: "Electronic notaries are required to create and retain an audio-visual recording of every electronic notarial act for a period of at least 10 years.",
+        emoji: "🎥",
+        points: 10,
+        category: "Electronic Notarization"
+    },
+    {
+        id: 149,
+        question: "Which statement is true regarding the use of a seal by a Notary in NYS?",
+        options: ["A seal is mandatory for all acts", "A seal is required only for electronic notarizations", "A seal is not required, but if used, must meet content requirements", "A seal must be registered with the County Clerk"],
+        correct: 2,
+        explanation: "New York State law does not mandate the use of a seal for Notaries Public. However, if a seal is used, it must legibly include specific identifying information.",
+        emoji: "씰",
+        points: 10,
+        category: "Procedures & ID"
+    },
+    {
+        id: 150,
+        question: "What type of document would NOT require an inked thumbprint in the journal, according to current NYS law?",
+        options: ["A real property conveyance", "A power of attorney", "A simple affidavit", "None of the above; thumbprints are not currently required"],
+        correct: 3,
+        explanation: "As of June 2025, New York State law does NOT currently require inked thumbprints in the notary journal for any type of transaction. Proposed legislation suggests it, but it is not law.",
+        emoji: "👍",
+        points: 10,
+        category: "Journaling"
     }
 ];
