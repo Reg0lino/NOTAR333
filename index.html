@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotaR333_OS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- UPDATED: Added Exo 2 font -->
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&family=VT323&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="theme-pink">
+
+    <div id="particle-container"></div>
+
+    <div id="app-container">
+        <header>
+            <div class="header-top-row">
+                <div class="ascii-art-header"><pre>(^._.^)ﾉ</pre></div>
+                <button id="theme-switcher-btn" class="theme-btn">🎨</button>
+            </div>
+            <h1 id="main-title" class="shimmer">NotaR333_OS</h1>
+            <div id="user-stats">
+                <span id="rank-display">//Rank: Cyber-Cadet</span>
+                <span id="score-display">//Points: 0</span>
+            </div>
+        </header>
+
+        <!-- Home Screen -->
+        <div id="home-screen" class="screen active">
+            <!-- NEW: Container for resuming a saved session -->
+            <div id="resume-session-container" class="hidden">
+                <h2>// SESSION_DETECTED_</h2>
+                <button id="resume-session-btn" class="btn btn-primary">> Resume Session</button>
+                <button id="discard-session-btn" class="btn btn-secondary">> Discard & Start New</button>
+            </div>
+
+            <!-- Regular start options -->
+            <div id="new-session-container">
+                <h2>// SELECT_MODE_</h2>
+                <button id="start-drill-btn" class="btn btn-primary">> Practice Drill (20 Qs)</button>
+                <button id="start-exam-sim-btn" class="btn btn-primary">> Exam Simulation (40 Qs)</button>
+                <button id="review-weak-spots-btn" class="btn btn-secondary hidden">> Review Weak Spots</button>
+                <p id="weak-spots-counter" class="info-text"></p>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div id="quiz-header">
+                <!-- NEW: Pause Button -->
+                <button id="pause-quiz-btn" class="pause-btn">||</button>
+                <div id="progress-text">Question 1/X</div>
+                <div id="timer-display" class="hidden">--:--</div>
+            </div>
+            <div id="progress-bar-container"><div id="progress-bar"></div></div>
+            <div id="question-container">
+                <h2 id="question-text"><span id="q-emoji"></span><span id="q-text"></span><span id="weak-spot-indicator"></span></h2>
+            </div>
+            <div id="answer-buttons" class="btn-grid"></div>
+        </div>
+
+        <!-- Explanation Popup -->
+        <div id="explanation-popup" class="hidden popup-overlay">
+            <div class="popup-content">
+                <h3 id="explanation-title"></h3>
+                <p id="explanation-text"></p>
+                <button id="continue-quiz-btn" class="btn btn-primary">> Continue</button>
+            </div>
+        </div>
+
+        <!-- NEW: Pause Modal -->
+        <div id="pause-modal" class="hidden popup-overlay">
+            <div class="popup-content">
+                <h3>// PAUSED_</h3>
+                <p>Your session is on hold. The timer has been stopped.</p>
+                <button id="save-exit-btn" class="btn btn-primary">> Save & Exit</button>
+                <button id="abandon-exit-btn" class="btn btn-secondary">> Abandon & Exit</button>
+                <button id="resume-quiz-btn" class="btn btn-secondary">> Resume Quiz</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <h2>// MISSION_COMPLETE_</h2>
+            <p id="results-summary-text" class="final-score"></p>
+            <p id="points-earned-text" class="points-earned"></p>
+            <div id="results-mascot">
+                <p id="final-mascot-art">(^ ω ^)</p>
+                <p id="final-mascot-text">Great work!</p>
+            </div>
+            <button id="review-mission-btn" class="btn btn-primary hidden">> Begin After-Action Review</button>
+            <button id="back-to-home-btn" class="btn btn-secondary">> Back to Main Menu</button>
+        </div>
+
+        <!-- After-Action Review Screen -->
+        <div id="review-screen" class="screen">
+             <h2 id="review-title">// AFTER-ACTION_REVIEW_</h2>
+            <div id="review-content"></div>
+            <div class="review-nav">
+                <button id="prev-review-btn" class="btn btn-secondary">< Prev</button>
+                <span id="review-counter">1 / X</span>
+                <button id="next-review-btn" class="btn btn-secondary">> Next</button>
+            </div>
+            <button id="finish-review-btn" class="btn btn-primary">> Mission Debriefed</button>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

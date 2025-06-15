@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYS Notary Renewal Interactive Study App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Neutrals with Muted Blue/Teal Accents -->
+    <!-- Application Structure Plan: The SPA is designed for optimal learning and knowledge testing, moving beyond the linear structure of the source report. It uses a tabbed navigation system to switch between four core, task-oriented sections: 1) A 'Dashboard' to immediately highlight critical recent updates for a renewal candidate. 2) A 'Study Guide' that breaks down the dense syllabus into digestible topics using interactive accordions. 3) An 'Interactive Practice Exam' to actively test knowledge with immediate feedback, scoring, and review capabilities. 4) A searchable 'Glossary' for quick reference. This structure was chosen because it separates learning modes (passive reading vs. active recall), reduces cognitive load by chunking information, and guides the user directly to the most important content (recent updates) for their specific situation (lapsed commission). -->
+    <!-- Visualization & Content Choices: Report info is transformed for better usability. GOAL: Compare - The fee table is visualized as a Chart.js Bar Chart to make the proposed increase immediately apparent. GOAL: Organize - The syllabus is presented as interactive accordions to manage information density. Key updates are shown as distinct cards with icons for quick status recognition (effective vs. pending). GOAL: Test - The 100 practice questions are implemented as a one-by-one interactive quiz to simulate exam conditions and provide active recall practice. GOAL: Inform - The glossary is made interactive with a live search filter for quick lookup. Library/Method: Chart.js for the fee chart. All other visuals and interactions are built with HTML/CSS/Tailwind and vanilla JavaScript. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link.active {
+            background-color: #0d9488; /* teal-600 */
+            color: white;
+        }
+        .answer-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .answer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .correct {
+            background-color: #dcfce7 !important; /* green-100 */
+            border-color: #22c55e !important; /* green-500 */
+            color: #15803d; /* green-700 */
+        }
+        .incorrect {
+            background-color: #fee2e2 !important; /* red-100 */
+            border-color: #ef4444 !important; /* red-500 */
+            color: #b91c1c; /* red-700 */
+        }
+        details > summary {
+            cursor: pointer;
+        }
+        details[open] > summary {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-teal-700">NYS Notary Exam Prep</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <button class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-teal-500 hover:text-white" data-target="dashboard">Dashboard</button>
+                        <button class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-teal-500 hover:text-white" data-target="study-guide">Study Guide</button>
+                        <button class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-teal-500 hover:text-white" data-target="practice-exam">Practice Exam</button>
+                        <button class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-teal-500 hover:text-white" data-target="glossary">Glossary</button>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
+                        <option value="dashboard">Dashboard</option>
+                        <option value="study-guide">Study Guide</option>
+                        <option value="practice-exam">Practice Exam</option>
+                        <option value="glossary">Glossary</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Welcome to Your Notary Renewal Guide</h2>
+                <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">This tool is designed to help you pass the NYS Notary Public exam, especially if your commission has been expired for over 6 months. We'll focus on the key changes and foundational knowledge you need to succeed.</p>
+            </div>
+
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md mb-8">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <span class="text-2xl">⚠️</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">
+                            <span class="font-bold">Key Focus Area:</span> Since your commission lapsed for over six months, you must retake the full exam. Pay close attention to the major updates effective from January 2023 regarding <span class="font-semibold">Electronic Notarization (REN)</span> and <span class="font-semibold">Mandatory Journaling</span>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-semibold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">At a Glance: Current & Pending Rules (June 2025)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card for Mandatory Journal -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-green-100 text-green-600 p-2 rounded-full">
+                           <span class="text-2xl">✔</span>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold">Mandatory Notary Journal</h4>
+                            <p class="text-sm text-slate-500 mb-2">Effective Law (Jan 25, 2023)</p>
+                            <p class="text-slate-700">All notaries (traditional and electronic) must maintain a detailed journal of all notarial acts. Records must be kept for 10 years.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card for Electronic Notarization (REN) -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                     <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-green-100 text-green-600 p-2 rounded-full">
+                           <span class="text-2xl">✔</span>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold">Electronic Notarization (REN)</h4>
+                            <p class="text-sm text-slate-500 mb-2">Effective Law (Jan 25, 2023)</p>
+                            <p class="text-slate-700">Authorized with specific registration, compliant tech (credential analysis, identity proofing), and 10-year AV recording retention.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card for RIN Prohibition -->
+                 <div class="bg-white rounded-lg shadow-md p-6">
+                     <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-red-100 text-red-600 p-2 rounded-full">
+                           <span class="text-2xl">✖️</span>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold">Remote Ink Notarization (RIN)</h4>
+                            <p class="text-sm text-slate-500 mb-2">Prohibited (Jan 31, 2023)</p>
+                            <p class="text-slate-700">Remote Ink Notarization (RIN) is no longer permitted in NYS. Only fully electronic remote notarization is sanctioned.</p>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Card for S398 -->
+                 <div class="bg-white rounded-lg shadow-md p-6">
+                     <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-yellow-100 text-yellow-600 p-2 rounded-full">
+                           <span class="text-2xl">⏳</span>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold">S.B. S398: Real Property Rules</h4>
+                            <p class="text-sm text-slate-500 mb-2">Pending Legislation</p>
+                            <p class="text-slate-700">Proposes new duties for residential real property conveyances, including inked thumbprints in journals and a detailed "colloquy form".</p>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Card for S6268 -->
+                 <div class="bg-white rounded-lg shadow-md p-6">
+                     <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-yellow-100 text-yellow-600 p-2 rounded-full">
+                           <span class="text-2xl">⏳</span>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold">S.B. S6268: Fee Increase</h4>
+                            <p class="text-sm text-slate-500 mb-2">Pending Legislation</p>
+                            <p class="text-slate-700">Proposes increasing standard notarial fees for acknowledgments and oaths from the current $2.00 to $5.00 per act.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12">
+                <h3 class="text-2xl font-semibold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">Visualizing the Proposed Fee Change</h3>
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                     <p class="text-center text-slate-600 mb-4">This chart compares current statutory fees for common notarial acts with those proposed in Senate Bill S6268. The proposed fee for electronic notarization remains unchanged.</p>
+                    <div class="chart-container relative w-full max-w-2xl mx-auto h-80 md:h-96 max-h-[400px]">
+                        <canvas id="feeChart"></canvas>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Study Guide Section -->
+        <section id="study-guide" class="content-section hidden">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Comprehensive Study Guide</h2>
+                <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Review the core concepts of NYS Notary Law. Click each topic to expand and see the details.</p>
+            </div>
+            <div id="study-guide-content" class="space-y-4"></div>
+        </section>
+
+        <!-- Practice Exam Section -->
+        <section id="practice-exam" class="content-section hidden">
+            <div id="exam-start-screen" class="text-center">
+                 <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Practice Exam</h2>
+                 <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Test your knowledge with 100 multiple-choice questions based on the NYS Notary Public License Law. You need 70% (70 questions) to pass. Good luck!</p>
+                 <button id="start-exam-btn" class="mt-8 bg-teal-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-teal-700 transition-colors duration-300">Start Exam</button>
+            </div>
+
+            <div id="exam-question-screen" class="hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <div id="exam-progress" class="text-sm font-semibold text-slate-600">Question 1 of 100</div>
+                    <div id="exam-score" class="text-sm font-semibold text-teal-700">Score: 0</div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                    <div id="progress-bar" class="bg-teal-500 h-2.5 rounded-full" style="width: 1%"></div>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <p id="question-text" class="text-xl font-medium mb-6"></p>
+                    <div id="answer-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Answer buttons will be generated here -->
+                    </div>
+                    <div id="explanation-box" class="hidden mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h4 class="font-bold text-gray-800">Explanation:</h4>
+                        <p id="explanation-text" class="text-gray-700 mt-2"></p>
+                    </div>
+                </div>
+                 <div class="flex justify-end mt-6">
+                    <button id="next-question-btn" class="hidden bg-slate-700 text-white font-bold py-2 px-6 rounded-lg hover:bg-slate-800 transition-colors duration-300">Next Question &rarr;</button>
+                </div>
+            </div>
+
+            <div id="exam-results-screen" class="hidden text-center bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Exam Complete!</h2>
+                <p id="final-score-text" class="text-5xl font-bold my-6"></p>
+                <p id="result-message" class="text-xl text-slate-600 mb-8"></p>
+                <div class="flex justify-center space-x-4">
+                    <button id="restart-exam-btn" class="bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-teal-700 transition-colors duration-300">Try Again</button>
+                    <button id="review-answers-btn" class="bg-slate-200 text-slate-800 font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-slate-300 transition-colors duration-300">Review Answers</button>
+                </div>
+            </div>
+             <div id="review-screen" class="hidden">
+                <h2 class="text-2xl font-bold mb-6 text-center">Review Your Answers</h2>
+                <div id="review-content" class="space-y-6"></div>
+                 <div class="text-center mt-8">
+                     <button id="back-to-results-btn" class="bg-slate-700 text-white font-bold py-2 px-6 rounded-lg hover:bg-slate-800">Back to Results</button>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Glossary Section -->
+        <section id="glossary" class="content-section hidden">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Glossary of Terms</h2>
+                <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Find definitions for key terms related to the NYS Notary Public License Law.</p>
+            </div>
+            <div class="mb-6">
+                <input type="text" id="glossary-search" placeholder="Search for a term..." class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500">
+            </div>
+            <div id="glossary-content" class="space-y-4"></div>
+        </section>
+
+    </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const studyGuideData = [
+        {
+            title: "Foundations of Notary Public Office",
+            content: `
+                <ul>
+                    <li class="mb-2"><strong>Commissioning Body:</strong> NY Secretary of State.</li>
+                    <li class="mb-2"><strong>Term of Office:</strong> 4 years, with statewide jurisdiction.</li>
+                    <li class="mb-2"><strong>Eligibility:</strong> At least 18 years old; resident of NYS or maintain a place of business in NYS. Commission vacates if a resident moves out of state without retaining a NYS office.</li>
+                    <li class="mb-2"><strong>Examination Exemptions:</strong> Attorneys licensed in NYS; certain Court Clerks of the Unified Court System.</li>
+                    <li class="mb-2"><strong>Fees:</strong> $60 initial application/renewal; $15 examination; $10 for name/address change (waived for marital status change); $10 for duplicate ID.</li>
+                    <li class="mb-2"><strong>Oath of Office:</strong> Must be sworn and notarized for initial application and every renewal.</li>
+                    <li class="mb-2"><strong>County Clerk Role:</strong> Notaries are commissioned in their county of residence. Clerk maintains a record of commission and signature, and can authenticate signatures for out-of-state use. A Certificate of Official Character can be filed in other counties for a $10 fee.</li>
+                </ul>
+            `
+        },
+        {
+            title: "Core Powers and Prohibited Activities",
+            content: `
+                <h4 class="font-semibold text-lg mb-2">Authorized Powers (Exec. Law §135)</h4>
+                <ul>
+                    <li class="mb-2">Administer oaths and affirmations.</li>
+                    <li class="mb-2">Take affidavits and depositions.</li>
+                    <li class="mb-2">Receive and certify acknowledgments and proofs.</li>
+                    <li class="mb-2">Protest negotiable instruments (75 cents per protest, 10 cents per notice, max 5).</li>
+                </ul>
+                <h4 class="font-semibold text-lg mt-4 mb-2">Prohibited Activities & Ethical Conduct</h4>
+                 <ul>
+                    <li class="mb-2"><strong>Unauthorized Practice of Law:</strong> A non-attorney notary CANNOT give legal advice or draft legal documents (wills, deeds, contracts). This is a misdemeanor.</li>
+                    <li class="mb-2"><strong>Advertising:</strong> Ads in languages other than English must include the disclaimer: "I am not an attorney licensed to practice law and may not give legal advice...".</li>
+                    <li class="mb-2"><strong>Pecuniary Interest:</strong> A notary is disqualified if they are a party to or have a direct financial interest in the transaction. Exception: Notaries who are stockholders/employees of a corporation can notarize for that corporation if they are not an individual party to the instrument.</li>
+                    <li class="mb-2"><strong>Limitations:</strong> Notaries CANNOT solemnize marriages.</li>
+                    <li class="mb-2"><strong>Duty to Officiate:</strong> Refusal to administer an oath/affidavit when requested is a misdemeanor.</li>
+                </ul>
+            `
+        },
+        {
+            title: "Identity Verification",
+            content: `
+                <p class="mb-4">Personal appearance of the signer is mandatory for all notarial acts.</p>
+                <h4 class="font-semibold text-lg mb-2">For Physical Appearance:</h4>
+                <ul>
+                    <li class="mb-2">Personal knowledge of the signer.</li>
+                    <li class="mb-2">Valid government-issued ID with photo, physical description, and signature.</li>
+                    <li class="mb-2">At least two current documents bearing the signer's signature.</li>
+                    <li class="mb-2">Oath/affirmation of one or two credible witnesses who know the signer and are known to the notary (or can be identified).</li>
+                </ul>
+                 <h4 class="font-semibold text-lg mt-4 mb-2">For Electronic Appearance (if signer is not personally known):</h4>
+                <ul>
+                    <li class="mb-2"><strong>Credential Analysis:</strong> Automated third-party process to validate a government-issued ID.</li>
+                    <li class="mb-2"><strong>Identity Proofing:</strong> Third-party process to confirm the signer's identity by reviewing personal info from public/proprietary data sources (must meet NIST IAL2 standard).</li>
+                </ul>
+            `
+        },
+        {
+            title: "Notarial Certificates & Acts",
+            content: `
+                <ul>
+                    <li class="mb-2"><strong>Required Information (Exec. Law §137):</strong> Below the signature, in black ink, the notary must affix their name, "Notary Public State of New York", county of original qualification, and commission expiration date.</li>
+                    <li class="mb-2"><strong>NYC Requirement:</strong> Notaries in NYC must also affix their official number(s).</li>
+                    <li class="mb-2"><strong>Validity of Acts (Exec. Law §142-a):</strong> Acts are generally NOT invalidated by minor, unknown defects (e.g., expired term, acting outside jurisdiction) unless the defect was known or apparent on the certificate.</li>
+                    <li class="mb-2"><strong>Willful Failure to Comply:</strong> While the act itself may not be invalid, willful failure to include required info can lead to disciplinary action.</li>
+                </ul>
+            `
+        },
+        {
+            title: "Electronic Notarization (REN)",
+            content: `
+                <p class="mb-4">Governed by Exec. Law §135-c and 19 NYCRR Part 182, effective Jan 25, 2023.</p>
+                <ul>
+                    <li class="mb-2"><strong>Registration:</strong> Notaries must register their capability with the Secretary of State.</li>
+                    <li class="mb-2"><strong>Notary Location:</strong> Must be physically located within NYS at the time of notarization.</li>
+                    <li class="mb-2"><strong>Signer Location:</strong> Can be anywhere (with special conditions if outside the U.S.).</li>
+                    <li class="mb-2"><strong>Technology:</strong> Must use secure audio-video communication. Notary must maintain sole control of their electronic signature.</li>
+                    <li class="mb-2"><strong>Recording:</strong> Must create and retain an audio-visual recording of every REN for 10 years.</li>
+                    <li class="mb-2"><strong>Fee:</strong> Up to $25 per electronic notarial act.</li>
+                    <li class="mb-2"><strong>RIN Prohibited:</strong> Remote Ink Notarization is NOT permitted after Jan 31, 2023.</li>
+                </ul>
+            `
+        },
+        {
+            title: "Mandatory Notary Journal",
+            content: `
+                <p class="mb-4">Effective Jan 25, 2023, for ALL notaries and ALL notarial acts.</p>
+                <ul>
+                    <li class="mb-2"><strong>Retention Period:</strong> Must be kept for 10 years.</li>
+                    <li class="mb-2"><strong>Required Entries:</strong>
+                        <ul class="list-disc pl-6 mt-2">
+                            <li>Date and approximate time of the act.</li>
+                            <li>Type of notarial act.</li>
+                            <li>Full name and address of individuals involved.</li>
+                            <li>Number and type of services provided.</li>
+                            <li>Type of credential used for identification.</li>
+                            <li>Verification procedures used.</li>
+                            <li>For REN: Communication technology and providers used.</li>
+                        </ul>
+                    </li>
+                    <li class="mb-2"><strong>Proposed (S.398):</strong> For residential real property conveyances, proposed rules include adding an inked thumbprint and a copy of the ID to the journal. This is NOT current law.</li>
+                </ul>
+            `
+        },
+        {
+            title: "Violations, Misconduct & Penalties",
+            content: `
+                <ul>
+                    <li class="mb-2"><strong>Class D Felony (up to 7 years):</strong> Forgery in the second degree (e.g., falsely altering a deed).</li>
+                    <li class="mb-2"><strong>Class E Felony (up to 4 years):</strong> Issuing a false certificate with intent to defraud.</li>
+                    <li class="mb-2"><strong>Class A Misdemeanor (up to 1 year):</strong> Official misconduct.</li>
+                    <li class="mb-2"><strong>Misdemeanor:</strong> Unauthorized practice of law; acting without an appointment; acting before filing oath of office; refusal to officiate when requested.</li>
+                    <li class="mb-2"><strong>Disciplinary Action:</strong> Secretary of State can suspend or remove a notary for misconduct, fraud, or misstatement on application after a hearing.</li>
+                </ul>
+            `
+        }
+    ];
+
+    const glossaryData = [
+        { term: "Acknowledgment", definition: "A formal declaration before an authorized public officer by a person who has executed an instrument, that such execution is their act and deed." },
+        { term: "Affiant", definition: "A person who makes and subscribes an affidavit." },
+        { term: "Affidavit", definition: "A written statement sworn to or affirmed before an officer authorized to administer an oath or affirmation." },
+        { term: "Affirmation", definition: "A solemn declaration equivalent to an oath, made by a person who conscientiously declines taking an oath." },
+        { term: "Apostille", definition: "A certificate issued by the Secretary of State that authenticates the signature of a public official on a document for use in foreign countries that are parties to the Hague Apostille Convention." },
+        { term: "Conveyance (Deed)", definition: "A written instrument by which title to real property is transferred from one party to another." },
+        { term: "Deponent", definition: "A person who gives testimony under oath or affirmation, particularly in a deposition." },
+        { term: "Deposition", definition: "The testimony of a witness taken out of court under oath or affirmation, usually in writing, under a commission or before a notary public." },
+        { term: "Electronic Notarial Act", definition: "A notarial act performed by an electronic notary public using communication technology." },
+        { term: "Jurat", definition: "The clause in an affidavit stating when, where, and before whom it was sworn to or affirmed." },
+        { term: "Oath", definition: "A solemn declaration, accompanied by a swearing to God or a revered person or thing, that one's statement is true or that one will be bound to a promise." },
+        { term: "Perjury", definition: "The willful giving of false testimony under oath or affirmation on a material matter." },
+        { term: "Proof of Execution", definition: "The formal declaration of a subscribing witness to the execution of an instrument." },
+        { term: "Protest", definition: "A formal statement in writing by a notary public, at the request of the holder of a bill or note, of its presentment for payment or acceptance and refusal thereof." },
+        { term: "Seal", definition: "While not required in New York State, if a notary uses a seal, it must clearly identify the notary." },
+        { term: "Venue", definition: "The geographical location where a notarial act is performed, typically indicated by 'State of New York, County of [County Name]'." },
+        { term: "Will", definition: "A legal document for property distribution at death. Notaries are cautioned not to execute an acknowledgment of a will's execution as it's not a valid attestation." },
+    ];
+    
+    const practiceQuestions = [
+        { q: "A Notary Public commission in New York State is valid for what term?", o: ["Two years", "Three years", "Four years", "Five years"], a: 2, e: "The appointment of a Notary Public shall be for a term of 4 years. (Source: Notary Public License Law)" },
+        { q: "Who is primarily responsible for commissioning Notaries Public in New York State?", o: ["The County Clerk", "The Governor", "The Secretary of State", "The Attorney General"], a: 2, e: "Notaries public are commissioned by the Secretary of State. (Source: Notary Public License Law)" },
+        { q: "As of June 2025, what is the current fee for an initial application to become a Notary Public in New York State?", o: ["$15.00", "$25.00", "$60.00", "$100.00"], a: 2, e: "An applicant for a notary public commission must submit an original application and $60 fee. (Source: Notary Public License Law)" },
+        { q: "Which of the following individuals is exempt from taking the New York State Notary Public examination?", o: ["A certified public accountant", "An individual who previously held a notary commission that expired over a year ago", "An attorney licensed to practice law in New York State", "A real estate broker with over 10 years of experience"], a: 2, e: "An individual admitted to practice in NYS as an attorney may be appointed a notary public without an examination. (Source: Notary Public License Law)" },
+        { q: "If a Notary Public's commission has expired for more than six months, what is generally required for them to become commissioned again?", o: ["They must pay a late renewal fee.", "They must complete a mandatory online training course.", "They must retake and pass the Notary Public examination.", "They must obtain a letter of recommendation from a current notary."], a: 2, e: "Renewing Notaries must take the exam if commission has lapsed (expired) for more than six months. (Source: NYSDOS Website)" },
+        { q: "As of January 25, 2023, what is the minimum retention period for the journal of notarial acts performed by a New York Notary Public?", o: ["3 years", "5 years", "7 years", "10 years"], a: 3, e: "Recordbooks must be retained in the notaries possession for 10 years. (Source: 19 NYCRR §182.9)" },
+        { q: "Which of the following is NOT permitted in New York State after January 31, 2023?", o: ["Remote Electronic Notarization (REN)", "In-person notarization", "Remote Ink Notarization (RIN)", "Notarization of an affidavit via communication technology by a registered electronic notary"], a: 2, e: "Remote ink notarization (RIN) is not permitted in New York State after January 31, 2023. (Source: NYSDOS Guidance)" },
+        { q: "What is the maximum fee an Electronic Notary Public may charge for performing an electronic notarial act in New York State?", o: ["$2.00", "$5.00", "$15.00", "$25.00"], a: 3, e: "An Electronic Notary may charge up to $25.00 per electronic notarial act performed. (Source: 19 NYCRR §182.11)" },
+        { q: "A Notary Public is asked to notarize a document for their spouse, who is a party to the transaction and stands to gain financially. What must the Notary Public do?", o: ["Proceed with the notarization, but disclose the relationship.", "Refuse to perform the notarial act due to personal interest.", "Perform the notarization, but charge no fee.", "Seek approval from the County Clerk before proceeding."], a: 1, e: "A notary is disqualified from acting in cases where they are a party to or directly and pecuniarily interested in the transaction. Such acknowledgments are nullities. (Source: Notary Public License Law)" },
+        { q: "According to NYS law, what information must a Notary Public print, typewrite, stamp, or affix electronically below their signature on a notarial certificate?", o: ["Only their name and signature.", "Their name, 'Notary Public State of New York,' county of original qualification, and commission expiration date.", "Their name, their home address, and the date of the notarial act.", "Their name, their official seal, and the type of document notarized."], a: 1, e: "Notaries must print, typewrite, stamp, or affix electronically their name, 'Notary Public State of New York,' county of original qualification, and commission expiration date below their signature in black ink. (Source: Executive Law §137)" },
+        { q: "A non-attorney Notary Public in New York State advertises their services in a foreign language. What specific disclaimer must be included in their advertisement?", o: ["\"I am a Notary Public and can provide legal advice in this language.\"", "\"I am not an attorney licensed to practice law and may not give legal advice about immigration or any other legal matter or accept fees for legal advice.\"", "\"Consult an attorney for legal matters; I only notarize documents.\"", "\"My services are not equivalent to those of a licensed attorney.\""], a: 1, e: "Notaries advertising in a language other than English must include the specific disclaimer: \"I am not an attorney licensed to practice law and may not give legal advice about immigration or any other legal matter or accept fees for legal advice.\" (Source: Executive Law §135-b)" },
+        { q: "What is the primary purpose of the mandatory notarial journal required for all New York Notaries Public since January 25, 2023?", o: ["To track notary income for tax purposes.", "To provide a verifiable record of all notarial acts for accountability and fraud prevention.", "To serve as a personal reminder for the notary of their daily tasks.", "To allow the public to review a notary's past transactions without restriction."], a: 1, e: "The journal provides a verifiable record to document compliance and enhance accountability. Records must be producible to the Secretary of State upon demand. (Source: 19 NYCRR §182.9)" },
+        { q: "When performing an electronic notarial act, what is the notary public's required physical location?", o: ["The notary must be physically located in the same county as the principal.", "The notary must be physically located within New York State.", "The notary can be located anywhere, as long as the principal is in New York State.", "The notary must be physically located in the same room as the principal."], a: 1, e: "The notary must be physically located within the State of New York at the time of the notarization. (Source: Executive Law §135-c)" },
+        { q: "A Notary Public is asked to prepare a will for a client and notarize their signature. What should the Notary Public do?", o: ["Prepare the will and notarize it, as it is a common legal document.", "Refuse to prepare the will, as it constitutes the unauthorized practice of law, and caution against acknowledging its execution.", "Prepare the will, but advise the client to seek an attorney for notarization.", "Notarize the will, but inform the client that it may not be legally binding."], a: 1, e: "Unless a lawyer, a notary public is prohibited from engaging directly or indirectly in the practice of law, including drawing legal papers such as wills. Notaries are specifically cautioned not to execute an acknowledgment of the execution of a will. (Source: Notary Public License Law)" },
+        { q: "What is the passing score for the New York State Notary Public examination?", o: ["60%", "65%", "70%", "75%"], a: 2, e: "You must correctly answer at least 70 percent of the questions to pass the exam. (Source: NYSDOS Website)" },
+        { q: "Which of the following is considered an 'unequivocal and present act' when administering an oath or affirmation?", o: ["Having the affiant sign a document that states they have taken an oath, without verbal confirmation.", "Administering the oath over the telephone without visual contact.", "Requiring the affiant to raise their right hand and verbally affirm or swear to the truth of their statements in the notary's presence.", "Sending the oath form to the affiant by mail for their signature."], a: 2, e: "An oath or affirmation must be an unequivocal and present act in the presence of an officer authorized to administer it. (Source: Notary Public License Law)" },
+        { q: "A Notary Public in New York City must affix what additional information to each instrument they notarize?", o: ["Their personal phone number.", "Their official number(s) assigned by the county clerk or register.", "The full name of the document signer.", "The seal of the county clerk."], a: 1, e: "A notary public qualified in a county within the city of New York must also affix their official number or numbers in black ink. (Source: Executive Law §137)" },
+        { q: "What is the consequence if a Notary Public willfully fails to comply with the requirement to include specific information (name, county, expiration) on their notarial certificate?", o: ["The notarial act is automatically invalidated.", "The notary public shall be subject to disciplinary action by the Secretary of State.", "The notary public must retake the examination immediately.", "The notary public is required to pay a $500 fine to the county clerk."], a: 1, e: "If any notary public shall willfully fail to comply, they shall be subject to disciplinary action by the secretary of state. However, no official act shall be held invalid on account of this failure. (Source: Executive Law §137)" },
+        { q: "What is the current fee for administering an oath or affirmation by a New York Notary Public, as of June 2025?", o: ["$1.00", "$2.00", "$5.00", "$10.00"], a: 1, e: "A notary public may charge a fee of $2.00 for administering an oath or affirmation. (Source: Executive Law §136)" },
+        { q: "Which of the following is NOT a required entry in the mandatory notarial journal for all New York Notaries Public?", o: ["The date and time of the notarial act.", "The full name and address of the individuals for whom the act was performed.", "The social security number of the principal.", "The type of credential used to identify the principal."], a: 2, e: "Journal entries must include: date, time, type of act, names/addresses of individuals, services, credential type, and verification procedures. Social security number is not listed as a requirement. (Source: 19 NYCRR §182.9)" },
+        { q: "What does 'credential analysis' refer to in the context of electronic notarization identity verification?", o: ["A notary's personal assessment of a signer's trustworthiness.", "A process where a third-party service validates a government-issued identification through data sources.", "A review of the signer's credit history to confirm their identity.", "The notary's examination of the physical features of an ID document."], a: 1, e: "Credential analysis is a process where a third-party service validates a government-issued identification presented by an individual through a review of public and proprietary data sources. (Source: 19 NYCRR Part 182)" },
+        { q: "If a New York Notary Public moves out of New York State and does not retain an office or place of business in the state, what is the consequence for their commission?", o: ["Their commission automatically vacates.", "Their commission remains valid until its expiration date.", "They must notify the Secretary of State within 30 days but can continue to notarize.", "They must transfer their commission to their new state of residence."], a: 0, e: "A notary public who is a resident of New York State and moves out of the state and who does not retain an office or place of business in this State shall vacate his or her office as a notary public. (Source: Notary Public License Law)" },
+        { q: "What is the purpose of the proposed Senate Bill S398 regarding residential real property conveyances?", o: ["To increase the fees notaries can charge for all notarial acts.", "To establish clear notary duties to prevent deed theft.", "To allow notaries to solemnize marriages related to property transfers.", "To exempt notaries from maintaining a journal for real property transactions."], a: 1, e: "The bill (S398) aims to establish a clear set of notary duties to prevent deed theft, including new journal and procedural requirements for residential real property conveyances. (Source: NY State Senate Bill 2025-S398)" },
+        { q: "Which of the following is a Class D felony under New York Penal Law applicable to notaries?", o: ["Refusal to officiate an oath when requested.", "Advertising in a foreign language without the required disclaimer.", "Forgery in the second degree, such as falsely altering a deed with intent to defraud.", "Acting as a notary before taking and filing the oath of office."], a: 2, e: "Forgery in the second degree (§170.10 Penal Law) is a Class D felony and includes falsely making, completing, or altering a written instrument like a deed or contract with intent to defraud. (Source: Notary Public License Law)" },
+        { q: "What is the current status of Senate Bill S6268, which proposes to increase notary fees from $2.00 to $5.00, as of June 2025?", o: ["It has been signed into law and is effective.", "It has been defeated and will not be reconsidered.", "It is pending legislation, currently in the Senate Finance Committee.", "It is awaiting a public referendum vote."], a: 2, e: "As of June 2025, NY State Senate Bill S6268 is active and in the Senate Finance Committee; it is not yet law. (Source: NY State Senate Website)" },
+        { q: "What is the minimum age requirement to become a Notary Public in New York State?", o: ["16 years old", "18 years old", "21 years old", "25 years old"], a: 1, e: "Notary applicants must be at least 18 years old. (Source: Notary Public License Law)" },
+        { q: "What is the role of the County Clerk's office regarding Notaries Public in New York State?", o: ["They administer the Notary Public examination.", "They issue the initial Notary Public commission.", "They maintain a public record of the notary's commission and signature.", "They provide legal advice to notaries."], a: 2, e: "The county clerk maintains a record of the commission and signature. The public may then access this record and verify the 'official' signature of the notary at the county clerk's office. (Source: Notary Public License Law)" },
+        { q: "What is the fee for taking the New York State Notary Public examination?", o: ["$10.00", "$15.00", "$20.00", "$60.00"], a: 1, e: "The examination fee is $15.00. (Source: NYSDOS Website)" },
+        { q: "A notary public is asked to take an acknowledgment over the telephone without the individual physically present. What should the notary do?", o: ["Proceed with the acknowledgment, as long as the individual's identity is confirmed verbally.", "Refuse, as taking acknowledgments over the telephone without personal appearance is illegal.", "Advise the individual to send a scanned copy of their ID for verification.", "Perform the acknowledgment, but note in the journal that it was done remotely."], a: 1, e: "The practice of taking acknowledgments and affidavits over the telephone, or otherwise, without the actual, personal appearance of the individual before the officiating notary, is illegal. (Source: Notary Public License Law)" },
+        { q: "Which of the following is a power generally authorized for a New York Notary Public?", o: ["Solemnizing marriages.", "Drafting legal contracts for a fee.", "Administering oaths and affirmations.", "Certifying copies of public records."], a: 2, e: "Notaries have general powers to administer oaths/affirmations. They have no authority to solemnize marriages or issue certified copies, and cannot draft legal papers unless they are an attorney. (Source: Notary Public License Law)" },
+        { q: "What is the retention period for the audio-visual recording of an electronic notarial act performed by a New York Notary Public?", o: ["1 year", "3 years", "5 years", "10 years"], a: 3, e: "Electronic notaries must keep a copy of the video and audio conference recording for at least 10 years. (Source: 19 NYCRR Part 182)" },
+        { q: "A Notary Public is also a stockholder and employee of a corporation. Can they notarize a document executed by another employee of that same corporation?", o: ["No, because it presents a conflict of interest.", "Yes, provided they are not individually a party to the instrument.", "Only if they do not receive any fee for the notarization.", "Only if the document is not related to the corporation's financial matters."], a: 1, e: "Executive Law §138 allows notaries who are stockholders, directors, officers, or employees of a corporation to take acknowledgments for that corporation, provided they are not an individual party to the instrument. (Source: Notary Public License Law)" },
+        { q: "What is the consequence if a Notary Public acts before taking and filing their oath of office?", o: ["The notarial act is valid but the notary receives a warning.", "The notary public is subject to civil penalties only.", "The notary public is guilty of a misdemeanor.", "The notary public's commission is automatically suspended for 30 days."], a: 2, e: "A notary public must not perform any official acts before taking and filing their oath of office; doing so is a misdemeanor under Public Officers Law §15. (Source: Notary Public License Law)" },
+        { q: "A notary public is requested to administer an oath to an individual. What is the notary's obligation?", o: ["The notary may refuse if they are too busy.", "The notary must officiate on request, and refusal is a misdemeanor.", "The notary may charge any reasonable fee for the service.", "The notary must first determine if the individual is a U.S. citizen."], a: 1, e: "A notary must officiate on request. Refusal to administer an oath or affidavit when requested is a misdemeanor. (Source: Notary Public License Law)" },
+        { q: "Which of the following is NOT required on a New York Notary Public's identification card?", o: ["Notary's name", "Notary's address", "Notary's commission term", "Notary's photograph"], a: 3, e: "The identification card will indicate the notary's name, address, county and commission term. A photograph is not a specified requirement. (Source: Notary Public License Law)" },
+        { q: "What is the maximum fee a New York Notary Public may charge for taking and certifying an acknowledgment or proof of execution by one person, as of June 2025?", o: ["$1.00", "$2.00", "$5.00", "$10.00"], a: 1, e: "A notary public may charge a fee of $2.00 for taking an acknowledgment or proof of execution. (Source: Executive Law §136)" },
+        { q: "In the context of electronic notarization, what is 'identity proofing'?", o: ["The notary's visual confirmation of the signer's face.", "A process where a third party confirms the identity of a signer through review of personal information from public and proprietary data sources.", "The signer providing a password or PIN to the notary.", "The notary asking the signer a series of personal questions."], a: 1, e: "Identity proofing is a process or service through which a third party confirms the identity of a signer through review of personal information from public and proprietary data sources. (Source: 19 NYCRR Part 182)" },
+        { q: "What is the current status of Senate Bill S398, which proposes mandatory journal entries with inked thumbprints for residential real property conveyances?", o: ["It has been signed into law and is effective.", "It is pending legislation, currently in the Senate Finance Committee.", "It was defeated in the Assembly and will not be reintroduced.", "It is under review by the Department of State for potential regulation."], a: 1, e: "As of June 2025, NY State Senate Bill S398 is currently In Senate Committee (Finance Committee) and is not law. (Source: NY State Senate Website)" },
+        { q: "If a Notary Public changes their name due to marital status, what is the fee for changing their name on their license?", o: ["$0 (no fee)", "$5.00", "$10.00", "$20.00"], a: 0, e: "The $10 fee for a name change is not required if the individual name change is the result of a change in marital status. (Source: Notary Public License Law)" },
+        { q: "Which of the following is a misdemeanor offense for a Notary Public in New York State?", o: ["Administering an oath to a non-resident.", "Refusing to administer an oath or affidavit when requested.", "Charging the statutory fee for a notarial act.", "Filing a certificate of official character in another county."], a: 1, e: "Refusal to administer an oath or affidavit when requested is a misdemeanor. (Source: Notary Public License Law)" },
+        { q: "What is the validity period for New York State Notary Public examination results?", o: ["1 year", "2 years", "3 years", "4 years"], a: 1, e: "Examination results are only valid for a period of two years. (Source: NYSDOS Website)" },
+        { q: "A Notary Public is commissioned in Albany County. They are asked to notarize a document in New York City. Can they do so?", o: ["No, a notary can only officiate in their county of commission.", "Yes, a notary's jurisdiction is co-extensive with the boundaries of the state.", "Only if they first file a Certificate of Official Character in New York County.", "Only if the document will not be recorded in New York City."], a: 1, e: "A notary public's jurisdiction is co-extensive with the boundaries of the state. (Source: Notary Public License Law)" },
+        { q: "What happens if a person convicted of a felony applies to become a Notary Public in New York?", o: ["They are automatically disqualified.", "They may be considered for appointment if they obtain an executive pardon, certificate of relief from disabilities, or certificate of good conduct.", "They must wait 10 years after their conviction before applying.", "They are eligible only if the felony was a non-violent offense."], a: 1, e: "Generally, a person convicted of felony cannot be appointed. However, they may be considered if they obtain an executive pardon, a certificate of relief from disabilities, or a certificate of good conduct. (Source: Notary Public License Law)" },
+        { q: "What is the purpose of a 'colloquy form' as proposed in Senate Bill S398 for residential real property conveyances?", o: ["To record the notary's personal observations of the principal.", "To ensure the principal understands the nature of the transaction before signing.", "To document the notary's fees for the transaction.", "To serve as an application for legal aid for the principal."], a: 1, e: "The colloquy form, as proposed, is designed to be performed with the principal to ensure they understand the conveyance of real property and are acting of their own free will. (Source: NY State Senate Bill 2025-S398)" },
+        { q: "What is the fee for a duplicate Notary Public identification card in New York State?", o: ["$0", "$5.00", "$10.00", "$15.00"], a: 2, e: "A $10.00 non-refundable fee is required for a duplicate lost, destroyed, or damaged ID card. (Source: Notary Public License Law)" },
+        { q: "Which of the following is a mandatory entry in the journal for an electronic notarial act?", o: ["The principal's marital status.", "Identification of the communication technology and verification providers used.", "The notary's personal opinion of the principal's demeanor.", "A copy of the electronic document itself."], a: 1, e: "For electronic notarial acts, the journal must identify the communication technology, certification authority, and verification providers used. (Source: 19 NYCRR §182.9)" },
+        { q: "What is the primary difference between 'credential analysis' and 'identity proofing' in electronic notarization?", o: ["Credential analysis is for in-person acts, identity proofing is for remote acts.", "Credential analysis validates the ID's authenticity; identity proofing confirms the individual's identity.", "Credential analysis is performed by the notary; identity proofing by the signer.", "Credential analysis is optional; identity proofing is mandatory."], a: 1, e: "Credential analysis validates the authenticity of the ID document itself, while identity proofing is a process to validate the identity of the individual presenting the ID. (Source: 19 NYCRR Part 182)" },
+        { q: "What is the penalty for a non-attorney notary public who uses foreign language terms in advertising that imply they are a licensed attorney (e.g., 'abogado')?", o: ["Immediate removal from office.", "A civil penalty up to $1,000 for the first violation.", "Mandatory legal education courses.", "Suspension of commission for one year."], a: 1, e: "Penalties for advertising violations include a civil penalty up to $1,000 for the first violation, suspension for a second, and removal for a third. (Source: Executive Law §135-b)" },
+        { q: "What is the primary function of the County Clerk in relation to a notary public's signature?", o: ["To approve the notary's signature style.", "To authenticate the notary's signature for documents used outside the State.", "To provide the notary with a signature stamp.", "To train notaries on proper signature techniques."], a: 1, e: "County clerks can authenticate notary signatures and attest to their authority, which is especially important for documents intended for use outside the State. (Source: Notary Public License Law)" },
+        { q: "A Notary Public is asked to administer an oath to a public officer. Is this permissible?", o: ["No, only judges can administer oaths to public officers.", "Yes, a notary public is permitted to administer the oath of a public officer.", "Only if the public officer is a state-level official.", "Only if the notary is also an attorney."], a: 1, e: "Public Officers Law §10 permits a notary public to administer the oath of a public officer. (Source: Notary Public License Law)" },
+        { q: "What is the status of a notary public's official acts if they are performed before taking and filing their oath of office?", o: ["The acts are valid, but the notary is subject to a fine.", "The acts are invalid, and the notary is guilty of a felony.", "The acts are not invalid, but the notary is guilty of a misdemeanor for performing them.", "The acts are invalid, and the notary is subject to removal."], a: 2, e: "Public Officers Law §15 states acting before filing an oath is a misdemeanor. Executive Law §142-a generally protects the validity of acts from unknown defects, but the action itself is a crime. (Source: Notary Public License Law)" },
+        { q: "What is the primary purpose of the audio-visual recording requirement for electronic notarial acts?", o: ["To provide a visual record for marketing purposes.", "To allow the notary to review their performance.", "To create an immutable evidentiary record of the transaction for accountability and fraud deterrence.", "To ensure the notary can visually confirm the signer's attire."], a: 2, e: "The recording provides an immutable record of the entire remote notarial transaction, significantly enhancing accountability and serving as a strong deterrent against fraud. (Source: 19 NYCRR Part 182)" },
+        { q: "According to proposed Senate Bill S398, what additional item would be required in the journal entry for notarizations involving residential real property conveyances?", o: ["A photograph of the property.", "An inked thumbprint of the principal.", "The principal's financial statements.", "A copy of the notary's commission."], a: 1, e: "The proposed bill requires that for each journal entry, the principal signing the instrument shall place an inked thumbprint into the journal. (Source: NY State Senate Bill 2025-S398)" },
+        { q: "What is the maximum number of additional notices of protest a Notary Public may charge for, and at what fee per notice?", o: ["3 notices, $0.25 each", "5 notices, $0.10 each", "10 notices, $0.05 each", "Unlimited notices, $0.10 each"], a: 1, e: "The statutory fee is 10 cents for each notice of protest, with a limit of five notices. (Source: Executive Law §136)" },
+        { q: "Which of the following is NOT a valid form of identification for a physical appearance notarization if the notary does not personally know the signer?", o: ["A valid government-issued driver's license with photo and signature.", "Two current documents, both bearing the individual's signature.", "A library card with a photo.", "The oath of one credible witness known to the notary."], a: 2, e: "Acceptable forms include valid government-issued ID, at least two current documents with signature, or oath/affirmation of witnesses. A library card is not typically considered a valid government-issued ID for these purposes. (Source: Notary Public License Law)" },
+        { q: "What is the primary justification for the proposed increase in notary fees from $2.00 to $5.00, as stated in Senate Bill S6268?", o: ["To align New York fees with national averages.", "To compensate notaries for increased operational costs and stagnant fees over decades.", "To fund a new state-wide notary education program.", "To discourage individuals from becoming notaries."], a: 1, e: "The justification notes that the fee has remained unchanged since 1991, while the fees notaries are charged have continually increased. (Source: NY State Senate Bill 2025-S6268)" },
+        { q: "If a Notary Public is convicted of a crime, under what circumstances might they still be considered for appointment?", o: ["Only if the crime was a traffic violation.", "If they obtain an executive pardon, a certificate of relief from disabilities, or a certificate of good conduct.", "Never, any criminal conviction is an absolute bar.", "Only if they complete a court-ordered community service."], a: 1, e: "Should a person convicted of any crime obtain an executive pardon, a certificate of relief from disabilities, or a certificate of good conduct, he or she may be considered for appointment. (Source: Notary Public License Law)" },
+        { q: "What is the purpose of 'identity proofing' in electronic notarization, according to NYS regulations?", o: ["To confirm the notary's identity to the signer.", "To verify the authenticity of the document being notarized.", "To confirm the identity of a signer through review of personal information from public and proprietary data sources.", "To ensure the signer has a valid email address."], a: 2, e: "Identity proofing is a process or service through which a third party confirms the identity of a signer through review of personal information from public and proprietary data sources. (Source: 19 NYCRR Part 182)" },
+        { q: "Which of the following is NOT considered the unauthorized practice of law for a non-attorney Notary Public?", o: ["Giving legal advice on immigration matters.", "Drafting a will for a client.", "Administering an oath to a deponent.", "Soliciting legal business for a lawyer with whom they have a business connection."], a: 2, e: "Administering oaths is a general power of a notary public. Giving legal advice, drafting legal papers, and soliciting legal business for lawyers are prohibited activities for non-attorneys. (Source: Notary Public License Law)" },
+        { q: "What is the maximum term of imprisonment for a Class A misdemeanor in New York State?", o: ["6 months", "1 year", "2 years", "4 years"], a: 1, e: "Penal Law §70.15 defines the maximum definite sentence for a Class A misdemeanor as one year. (Source: Notary Public License Law)" },
+        { q: "A notary public is asked to notarize a document on a Sunday. Is this permissible?", o: ["No, notarial acts are prohibited on Sundays.", "Yes, a notary may administer an oath or take an acknowledgment on a Sunday.", "Only if it is an emergency situation.", "Only if the document is not related to a civil proceeding."], a: 1, e: "A notary may administer an oath or take an acknowledgment on Sunday, but a deposition cannot be taken in a civil proceeding on that day. (Source: Notary Public License Law)" },
+        { q: "What is the primary purpose of the proposed 'inked thumbprint' requirement in Senate Bill S398 for residential real property conveyances?", o: ["To provide an alternative form of signature for the principal.", "To add a biometric layer of security to combat deed theft and aid law enforcement.", "To verify the principal's age.", "To track the number of notarizations performed by the notary."], a: 1, e: "The proposed thumbprint requirement is a highly specific anti-fraud measure, adding a biometric layer of security to protect homeowners and provide evidence in fraud cases. (Source: NY State Senate Bill 2025-S398)" },
+        { q: "If a notary public is removed as a Commissioner of Deeds for New York City, are they eligible for reappointment as a Notary Public?", o: ["Yes, after a waiting period of one year.", "No, they are ineligible for reappointment as a Commissioner of Deeds or as a Notary Public.", "Only if they pass a special examination.", "Only if they receive a pardon from the Secretary of State."], a: 1, e: "Persons removed from office as Commissioner of Deeds for NYC are ineligible for reappointment as such or as a notary public. (Source: Executive Law §140)" },
+        { q: "What is the fee for filing a Certificate of Official Character with a County Clerk in a county other than the notary's county of residence?", o: ["$1.00", "$5.00", "$10.00", "$15.00"], a: 2, e: "There is a fee of $10.00 to file the certificate of official character in another county. (Source: Notary Public License Law)" },
+        { q: "What is the term for a formal declaration before an authorized public officer by a person who has executed an instrument, stating that such execution is their act and deed?", o: ["Affidavit", "Jurat", "Acknowledgment", "Deposition"], a: 2, e: "An Acknowledgment is defined as a formal declaration before an authorized public officer by a person who has executed an instrument, that such execution is their act and deed. (Source: Notary Public License Law)" },
+        { q: "Which of the following is a Class E felony under New York Penal Law applicable to public servants?", o: ["Official misconduct.", "Issuing a false certificate with intent to defraud.", "Refusal to officiate.", "Advertising without proper disclaimer."], a: 1, e: "Issuing a false certificate (§175.40 Penal Law) is a Class E felony when a public servant, with intent to defraud, issues a false official certificate knowing it to be false. (Source: Notary Public License Law)" },
+        { q: "What is the purpose of the proposed mandatory educational program for notaries related to residential real property conveyances, as per Senate Bill S398?", o: ["To teach notaries how to appraise real estate.", "To educate notaries on their new duties concerning such conveyances and the colloquy form.", "To provide legal advice to notaries on property law.", "To certify notaries as real estate agents."], a: 1, e: "The Secretary of State is proposed to establish a mandatory program for educating notaries on their new duties related to residential real property conveyances and the colloquy. (Source: NY State Senate Bill 2025-S398)" },
+        { q: "If a Notary Public's commission expires, how long do they have to renew it without being required to retake the examination?", o: ["30 days", "3 months", "6 months", "1 year"], a: 2, e: "Renewing Notaries must take the exam if their commission has lapsed (expired) for more than six months. This implies they can renew without the exam within the six-month period. (Source: NYSDOS Website)" },
+        { q: "What is the term for a written statement sworn to or affirmed before an officer authorized to administer an oath or affirmation?", o: ["Acknowledgment", "Affidavit", "Deed", "Contract"], a: 1, e: "An affidavit is a written statement sworn to or affirmed before an officer authorized to administer an oath or affirmation. (Source: Notary Public License Law)" },
+        { q: "What is the maximum term of imprisonment for a Class D felony in New York State?", o: ["4 years", "7 years", "10 years", "15 years"], a: 1, e: "Penal Law §70.00 defines the maximum term for a Class D felony as 7 years. (Source: Notary Public License Law)" },
+        { q: "Which of the following is a key characteristic of the electronic signature used by an electronic notary public?", o: ["It must be a physical stamp applied digitally.", "It must be unique to the notary and linked to the record to detect alterations.", "It must be easily transferable to other notaries.", "It must be a scanned image of the notary's handwritten signature."], a: 1, e: "An electronic signature must be unique, independently verifiable, under the notary's sole control, and attached to or logically associated with the electronic record in a manner that detects subsequent alterations. (Source: 19 NYCRR Part 182)" },
+        { q: "What is the fee for a Notary Public to file a certificate of official character in another county?", o: ["$1.00", "$5.00", "$10.00", "$15.00"], a: 2, e: "There is a fee of $10.00 to file the certificate of official character in another county. (Source: Notary Public License Law)" },
+        { q: "What is the term used for a person who makes and subscribes their signature to an affidavit?", o: ["Deponent", "Affiant", "Grantor", "Principal"], a: 1, e: "An Affiant is defined as a person who makes and subscribes an affidavit. (Source: Notary Public License Law)" },
+        { q: "Which of the following is NOT a required item to bring to the NYS Notary Public examination?", o: ["A government-issued photo identification.", "A check or money order for the examination fee.", "A copy of the Notary Public License Law booklet.", "Two #2 pencils."], a: 2, e: "Reference materials like books are not allowed at the exam center. You must bring a government-issued ID, the $15 examination fee, and two #2 pencils. (Source: NYSDOS Website)" },
+        { q: "What is the consequence if a Notary Public is found guilty of 'official misconduct' under Penal Law §195.00?", o: ["It is a Class D felony.", "It is a Class E felony.", "It is a Class A misdemeanor.", "It results in automatic removal from office without further hearing."], a: 2, e: "Official misconduct (§195.00 Penal Law) is a Class A misdemeanor. (Source: Notary Public License Law)" },
+        { q: "What is the purpose of 'credential analysis' as defined in NYS regulations for electronic notarization?", o: ["To analyze the notary's credentials.", "To validate a government-issued identification presented by an individual through a review of public and proprietary data sources.", "To verify the notary's digital certificate.", "To assess the signer's financial standing."], a: 1, e: "Credential analysis is a process where a third-party service validates a government-issued identification presented by an individual through a review of public and proprietary data sources. (Source: 19 NYCRR Part 182)" },
+        { q: "What is the term for the clause in an affidavit stating when, where, and before whom it was sworn to or affirmed?", o: ["Acknowledgment", "Attestation Clause", "Jurat", "Venue"], a: 2, e: "The Jurat is defined as the clause in an affidavit stating when, where, and before whom it was sworn to or affirmed. (Source: Notary Public License Law)" },
+        { q: "What is the primary responsibility of a notary public regarding identity verification for an electronic notarization if the signer is not personally known?", o: ["To rely solely on the signer's verbal affirmation of identity.", "To use communication technology that facilitates credential analysis and identity proofing by a third-party service provider.", "To require the signer to mail a copy of their identification after the act.", "To verify identity through a simple online search."], a: 1, e: "For electronic appearance where the signer is not personally known, identity verification must be done via communication technology using credential analysis and identity proofing by a third-party service provider. (Source: 19 NYCRR Part 182)" },
+        { q: "What is the current fee for a Notary Public to administer an oath or affirmation, as per Executive Law §136?", o: ["$0.75", "$1.00", "$2.00", "$5.00"], a: 2, e: "For administering an oath or affirmation, the fee is two dollars. (Source: Executive Law §136)" },
+        { q: "What is the consequence if a notary public, with intent to defraud, issues a false official certificate knowing it contains false information?", o: ["It is a Class A misdemeanor.", "It is a Class E felony.", "It results in a civil penalty only.", "It leads to immediate suspension without a hearing."], a: 1, e: "Issuing a false certificate (§175.40 Penal Law) is a Class E felony. (Source: Notary Public License Law)" },
+        { q: "What is the primary role of the Secretary of State in New York regarding Notaries Public?", o: ["To provide legal advice to notaries.", "To administer the Notary Public examination.", "To appoint and commission notaries public.", "To investigate all complaints against notaries."], a: 2, e: "Notaries public are commissioned by the Secretary of State, who may appoint and commission as many as deemed best. (Source: Notary Public License Law)" },
+        { q: "Which of the following is a prohibited activity for a non-attorney Notary Public?", o: ["Taking an acknowledgment for a deed.", "Administering an oath for an affidavit.", "Preparing a bill of sale for a client for compensation.", "Protesting a promissory note."], a: 2, e: "A non-attorney notary may not draw any kind of legal papers, such as a bill of sale, for compensation. (Source: Notary Public License Law)" },
+        { q: "According to proposed Senate Bill S398, what would be the consequence if a notary public has not completed the mandatory educational program for residential real property conveyances?", o: ["They would be subject to a civil penalty.", "They would be unqualified to certify any acknowledgment of a conveyance of residential real property, and such instrument would be voidable.", "They would be required to retake the notary public examination.", "They would be prohibited from performing any notarial acts for one year."], a: 1, e: "The proposed bill states that a notary who has not completed the educational program is unqualified to certify such acknowledgments, and any instrument they do certify is voidable. (Source: NY State Senate Bill 2025-S398)" },
+        { q: "What is the current fee for renewing a Notary Public commission in New York State?", o: ["$15.00", "$25.00", "$60.00", "$100.00"], a: 2, e: "The renewal fee is $60.00. (Source: Notary Public License Law)" },
+        { q: "What is the term for a formal statement in writing by a notary public, at the request of the holder of a bill or note, of its presentment for payment or acceptance and refusal thereof?", o: ["Acknowledgment", "Deposition", "Protest", "Affidavit"], a: 2, e: "A Protest is defined as a formal statement in writing by a notary public regarding the presentment and refusal of a bill or note. (Source: Notary Public License Law)" },
+        { q: "A Notary Public is commissioned in Westchester County. They wish to have their signature on file with the Queens County Clerk. What is the fee to file a Certificate of Official Character in Queens County?", o: ["$1.00", "$5.00", "$10.00", "$15.00"], a: 2, e: "There is a fee of $10.00 to file the certificate of official character in another county. (Source: Notary Public License Law)" },
+        { q: "Which of the following is a valid form of identification for an in-person notarization if the notary does not personally know the signer?", o: ["A current utility bill with the signer's name and address.", "A student ID card from a private university.", "A valid US Passport.", "A signed credit card."], a: 2, e: "A valid US Passport is a government-issued identification document acceptable for verifying identity. (Source: Notary Public License Law)" },
+        { q: "What is the significance of 'personal appearance' in New York Notary Public law?", o: ["It is only required for electronic notarizations.", "It ensures the notary can verify the signer's identity and willingness.", "It allows the notary to provide legal advice to the signer.", "It is only required for documents involving real property."], a: 1, e: "The requirement of actual, personal appearance is a cornerstone of notarial practice to prevent fraud by allowing the notary to verify identity and ensure the signing is voluntary. (Source: Notary Public License Law)" },
+        { q: "What is the maximum term of imprisonment for a Class E felony in New York State?", o: ["1 year", "2 years", "4 years", "7 years"], a: 2, e: "Penal Law §70.00 defines the maximum term for a Class E felony as 4 years. (Source: Notary Public License Law)" },
+        { q: "Which of the following is a reason for which a Notary Public can be suspended or removed from office?", o: ["Refusing to notarize a document for a family member.", "Misstatement in their application or taking false oaths.", "Charging the statutory fee for a notarial act.", "Failing to renew their commission exactly 90 days before expiration."], a: 1, e: "Notaries can be suspended or removed for misconduct, fraud or deceit in office, or a misstatement on their application. (Source: Notary Public License Law)" },
+        { q: "What is the purpose of the proposed 'colloquy form' in Senate Bill S398 for residential real property conveyances?", o: ["To record the notary's personal observations of the principal.", "To ensure the principal understands the nature of the transaction and is signing voluntarily.", "To document the notary's fees for the transaction.", "To serve as an application for legal aid for the principal."], a: 1, e: "The proposed colloquy form includes questions to confirm the principal's understanding of the transaction and that they are acting of their own free will. (Source: NY State Senate Bill 2025-S398)" },
+        { q: "Who is exempt from paying the application fee to become a Notary Public in New York State?", o: ["No one is exempt from the application fee.", "Attorneys licensed in NYS.", "Court clerks of the Unified Court System.", "County Clerk staff members designated as notaries to serve the public."], a: 3, e: "County Law §534 states that county clerk appointees designated to provide free notary services to the public are exempt from examination and application fees. (Source: Notary Public License Law)" },
+        { q: "What is the term for the testimony of a witness taken out of court under oath or affirmation?", o: ["Acknowledgment", "Affidavit", "Deposition", "Protest"], a: 2, e: "A Deposition is defined as the testimony of a witness taken out of court under oath or affirmation. (Source: Notary Public License Law)" },
+        { q: "What is the primary difference between an 'oath' and an 'affirmation' in notarial practice?", o: ["An oath is legally binding, while an affirmation is not.", "An oath involves a swearing to a divine being; an affirmation is a solemn declaration without religious reference.", "An oath is for legal documents; an affirmation is for personal statements.", "An oath requires a witness; an affirmation does not."], a: 1, e: "An affirmation is legally equivalent to an oath. The difference is that an oath involves a reference to a divine being, while an affirmation is a solemn declaration for those who decline taking an oath. (Source: Notary Public License Law)" },
+        { q: "If a Notary Public is also a member of the New York State Legislature and accepts a notary public appointment while receiving compensation for it, what is the consequence?", o: ["They must resign from the Legislature.", "They must decline the notary public compensation.", "Their notary public commission is automatically revoked.", "Their seat in the Legislature is vacated."], a: 3, e: "Acceptance of a notary public appointment by a member of the legislature vacates their seat if compensation is received. (Source: Notary Public License Law)" },
+        { q: "What does 'personal knowledge' mean as a method of identity verification for a notary public?", o: ["The notary has seen the signer's ID in the past.", "The notary has known the signer for a long period and is certain of their identity.", "The notary recognizes the signer from a brief encounter.", "The notary has reviewed the signer's social media profile."], a: 1, e: "Personal knowledge implies a level of familiarity with an individual that is sufficient to be certain of their identity without needing to see identification. (Source: Notary Public License Law)" },
+        { q: "What is the purpose of the $10.00 fee for a change of name or address for a Notary Public?", o: ["To cover the cost of a new ID card.", "To update the notary's record with the Department of State.", "To penalize notaries for frequent changes.", "To fund notary public training programs."], a: 1, e: "A $10.00 non-refundable fee is required for the administrative task of changing a name or address on the notary's official record. (Source: Notary Public License Law)" },
+        { q: "What is the significance of the phrase 'unless the defect was known or apparent on the certificate' in Executive Law §142-a regarding the validity of notarial acts?", o: ["It means all defects, regardless of how minor, invalidate the act.", "It implies that unknown or non-apparent defects generally do not invalidate the act.", "It refers to defects in the document being notarized, not the notarial act itself.", "It allows the notary to correct any defect after the act is performed."], a: 1, e: "This phrase provides a 'saving clause' that protects the validity of documents from minor, unknown technical errors on the part of the notary, thus ensuring legal certainty. (Source: Executive Law §142-a)" },
+        { q: "What is the primary purpose of the comprehensive syllabus provided for the NYS Notary Public examination?", o: ["To list all licensed notaries in New York.", "To outline all topics covered on the exam and assist in preparation.", "To provide legal advice to aspiring notaries.", "To serve as an application form for the commission."], a: 1, e: "The exam topics include license law, general terms and information related to the duties of a notary public, as outlined in the 'Notary Public License Law' booklet, which the syllabus covers. (Source: NYSDOS Website)" },
+        { q: "What does 'acknowledgment' mean in the context of a notary public's duties?", o: ["The notary's confirmation that they have read and understood the document.", "A formal declaration by a person who has executed an instrument that such execution is their act and deed.", "The notary's signature on a document to confirm its accuracy.", "A verbal agreement between two parties witnessed by the notary."], a: 1, e: "An Acknowledgment is a formal declaration by a person who has executed an instrument that such execution is their act and deed. (Source: Notary Public License Law)" }
+    ];
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const mobileNav = document.getElementById('mobile-nav');
+    const contentSections = document.querySelectorAll('.content-section');
+    const startExamBtn = document.getElementById('start-exam-btn');
+    const examStartScreen = document.getElementById('exam-start-screen');
+    const examQuestionScreen = document.getElementById('exam-question-screen');
+    const examResultsScreen = document.getElementById('exam-results-screen');
+    const reviewScreen = document.getElementById('review-screen');
+    const questionText = document.getElementById('question-text');
+    const answerOptionsContainer = document.getElementById('answer-options');
+    const explanationBox = document.getElementById('explanation-box');
+    const explanationText = document.getElementById('explanation-text');
+    const nextQuestionBtn = document.getElementById('next-question-btn');
+    const examProgress = document.getElementById('exam-progress');
+    const progressBar = document.getElementById('progress-bar');
+    const examScore = document.getElementById('exam-score');
+    const finalScoreText = document.getElementById('final-score-text');
+    const resultMessage = document.getElementById('result-message');
+    const restartExamBtn = document.getElementById('restart-exam-btn');
+    const reviewAnswersBtn = document.getElementById('review-answers-btn');
+    const backToResultsBtn = document.getElementById('back-to-results-btn');
+    const reviewContent = document.getElementById('review-content');
+    const studyGuideContent = document.getElementById('study-guide-content');
+    const glossaryContent = document.getElementById('glossary-content');
+    const glossarySearch = document.getElementById('glossary-search');
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let userAnswers = [];
+    let shuffledQuestions = [];
+
+    function switchTab(targetId) {
+        contentSections.forEach(section => {
+            section.classList.add('hidden');
+        });
+        document.getElementById(targetId).classList.remove('hidden');
+
+        navLinks.forEach(link => {
+            if (link.dataset.target === targetId) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+        mobileNav.value = targetId;
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function startExam() {
+        currentQuestionIndex = 0;
+        score = 0;
+        userAnswers = [];
+        shuffledQuestions = shuffleArray([...practiceQuestions]);
+        examStartScreen.classList.add('hidden');
+        reviewScreen.classList.add('hidden');
+        examResultsScreen.classList.add('hidden');
+        examQuestionScreen.classList.remove('hidden');
+        displayQuestion();
+    }
+
+    function displayQuestion() {
+        const question = shuffledQuestions[currentQuestionIndex];
+        questionText.textContent = question.q;
+        answerOptionsContainer.innerHTML = '';
+        
+        question.o.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.textContent = option;
+            button.classList.add('answer-btn', 'w-full', 'text-left', 'p-4', 'border-2', 'border-slate-300', 'rounded-lg', 'bg-slate-50', 'hover:bg-teal-100', 'hover:border-teal-400');
+            button.dataset.index = index;
+            button.addEventListener('click', selectAnswer);
+            answerOptionsContainer.appendChild(button);
+        });
+
+        explanationBox.classList.add('hidden');
+        nextQuestionBtn.classList.add('hidden');
+        updateProgress();
+    }
+
+    function selectAnswer(e) {
+        const selectedButton = e.target;
+        const selectedIndex = parseInt(selectedButton.dataset.index);
+        const question = shuffledQuestions[currentQuestionIndex];
+        const correctIndex = question.a;
+
+        userAnswers[currentQuestionIndex] = selectedIndex;
+
+        Array.from(answerOptionsContainer.children).forEach(button => {
+            button.disabled = true;
+            button.removeEventListener('click', selectAnswer);
+        });
+
+        if (selectedIndex === correctIndex) {
+            score++;
+            selectedButton.classList.add('correct');
+        } else {
+            selectedButton.classList.add('incorrect');
+            answerOptionsContainer.children[correctIndex].classList.add('correct');
+        }
+
+        explanationText.textContent = question.e;
+        explanationBox.classList.remove('hidden');
+        nextQuestionBtn.classList.remove('hidden');
+        updateProgress();
+    }
+    
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < shuffledQuestions.length) {
+            displayQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        examQuestionScreen.classList.add('hidden');
+        examResultsScreen.classList.remove('hidden');
+        const percentage = Math.round((score / shuffledQuestions.length) * 100);
+        finalScoreText.textContent = `${percentage}%`;
+        finalScoreText.className = 'text-5xl font-bold my-6 ';
+        if (percentage >= 70) {
+            finalScoreText.classList.add('text-green-600');
+            resultMessage.textContent = `Congratulations, you passed! (${score}/${shuffledQuestions.length} correct)`;
+        } else {
+            finalScoreText.classList.add('text-red-600');
+            resultMessage.textContent = `You did not pass. Keep studying and try again! (${score}/${shuffledQuestions.length} correct)`;
+        }
+    }
+
+    function reviewAnswers() {
+        examResultsScreen.classList.add('hidden');
+        reviewScreen.classList.remove('hidden');
+        reviewContent.innerHTML = '';
+
+        shuffledQuestions.forEach((q, index) => {
+            const userAnswerIndex = userAnswers[index];
+            const correct = userAnswerIndex === q.a;
+            
+            const reviewBlock = `
+                <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 ${correct ? 'border-green-500' : 'border-red-500'}">
+                    <p class="font-bold text-slate-800">${index + 1}. ${q.q}</p>
+                    <p class="mt-2 text-sm"><strong>Your Answer:</strong> <span class="${correct ? 'text-green-700' : 'text-red-700'}">${q.o[userAnswerIndex]}</span></p>
+                    ${!correct ? `<p class="mt-1 text-sm"><strong>Correct Answer:</strong> <span class="text-green-700">${q.o[q.a]}</span></p>` : ''}
+                    <p class="mt-2 text-sm text-slate-600"><strong>Explanation:</strong> ${q.e}</p>
+                </div>
+            `;
+            reviewContent.innerHTML += reviewBlock;
+        });
+    }
+
+    function updateProgress() {
+        examProgress.textContent = `Question ${currentQuestionIndex + 1} of ${shuffledQuestions.length}`;
+        const progressPercentage = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+        examScore.textContent = `Score: ${score}`;
+    }
+
+    function populateStudyGuide() {
+        studyGuideData.forEach(item => {
+            const detailElement = document.createElement('details');
+            detailElement.className = 'bg-white rounded-lg shadow-sm p-4';
+            detailElement.innerHTML = `
+                <summary class="font-semibold text-lg text-teal-800 list-none flex justify-between items-center">
+                    ${item.title}
+                    <span class="text-teal-500 transform transition-transform duration-300 details-arrow">&#9662;</span>
+                </summary>
+                <div class="mt-4 text-slate-700 space-y-2 border-t pt-4">
+                    ${item.content}
+                </div>
+            `;
+            studyGuideContent.appendChild(detailElement);
+        });
+    }
+    
+    function populateGlossary() {
+        glossaryContent.innerHTML = '';
+        glossaryData.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'glossary-item bg-white p-4 rounded-lg shadow-sm';
+            div.innerHTML = `
+                <h4 class="font-bold text-teal-800">${item.term}</h4>
+                <p class="text-slate-700 mt-1">${item.definition}</p>
+            `;
+            glossaryContent.appendChild(div);
+        });
+    }
+
+    function filterGlossary() {
+        const searchTerm = glossarySearch.value.toLowerCase();
+        const items = document.querySelectorAll('.glossary-item');
+        items.forEach(item => {
+            const term = item.querySelector('h4').textContent.toLowerCase();
+            const definition = item.querySelector('p').textContent.toLowerCase();
+            if (term.includes(searchTerm) || definition.includes(searchTerm)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    }
+
+    function renderFeeChart() {
+        const ctx = document.getElementById('feeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Administer Oath/Affirmation', 'Take Acknowledgment/Proof', 'Swear a Witness'],
+                datasets: [
+                    {
+                        label: 'Current Fee ($)',
+                        data: [2, 2, 2],
+                        backgroundColor: 'rgba(15, 118, 110, 0.6)', // teal-700
+                        borderColor: 'rgba(15, 118, 110, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Proposed Fee ($) [S.6268]',
+                        data: [5, 5, 5],
+                        backgroundColor: 'rgba(251, 191, 36, 0.6)', // amber-400
+                        borderColor: 'rgba(251, 191, 36, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Comparison of Notary Fees: Current vs. Proposed',
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Fee Amount (USD)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => switchTab(link.dataset.target));
+    });
+    
+    mobileNav.addEventListener('change', (e) => switchTab(e.target.value));
+
+    startExamBtn.addEventListener('click', startExam);
+    nextQuestionBtn.addEventListener('click', nextQuestion);
+    restartExamBtn.addEventListener('click', startExam);
+    reviewAnswersBtn.addEventListener('click', reviewAnswers);
+    backToResultsBtn.addEventListener('click', () => {
+        reviewScreen.classList.add('hidden');
+        examResultsScreen.classList.remove('hidden');
+    });
+    glossarySearch.addEventListener('input', filterGlossary);
+
+    switchTab('dashboard');
+    populateStudyGuide();
+    populateGlossary();
+    renderFeeChart();
+});
+</script>
+</body>
+</html>
