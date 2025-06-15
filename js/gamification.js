@@ -1,6 +1,5 @@
-// NotaR333_OS - Gamification Engine v3.9 (Master Celebration Queue)
+// NotaR333_OS - Gamification Engine v4.2 (Final)
 
-// --- NEW: Master queue for all major celebrations ---
 let celebrationQueue = [];
 let isProcessingCelebration = false;
 
@@ -8,15 +7,10 @@ function getCurrentRank() {
     return ranks.slice().reverse().find(r => state.totalPoints >= r.points);
 }
 
-/**
- * NEW: Displays the rank up modal. Called by the queue processor.
- * @param {object} rankData - The new rank object.
- */
 function displayRankUpModal(rankData) {
     triggerVibration('rankUp');
     domElements.rankUpText.textContent = `You are now a ${rankData.name}!`;
     togglePopup('rankUp', true);
-
     if (domElements.particleCelebrationContainer) {
         triggerConfetti({ 
             sourceElement: domElements.rankUpContent,
@@ -24,48 +18,33 @@ function displayRankUpModal(rankData) {
             container: domElements.particleCelebrationContainer
         });
     }
-
     setTimeout(() => {
         togglePopup('rankUp', false);
-    }, 4000); // Display for 4 seconds
+    }, 4000);
 }
 
-/**
- * NEW: Displays a single cheevo notification. Called by the queue processor.
- * @param {string} cheevoId - The ID of the cheevo to display.
- */
 function displayCheevoNotification(cheevoId) {
     const cheevo = cheevoData.find(c => c.id === cheevoId);
     if (!cheevo) return;
-
     const toastMessage = `${cheevo.icon} Achievement: ${cheevo.title}!`;
     showToast(toastMessage);
     triggerVibration('cheevoUnlock');
     triggerConfetti({ sourceElement: domElements.toastNotification, count: 40 });
-    updateAllUI(); // Update UI for point changes
+    updateAllUI();
 }
 
-/**
- * Processes the next celebration in the queue.
- */
 function processCelebrationQueue() {
-    if (isProcessingCelebration || celebrationQueue.length === 0) {
-        return;
-    }
+    if (isProcessingCelebration || celebrationQueue.length === 0) return;
     isProcessingCelebration = true;
-
-    const event = celebrationQueue.shift(); // Get the next event object
-
+    const event = celebrationQueue.shift();
     if (event.type === 'rankup') {
         displayRankUpModal(event.rank);
-        // Rank ups are big, give them a longer pause
         setTimeout(() => {
             isProcessingCelebration = false;
             processCelebrationQueue();
         }, 4500); 
     } else if (event.type === 'cheevo') {
         displayCheevoNotification(event.id);
-        // Cheevo toasts are shorter
         setTimeout(() => {
             isProcessingCelebration = false;
             processCelebrationQueue();
@@ -73,7 +52,6 @@ function processCelebrationQueue() {
     }
 }
 
-// --- CHEEVO LOGIC ---
 const cheevoConditions = {
     firstSession: () => state.stats.completedQuizCount >= 1,
     first100: () => state.totalPoints >= 100,
@@ -92,24 +70,18 @@ const cheevoConditions = {
     masterCategoryREN: () => checkCategoryMastery('Electronic Notarization'),
     masterCategoryProhibited: () => checkCategoryMastery('Prohibited Conduct'),
     masterAll: () => state.masteredIds.length === quizData.length,
-    changeTheme: () => true,
-    customizeCrew: () => true,
 };
+
 function checkCategoryMastery(categoryName) {
     const categoryQuestions = quizData.filter(q => q.category === categoryName);
     return categoryQuestions.every(q => state.masteredIds.includes(q.id));
 }
 
-/**
- * Checks all cheevos and adds any unlocked ones to the celebration queue.
- */
 function checkAllCheevos() {
     cheevoData.forEach(cheevo => {
         if (!state.unlockedCheevos.includes(cheevo.id)) {
             const condition = cheevoConditions[cheevo.id];
-            if (condition && condition()) {
-                unlockCheevo(cheevo.id);
-            }
+            if (condition && condition()) unlockCheevo(cheevo.id);
         }
     });
 }
@@ -128,17 +100,6 @@ function checkMidQuizCheevos(type) {
     }
 }
 
-function checkDirectActionCheevo(cheevoId) {
-    if (!state.unlockedCheevos.includes(cheevoId)) {
-        unlockCheevo(cheevoId);
-        processCelebrationQueue();
-    }
-}
-
-/**
- * Updates state for an unlocked cheevo and queues the notification.
- * @param {string} cheevoId 
- */
 function unlockCheevo(cheevoId) {
     const cheevo = cheevoData.find(c => c.id === cheevoId);
     if (!cheevo || state.unlockedCheevos.includes(cheevoId)) return;
@@ -154,7 +115,6 @@ function unlockCheevo(cheevoId) {
         }
     }
     
-    // Add a cheevo event object to the master queue
     celebrationQueue.push({ type: 'cheevo', id: cheevoId });
     console.log(`Queued Cheevo: ${cheevo.title}`);
 }

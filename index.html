@@ -21,17 +21,10 @@
             </div>
 
             <div class="header-top-row">
-                <div class="header-top-row">
-                    <!-- ADD THE WRAPPER DIV AROUND THE TOP-CATZ-BAR -->
-                    <div class="top-catz-wrapper">
-                        <div id="top-catz-bar">
-                            <!-- Cat images will be dynamically inserted here by ui.js -->
-                        </div>
-                    </div>
-                    <div class="header-icons">
-                        <a href="general.html" target="_blank" id="study-guide-btn" class="icon-btn" title="Study Guide">📖</a>
-                        <button id="dashboard-btn" class="icon-btn" title="Dashboard">📊</button>
-                        <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
+                <!-- Wrapper for catz bar + notification dot -->
+                <div class="top-catz-wrapper">
+                    <div id="top-catz-bar">
+                        <!-- Cat images will be dynamically inserted here -->
                     </div>
                 </div>
                 <div class="header-icons">
@@ -41,7 +34,7 @@
                 </div>
             </div>
 
-            <h1 id="main-title" class="shimmer">NotaR333</h1>
+            <h1 id="main-title" class="shimmer">NotaR333_OS</h1>
             <div id="user-stats">
                 <span id="rank-display">//Rank: Novice Notary</span>
                 <span id="score-display">//Points: 0</span>
@@ -70,7 +63,6 @@
                 <p id="weak-spots-counter" class="info-text"></p>
             </div>
         </div>
-        <!-- Other screens omitted for brevity, no changes needed -->
         <div id="quiz-screen" class="screen">
             <div id="quiz-header">
                 <button id="pause-quiz-btn" class="pause-btn" title="Pause">||</button>
@@ -121,7 +113,6 @@
             <button id="back-to-home-from-dash-btn" class="btn btn-primary">> Back to Main Menu</button>
         </div>
 
-
         <!-- Popups & Modals -->
         <div id="explanation-popup" class="popup-overlay">
             <div class="popup-content">
@@ -144,7 +135,7 @@
                 <h3>// System Preferences</h3>
                 <div class="settings-section">
                     <h4>AUDIO / VISUAL</h4>
-                    <div class="setting-item"><label for="haptics-toggle">Haptic Feedback</label><button id="haptics-toggle" class="toggle-btn" data-setting="haptics">📳</button></div>
+                    <div class="setting-item"><label for="haptics-toggle">Haptic Feedback</label><button id="haptics-toggle" class="toggle-btn">📳</button></div>
                     <div class="setting-item"><label for="fullscreen-toggle">Fullscreen</label><button id="fullscreen-toggle" class="toggle-btn">[ ]</button></div>
                     <div class="setting-item"><label>Theme</label><div id="theme-selector"></div></div>
                 </div>
@@ -160,13 +151,12 @@
             <p id="toast-text"></p>
         </div>
         
-        <!-- Rank Up Modal - Structure Updated -->
         <div id="rank-up-modal" class="popup-overlay">
             <div id="particle-celebration-container"></div>
             <div class="rank-up-content">
                 <img id="rank-up-gif" src="images/celebrating_cat.gif" alt="Celebrating Cat">
                 <h2 id="rank-up-title">RANK UP!</h2>
-                <p id="rank-up-text">You are now a Notary-Nomad!</p>
+                <p id="rank-up-text"></p>
             </div>
         </div>
 
@@ -175,7 +165,7 @@
                 <h3>// Cat-alog</h3>
                 <p class="info-text">Click an icon (ⓘ) to view details. Click the image to select for your crew!</p>
                 <div id="catalog-grid" class="catalog-grid">
-                     <!-- Cat images for selection will be dynamically inserted here by ui.js -->
+                     <!-- Cat images for selection will be dynamically inserted here -->
                 </div>
                 <button id="close-catalog-btn" class="btn btn-primary">> Done</button>
             </div>
@@ -192,7 +182,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- Modular Script Loading -->

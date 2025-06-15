@@ -1,4 +1,4 @@
-/* NotaR333 - v3.7 Final Polish Styles */
+/* NotaR333 - v4.0 Final Styles */
 
 :root {
     --font-header: 'VT323', monospace;
@@ -20,7 +20,7 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
 
 /* --- PARTICLE & EFFECTS CONTAINERS --- */
 #particle-container, #particle-celebration-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
-#rank-up-modal #particle-celebration-container { z-index: 1; /* Behind rank up content */ }
+#rank-up-modal #particle-celebration-container { z-index: 1; }
 
 /* --- MAIN APP CONTAINER --- */
 #app-container { width: 100%; max-width: 600px; text-align: center; padding: 15px; background: var(--container-bg); border: 2px solid var(--primary-neon); box-shadow: 0 0 5px var(--primary-neon), 0 0 10px var(--primary-neon); border-radius: 10px; backdrop-filter: blur(5px); transition: all 0.5s ease; }
@@ -29,19 +29,8 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
 #mascot-container { text-align: center; margin-bottom: 5px; }
 #mascot-container img { width: 90px; height: auto; filter: drop-shadow(0 0 4px var(--secondary-neon)); }
 .header-top-row { display: flex; justify-content: space-between; align-items: center; }
-/* This new wrapper is now the positioning context */
-.top-catz-wrapper {
-    position: relative; /* THIS IS THE KEY CHANGE */
-    flex-grow: 1;
-}
-
-/* This bar just handles the cat layout now */
-#top-catz-bar {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    /* It no longer needs flex-grow or position: relative */
-}
+.top-catz-wrapper { position: relative; flex-grow: 1; }
+#top-catz-bar { display: flex; gap: 5px; align-items: center; cursor: pointer; }
 .top-cat { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; border: 2px solid var(--secondary-neon); filter: drop-shadow(0 0 4px var(--secondary-neon)); transition: transform 0.2s ease, filter 0.3s ease; }
 .top-cat.empty-slot { filter: blur(1.5px) opacity(0.5); border-color: rgba(255,255,255,0.2); }
 #top-catz-bar:hover .top-cat { transform: scale(1.05); }
@@ -84,7 +73,7 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
 .answer-btn.wrong { border-color: var(--error-color); color: var(--error-color); background-color: rgba(255, 51, 102, 0.1); }
 .popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(5px); }
 .popup-overlay.visible { display: flex; }
-.popup-content { background: var(--container-bg); padding: 20px 30px; border-radius: 10px; border: 2px solid var(--accent-color); width: 90%; max-width: 500px; text-align: left; box-shadow: 0 0 10px var(--accent-color); position: relative; z-index: 2; /* Ensure content is on top of particles */ }
+.popup-content { background: var(--container-bg); padding: 20px 30px; border-radius: 10px; border: 2px solid var(--accent-color); width: 90%; max-width: 500px; text-align: left; box-shadow: 0 0 10px var(--accent-color); position: relative; z-index: 2; }
 .popup-content > h3 { font-family: var(--font-header); color: var(--accent-color); font-size: 1.5rem; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 1px solid var(--secondary-neon); }
 .popup-content p { margin: 0 0 20px 0; line-height: 1.6; }
 .info-text { font-size: 0.9rem; color: var(--secondary-neon); margin-top: -10px; margin-bottom: 15px; text-align: center; }
@@ -142,15 +131,6 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
 .answer-btn.debug-correct-answer { box-shadow: 0 0 12px var(--success-color), inset 0 0 10px var(--success-color); border-color: var(--success-color); }
 .confetti-particle { position: absolute; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; animation: confetti-blast 1.2s ease-out forwards; }
 @keyframes confetti-blast { 0% { transform: translate(0, 0) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--x-end), var(--y-end)) rotate(720deg); opacity: 0; } }
-/* Change this selector... */
-.top-catz-wrapper.has-new-rewards::after {
-    content: '●';
-    position: absolute;
-    top: -5px;
-    right: 0px; /* This will now be relative to the wrapper */
-    font-size: 1.5rem;
-    color: var(--accent-color);
-    text-shadow: 0 0 8px var(--accent-color);
-    animation: pulse-glow 1.5s infinite ease-in-out;
-}
+.top-catz-wrapper.has-new-rewards::after { content: '●'; position: absolute; top: -5px; right: -5px; font-size: 1.5rem; color: var(--accent-color); text-shadow: 0 0 8px var(--accent-color); animation: pulse-glow 1.5s infinite ease-in-out; }
 @keyframes pulse-glow { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+.catalog-item-wrapper.is-new::after { content: '●'; position: absolute; top: 2px; right: 2px; font-size: 1.2rem; color: var(--accent-color); text-shadow: 0 0 5px var(--accent-color); z-index: 5; }

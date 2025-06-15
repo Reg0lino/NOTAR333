@@ -1,10 +1,9 @@
-// NotaR333 - Main Application Controller v3.9 (Final)
+// NotaR333 - Main Application Controller v4.2 (Final)
 
 const domElements = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- DOM Element Population ---
     const ids = [
         'home-screen', 'quiz-screen', 'results-screen', 'review-screen', 'dashboard-screen', 'explanation-popup', 'pause-modal', 
         'settings-modal', 'rank-up-modal', 'catalog-modal', 'reward-modal', 'mascot-container', 'top-catz-bar', 
@@ -25,10 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const camelCaseId = id.replace(/-(\w)/g, (_, letter) => letter.toUpperCase());
         domElements[camelCaseId] = document.getElementById(id);
     });
-    // Manual additions for elements without IDs or with class-based selection
     domElements.topCatzWrapper = document.querySelector('.top-catz-wrapper');
     domElements.rankUpContent = document.querySelector('.rank-up-content');
-    
     domElements.screens = { home: domElements.homeScreen, quiz: domElements.quizScreen, results: domElements.resultsScreen, review: domElements.reviewScreen, dashboard: domElements.dashboardScreen };
     domElements.popups = { explanation: domElements.explanationPopup, pause: domElements.pauseModal, settings: domElements.settingsModal, rankUp: domElements.rankUpModal, catalog: domElements.catalogModal, reward: domElements.rewardModal };
 
@@ -40,25 +37,23 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAllUI();
         checkForSavedSession();
         showScreen('home');
-        console.log("NotaR333 v3.9 Initialized and Ready.");
+        console.log("NotaR333 v4.2 Initialized and Ready.");
     }
 
     function addEventListeners() {
         document.addEventListener('keyup', (e) => {
             const key = e.key.toLowerCase();
-            // Debug key for correct answer
             if (key === 'd' && domElements.quizScreen.classList.contains('active')) {
                 const btn = domElements.answerButtons.querySelector('[data-correct="true"]');
                 if (btn) btn.classList.toggle('debug-correct-answer');
             }
-            // Debug key to add points and test rank up
             if (key === 'f') {
                 console.log("DEBUG: +1000 points added.");
                 const previousRank = getCurrentRank();
                 state.totalPoints += 1000;
                 const newRank = getCurrentRank();
                 if (newRank.name !== previousRank.name) {
-                    celebrationQueue.push({ type: 'rankup', rank: newRank });
+                    celebrationQueue.unshift({ type: 'rankup', rank: newRank });
                     processCelebrationQueue();
                 }
                 updateAllUI();
@@ -74,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.startDrillBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('drill', 20); });
         domElements.startExamSimBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('exam_sim', 40); });
         domElements.reviewWeakSpotsBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('weak_spots'); });
-        
         domElements.resumeSessionBtn.addEventListener('click', () => {
             triggerVibration('click');
             quizState = loadSavedSession();
@@ -103,9 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.topCatzWrapper.addEventListener('click', () => { 
             triggerVibration('open'); 
             if (state.newlyUnlockedCats.length > 0) {
-                state.newlyUnlockedCats = [];
-                saveState();
-                updateNotificationIndicator();
+                // We don't clear the individual dots here, only the main dot
+                domElements.topCatzWrapper.classList.remove('has-new-rewards');
             }
             openCatalogModal(); 
         });
@@ -137,6 +130,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const target = e.target;
             const catFile = target.dataset.catfile;
             if (!catFile) return;
+
+            // When a new item is interacted with, remove it from the "new" list
+            if (state.newlyUnlockedCats.includes(catFile)) {
+                state.newlyUnlockedCats = state.newlyUnlockedCats.filter(c => c !== catFile);
+                saveState();
+                // Find the wrapper and remove the .is-new class for instant feedback
+                const wrapper = target.closest('.catalog-item-wrapper');
+                if (wrapper) wrapper.classList.remove('is-new');
+            }
+
             if (target.matches('.info-icon')) {
                 e.stopPropagation();
                 triggerVibration('open');
@@ -153,7 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (emptySlotIndex > -1) state.selectedCats[emptySlotIndex] = catFile;
                     else showToast("Crew is full! Deselect another cat first.");
                 }
-                checkDirectActionCheevo('customizeCrew');
                 saveState();
                 renderTopCatz();
                 openCatalogModal();
@@ -164,6 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
             triggerVibration('click');
             const catFile = e.target.dataset.catfile;
             if (!catFile) return;
+            // Clear the "new" status when selecting from the details modal too
+            if (state.newlyUnlockedCats.includes(catFile)) {
+                state.newlyUnlockedCats = state.newlyUnlockedCats.filter(c => c !== catFile);
+            }
             const selectedIndex = state.selectedCats.indexOf(catFile);
             if (selectedIndex === -1) { 
                 const emptySlotIndex = state.selectedCats.indexOf(null);
@@ -171,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.selectedCats[emptySlotIndex] = catFile;
                 } else { showToast("Crew is full! Deselect another cat first."); return; }
             }
-            checkDirectActionCheevo('customizeCrew');
             saveState();
             renderTopCatz();
             togglePopup('reward', false);
@@ -187,10 +192,11 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.className = 'theme-select-btn';
             btn.dataset.theme = themeName;
             btn.style.backgroundColor = colors[themeName];
-            btn.onclick = () => { triggerVibration('click'); state.settings.theme = themeName; applySettings(); checkDirectActionCheevo('changeTheme'); saveState(); };
+            btn.onclick = () => { triggerVibration('click'); state.settings.theme = themeName; applySettings(); saveState(); };
             domElements.themeSelector.appendChild(btn);
         });
     }
+
     function openDashboard() { renderMasteryChart(); renderPersonalBests(); renderNemesisQuestion(); showScreen('dashboard'); }
     function renderMasteryChart() { 
         domElements.masteryChartContainer.innerHTML = ''; 
