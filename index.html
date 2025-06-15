@@ -7,18 +7,20 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- UPDATED: Added Exo 2 font -->
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&family=VT323&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body class="theme-pink">
+<body class="theme-pink font-size-medium">
 
     <div id="particle-container"></div>
 
     <div id="app-container">
         <header>
             <div class="header-top-row">
-                <div class="ascii-art-header"><pre>(^._.^)ﾉ</pre></div>
-                <button id="theme-switcher-btn" class="theme-btn">🎨</button>
+                <div id="mascot-container" class="ascii-art-header"><pre>(^._.^)ﾉ</pre></div>
+                <div class="header-icons">
+                    <button id="dashboard-btn" class="icon-btn" title="Dashboard">📊</button>
+                    <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
+                </div>
             </div>
             <h1 id="main-title" class="shimmer">NotaR333_OS</h1>
             <div id="user-stats">
@@ -29,14 +31,11 @@
 
         <!-- Home Screen -->
         <div id="home-screen" class="screen active">
-            <!-- NEW: Container for resuming a saved session -->
             <div id="resume-session-container" class="hidden">
                 <h2>// SESSION_DETECTED_</h2>
                 <button id="resume-session-btn" class="btn btn-primary">> Resume Session</button>
                 <button id="discard-session-btn" class="btn btn-secondary">> Discard & Start New</button>
             </div>
-
-            <!-- Regular start options -->
             <div id="new-session-container">
                 <h2>// SELECT_MODE_</h2>
                 <button id="start-drill-btn" class="btn btn-primary">> Practice Drill (20 Qs)</button>
@@ -49,8 +48,7 @@
         <!-- Quiz Screen -->
         <div id="quiz-screen" class="screen">
             <div id="quiz-header">
-                <!-- NEW: Pause Button -->
-                <button id="pause-quiz-btn" class="pause-btn">||</button>
+                <button id="pause-quiz-btn" class="pause-btn" title="Pause">||</button>
                 <div id="progress-text">Question 1/X</div>
                 <div id="timer-display" class="hidden">--:--</div>
             </div>
@@ -59,26 +57,6 @@
                 <h2 id="question-text"><span id="q-emoji"></span><span id="q-text"></span><span id="weak-spot-indicator"></span></h2>
             </div>
             <div id="answer-buttons" class="btn-grid"></div>
-        </div>
-
-        <!-- Explanation Popup -->
-        <div id="explanation-popup" class="hidden popup-overlay">
-            <div class="popup-content">
-                <h3 id="explanation-title"></h3>
-                <p id="explanation-text"></p>
-                <button id="continue-quiz-btn" class="btn btn-primary">> Continue</button>
-            </div>
-        </div>
-
-        <!-- NEW: Pause Modal -->
-        <div id="pause-modal" class="hidden popup-overlay">
-            <div class="popup-content">
-                <h3>// PAUSED_</h3>
-                <p>Your session is on hold. The timer has been stopped.</p>
-                <button id="save-exit-btn" class="btn btn-primary">> Save & Exit</button>
-                <button id="abandon-exit-btn" class="btn btn-secondary">> Abandon & Exit</button>
-                <button id="resume-quiz-btn" class="btn btn-secondary">> Resume Quiz</button>
-            </div>
         </div>
 
         <!-- Results Screen -->
@@ -91,7 +69,7 @@
                 <p id="final-mascot-text">Great work!</p>
             </div>
             <button id="review-mission-btn" class="btn btn-primary hidden">> Begin After-Action Review</button>
-            <button id="back-to-home-btn" class="btn btn-secondary">> Back to Main Menu</button>
+            <button id="back-to-home-from-results-btn" class="btn btn-secondary">> Back to Main Menu</button>
         </div>
 
         <!-- After-Action Review Screen -->
@@ -104,6 +82,61 @@
                 <button id="next-review-btn" class="btn btn-secondary">> Next</button>
             </div>
             <button id="finish-review-btn" class="btn btn-primary">> Mission Debriefed</button>
+        </div>
+        
+        <!-- Dashboard Screen -->
+        <div id="dashboard-screen" class="screen">
+            <h2>// USER_DASHBOARD_</h2>
+            <div class="dashboard-section">
+                <h3>Mastery Chart</h3>
+                <div id="mastery-chart-container"></div>
+            </div>
+            <div class="dashboard-section">
+                <h3>Personal Bests</h3>
+                <div id="personal-bests-container"></div>
+            </div>
+            <div class="dashboard-section">
+                <h3>Nemesis Question</h3>
+                <div id="nemesis-question-container"></div>
+            </div>
+            <button id="back-to-home-from-dash-btn" class="btn btn-primary">> Back to Main Menu</button>
+        </div>
+
+        <!-- Universal Popups / Modals -->
+        <div id="explanation-popup" class="hidden popup-overlay">
+            <div class="popup-content">
+                <h3 id="explanation-title"></h3>
+                <p id="explanation-text"></p>
+                <button id="continue-quiz-btn" class="btn btn-primary">> Continue</button>
+            </div>
+        </div>
+        <div id="pause-modal" class="hidden popup-overlay">
+            <div class="popup-content">
+                <h3>// PAUSED_</h3>
+                <p>Your session is on hold. The timer has been stopped.</p>
+                <button id="save-exit-btn" class="btn btn-primary">> Save & Exit</button>
+                <button id="abandon-exit-btn" class="btn btn-secondary">> Abandon & Exit</button>
+                <button id="resume-quiz-btn" class="btn btn-secondary">> Resume Quiz</button>
+            </div>
+        </div>
+        <div id="settings-modal" class="hidden popup-overlay">
+            <div class="popup-content">
+                <h3>// System Preferences</h3>
+                <div class="settings-section">
+                    <h4>AUDIO / VISUAL</h4>
+                    <div class="setting-item"><label for="audio-toggle">Sound FX</label><button id="audio-toggle" class="toggle-btn" data-setting="audio">🔊</button></div>
+                    <div class="setting-item"><label for="fullscreen-toggle">Fullscreen</label><button id="fullscreen-toggle" class="toggle-btn">[ ]</button></div>
+                    <div class="setting-item"><label for="low-power-toggle">Low-Power Mode</label><button id="low-power-toggle" class="toggle-btn" data-setting="lowPower">⚡</button></div>
+                    <div class="setting-item"><label>Font Size</label><div id="font-size-selector"><button class="font-btn" data-size="font-size-small">A</button><button class="font-btn" data-size="font-size-medium">A</button><button class="font-btn" data-size="font-size-large">A</button></div></div>
+                    <div class="setting-item"><label>Theme</label><div id="theme-selector"></div></div>
+                </div>
+                <div class="settings-section">
+                    <h4>DATA MANAGEMENT</h4>
+                    <button id="clear-weak-spots-btn" class="btn btn-secondary danger">> Clear Weak Spots</button>
+                    <button id="factory-reset-btn" class="btn btn-secondary danger">> Factory Reset</button>
+                </div>
+                <button id="close-settings-btn" class="btn btn-primary">> Close</button>
+            </div>
         </div>
     </div>
 
