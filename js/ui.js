@@ -1,4 +1,4 @@
-// NotaR333_OS - UI Management v4.5 (Final)
+// NotaR333_OS - UI Management v4.7
 
 function showScreen(screenName) {
     for (const key in domElements.screens) {
@@ -71,13 +71,16 @@ function showToast(message) {
 function renderTopCatz() {
     const catzBar = domElements.topCatzBar;
     catzBar.innerHTML = ''; 
-    for (let i = 0; i < 3; i++) {
+    // --- MODIFIED: Loop changed from 3 to 5 ---
+    for (let i = 0; i < 5; i++) {
         const catSrc = state.selectedCats[i];
         const img = document.createElement('img');
         img.src = catSrc ? `images/${catSrc}` : 'images/placeholder_empty.png';
         img.alt = `Custom Mascot ${i + 1}`;
         img.className = 'top-cat';
-        if (!catSrc) img.classList.add('empty-slot');
+        if (!catSrc) {
+            img.classList.add('empty-slot');
+        }
         catzBar.appendChild(img);
     }
 }
@@ -112,17 +115,10 @@ function openCatalogModal() {
     togglePopup('catalog', true);
 }
 
-/**
- * Shows the reward details modal for any cat, locked or unlocked.
- * @param {string} catFile - The filename of the cat image.
- */
 function showRewardDetails(catFile) {
     const cheevo = cheevoData.find(c => c.catImage === catFile);
     if (!cheevo) return;
-
     const isUnlocked = state.unlockedCats.includes(catFile);
-    
-    // --- NEW LOGIC: Show real image or blurred placeholder ---
     if (isUnlocked) {
         domElements.rewardImage.src = `images/${catFile}`;
         domElements.rewardImage.classList.remove('locked');
@@ -130,13 +126,9 @@ function showRewardDetails(catFile) {
         domElements.rewardImage.src = 'images/placeholder_locked.png';
         domElements.rewardImage.classList.add('locked');
     }
-
     domElements.rewardTitle.textContent = cheevo.title;
     domElements.rewardDescription.textContent = cheevo.description;
     domElements.rewardSelectBtn.dataset.catfile = catFile;
-
-    // --- NEW LOGIC: Hide select button if locked ---
     domElements.rewardSelectBtn.classList.toggle('hidden', !isUnlocked);
-    
     togglePopup('reward', true);
 }

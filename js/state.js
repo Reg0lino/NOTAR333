@@ -17,7 +17,7 @@ const defaultState = {
     // Gamification & Customization
     unlockedCheevos: [],
     unlockedCats: ['cat_welcome.png'],
-    selectedCats: ['cat_welcome.png', null, null],
+    selectedCats: ['cat_welcome.png', null, null, null, null],
     newlyUnlockedCats: [],
     
     // User Statistics
