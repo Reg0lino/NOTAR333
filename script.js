@@ -1,161 +1,170 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
     const body = document.body;
-    const homeScreen = document.getElementById('home-screen');
-    const quizScreen = document.getElementById('quiz-screen');
-    const resultsScreen = document.getElementById('results-screen');
-    const reviewScreen = document.getElementById('review-screen');
-    const explanationPopup = document.getElementById('explanation-popup');
-    const pauseModal = document.getElementById('pause-modal');
-    const resumeSessionContainer = document.getElementById('resume-session-container');
-    const newSessionContainer = document.getElementById('new-session-container');
-
-    const themeSwitcherBtn = document.getElementById('theme-switcher-btn');
+    const screens = {
+        home: document.getElementById('home-screen'),
+        quiz: document.getElementById('quiz-screen'),
+        results: document.getElementById('results-screen'),
+        review: document.getElementById('review-screen'),
+        dashboard: document.getElementById('dashboard-screen'),
+    };
+    const popups = {
+        explanation: document.getElementById('explanation-popup'),
+        pause: document.getElementById('pause-modal'),
+        settings: document.getElementById('settings-modal'),
+    };
+    // Header
+    const mascotContainer = document.getElementById('mascot-container');
+    const dashboardBtn = document.getElementById('dashboard-btn');
+    const settingsBtn = document.getElementById('settings-btn');
     const rankDisplay = document.getElementById('rank-display');
     const scoreDisplay = document.getElementById('score-display');
-    
+    // Home Screen
+    const resumeSessionContainer = document.getElementById('resume-session-container');
+    const newSessionContainer = document.getElementById('new-session-container');
     const resumeSessionBtn = document.getElementById('resume-session-btn');
     const discardSessionBtn = document.getElementById('discard-session-btn');
     const startDrillBtn = document.getElementById('start-drill-btn');
     const startExamSimBtn = document.getElementById('start-exam-sim-btn');
     const reviewWeakSpotsBtn = document.getElementById('review-weak-spots-btn');
     const weakSpotsCounter = document.getElementById('weak-spots-counter');
-    
+    // Quiz Screen
     const pauseQuizBtn = document.getElementById('pause-quiz-btn');
     const progressText = document.getElementById('progress-text');
-    const progressBar = document.getElementById('progress-bar');
     const timerDisplay = document.getElementById('timer-display');
+    const progressBar = document.getElementById('progress-bar');
     const qEmoji = document.getElementById('q-emoji');
     const qText = document.getElementById('q-text');
     const weakSpotIndicator = document.getElementById('weak-spot-indicator');
     const answerButtons = document.getElementById('answer-buttons');
-    
+    // Explanation Popup
     const explanationTitle = document.getElementById('explanation-title');
     const explanationText = document.getElementById('explanation-text');
     const continueQuizBtn = document.getElementById('continue-quiz-btn');
-
+    // Pause Modal
     const saveExitBtn = document.getElementById('save-exit-btn');
     const abandonExitBtn = document.getElementById('abandon-exit-btn');
     const resumeQuizBtn = document.getElementById('resume-quiz-btn');
-
+    // Results Screen
     const resultsSummaryText = document.getElementById('results-summary-text');
     const pointsEarnedText = document.getElementById('points-earned-text');
     const finalMascotArt = document.getElementById('final-mascot-art');
     const finalMascotText = document.getElementById('final-mascot-text');
     const reviewMissionBtn = document.getElementById('review-mission-btn');
-    const backToHomeBtn = document.getElementById('back-to-home-btn');
-
+    const backToHomeFromResultsBtn = document.getElementById('back-to-home-from-results-btn');
+    // Review Screen
     const reviewContent = document.getElementById('review-content');
     const prevReviewBtn = document.getElementById('prev-review-btn');
     const nextReviewBtn = document.getElementById('next-review-btn');
     const reviewCounter = document.getElementById('review-counter');
     const finishReviewBtn = document.getElementById('finish-review-btn');
+    // Dashboard Screen
+    const masteryChartContainer = document.getElementById('mastery-chart-container');
+    const personalBestsContainer = document.getElementById('personal-bests-container');
+    const nemesisQuestionContainer = document.getElementById('nemesis-question-container');
+    const backToHomeFromDashBtn = document.getElementById('back-to-home-from-dash-btn');
+    // Settings Modal
+    const closeSettingsBtn = document.getElementById('close-settings-btn');
+    const audioToggle = document.getElementById('audio-toggle');
+    const fullscreenToggle = document.getElementById('fullscreen-toggle');
+    const lowPowerToggle = document.getElementById('low-power-toggle');
+    const fontSizeSelector = document.getElementById('font-size-selector');
+    const themeSelector = document.getElementById('theme-selector');
+    const clearWeakSpotsBtn = document.getElementById('clear-weak-spots-btn');
+    const factoryResetBtn = document.getElementById('factory-reset-btn');
 
-    // --- Sound Effects ---
-    // (Ensure you have these .mp3 files in the same folder)
-    const sounds = {
-        click: new Audio('click.mp3'),
-        correct: new Audio('correct.mp3'),
-        incorrect: new Audio('incorrect.mp3'),
-        win: new Audio('win.mp3'),
-        pause: new Audio('pause.mp3')
+    // --- State & Settings ---
+    let state = {};
+    let quizState = {};
+    let timerInterval;
+
+    const defaultState = {
+        totalPoints: 0,
+        weakSpotIds: [],
+        masteredIds: [],
+        questionStats: {}, // { qId: { wrong: 3 }, ... }
+        settings: { audio: true, lowPower: false, fontSize: 'font-size-medium', theme: 'theme-pink', mascot: '(^._.^)ﾉ' },
+        stats: { personalBestScore: 0, longestStreak: 0 }
     };
-    const playSound = (sound) => sounds[sound] && sounds[sound].play().catch(e => {});
+    
+    const ranks = [ { points: 0, name: "Cyber-Cadet" }, { points: 250, name: "Notary-Nomad" }, { points: 500, name: "Code-Clerk" }, { points: 1000, name: "Synth-Signer" }, { points: 1500, name: "Data-Deacon" }, { points: 2500, name: "Matrix-Magistrate" }, { points: 4000, name: "Neon-Notary Prime ✨" }];
 
-    // --- State Variables ---
-    let currentQuestions = [], currentQuestionIndex = 0, totalPoints = 0, sessionPoints = 0, weakSpotIds = [], currentIncorrectQuestions = [], timerInterval, timeLeft;
-    const themes = ['theme-pink', 'theme-green', 'theme-orange'];
-    let currentThemeIndex = 0, currentReviewIndex = 0, quizMode = '';
+    // --- Audio ---
+    const sounds = {
+        click: new Audio('click.mp3'), correct: new Audio('correct.mp3'), incorrect: new Audio('incorrect.mp3'),
+        win: new Audio('win.mp3'), pause: new Audio('pause.mp3'), open: new Audio('open.mp3')
+    };
+    const playSound = (sound) => { if (state.settings.audio) sounds[sound]?.play().catch(e => {}); };
 
-    const ranks = [ { points: 0, name: "Cyber-Cadet" }, { points: 100, name: "Notary-Nomad" }, { points: 250, name: "Code-Clerk" }, { points: 500, name: "Synth-Signer" }, { points: 750, name: "Data-Deacon" }, { points: 1000, name: "Matrix-Magistrate" }, { points: 1500, name: "Neon-Notary Prime ✨" }];
-
-    // --- State & Session Management ---
+    // --- Core Functions ---
     function initialize() {
         loadState();
+        applySettings();
         updateStatsUI();
-        updateWeakSpotsUI();
         checkForSavedSession();
+        addEventListeners();
         showScreen('home');
     }
 
+    function showScreen(screenName) {
+        Object.values(screens).forEach(s => s?.classList.add('hidden'));
+        screens[screenName]?.classList.remove('hidden');
+    }
+
+    // --- State Management ---
     function loadState() {
-        totalPoints = parseInt(localStorage.getItem('notaR333_totalPoints') || '0', 10);
-        weakSpotIds = JSON.parse(localStorage.getItem('notaR333_weakSpots') || '[]');
-        const savedTheme = localStorage.getItem('notaR333_theme');
-        if (savedTheme && themes.includes(savedTheme)) {
-            body.className = savedTheme;
-            currentThemeIndex = themes.indexOf(savedTheme);
-        }
+        const savedState = JSON.parse(localStorage.getItem('notaR333_state'));
+        state = Object.assign({}, defaultState, savedState);
+        state.settings = Object.assign({}, defaultState.settings, savedState?.settings);
+        state.stats = Object.assign({}, defaultState.stats, savedState?.stats);
+    }
+    function saveState() { localStorage.setItem('notaR333_state', JSON.stringify(state)); }
+    function applySettings() {
+        body.className = `${state.settings.theme} ${state.settings.fontSize}`;
+        body.classList.toggle('low-power', state.settings.lowPower);
+        audioToggle.textContent = state.settings.audio ? '🔊' : '🔇';
+        lowPowerToggle.classList.toggle('active', state.settings.lowPower);
+        document.querySelectorAll('.font-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.size === state.settings.fontSize));
+        mascotContainer.innerHTML = `<pre>${state.settings.mascot}</pre>`;
     }
     
-    function saveState() {
-        localStorage.setItem('notaR333_totalPoints', totalPoints);
-        localStorage.setItem('notaR333_weakSpots', JSON.stringify([...new Set(weakSpotIds)]));
-        localStorage.setItem('notaR333_theme', body.className);
-    }
-    
-    function saveSession() {
-        const session = { quizMode, currentQuestions, currentQuestionIndex, sessionPoints, currentIncorrectQuestions, timeLeft };
-        localStorage.setItem('notaR333_savedSession', JSON.stringify(session));
-    }
-
-    function clearSavedSession() {
-        localStorage.removeItem('notaR333_savedSession');
-    }
-
+    // --- Session Management ---
+    function saveSession() { localStorage.setItem('notaR333_savedSession', JSON.stringify(quizState)); }
+    function clearSavedSession() { localStorage.removeItem('notaR333_savedSession'); }
     function checkForSavedSession() {
         const savedSession = localStorage.getItem('notaR333_savedSession');
-        if (savedSession) {
-            newSessionContainer.classList.add('hidden');
-            resumeSessionContainer.classList.remove('hidden');
-        } else {
-            newSessionContainer.classList.remove('hidden');
-            resumeSessionContainer.classList.add('hidden');
-        }
+        resumeSessionContainer.classList.toggle('hidden', !savedSession);
+        newSessionContainer.classList.toggle('hidden', !!savedSession);
     }
 
     // --- UI Update Functions ---
     function updateStatsUI() {
-        const currentRank = ranks.slice().reverse().find(r => totalPoints >= r.points);
+        const currentRank = ranks.slice().reverse().find(r => state.totalPoints >= r.points);
         rankDisplay.textContent = `//Rank: ${currentRank.name}`;
-        scoreDisplay.textContent = `//Points: ${totalPoints}`;
+        scoreDisplay.textContent = `//Points: ${state.totalPoints}`;
+        weakSpotsCounter.textContent = state.weakSpotIds.length > 0 ? `You have ${state.weakSpotIds.length} weak spot(s) to review.` : "Your weak spots list is clear! Great job!";
+        reviewWeakSpotsBtn.classList.toggle('hidden', state.weakSpotIds.length === 0);
     }
 
-    function updateWeakSpotsUI() {
-        reviewWeakSpotsBtn.classList.toggle('hidden', weakSpotIds.length === 0);
-        weakSpotsCounter.textContent = weakSpotIds.length > 0 ? `You have ${weakSpotIds.length} weak spot(s) to review.` : "Your weak spots list is clear! Great job!";
-    }
-
-    // --- Quiz Core Logic ---
+    // --- Quiz Logic ---
     function startQuiz(mode, questionCount) {
-        playSound('click');
-        quizMode = mode;
+        let questionSet = [];
         if (mode === 'weak_spots') {
-            if (weakSpotIds.length === 0) return alert("No weak spots to review!");
-            currentQuestions = quizData.filter(q => weakSpotIds.includes(q.id));
+            if (state.weakSpotIds.length === 0) return alert("No weak spots to review!");
+            questionSet = quizData.filter(q => state.weakSpotIds.includes(q.id));
         } else {
-            currentQuestions = [...quizData].sort(() => 0.5 - Math.random()).slice(0, questionCount);
+            questionSet = [...quizData].sort(() => 0.5 - Math.random()).slice(0, questionCount);
         }
-        currentQuestionIndex = 0;
-        sessionPoints = 0;
-        currentIncorrectQuestions = [];
-        if (mode === 'exam_sim') startTimer(60 * 60);
+        quizState = { mode, questions: questionSet, currentIndex: 0, sessionPoints: 0, incorrectQuestions: [], timeLeft: mode === 'exam_sim' ? 3600 : null };
+        if (quizState.mode === 'exam_sim') startTimer(quizState.timeLeft);
         showScreen('quiz');
         loadQuestion();
     }
     
     function resumeSavedQuiz() {
-        const session = JSON.parse(localStorage.getItem('notaR333_savedSession'));
-        if (!session) return;
-        
-        quizMode = session.quizMode;
-        currentQuestions = session.currentQuestions;
-        currentQuestionIndex = session.currentQuestionIndex;
-        sessionPoints = session.sessionPoints;
-        currentIncorrectQuestions = session.currentIncorrectQuestions;
-        
-        if (quizMode === 'exam_sim') startTimer(session.timeLeft);
-        
+        quizState = JSON.parse(localStorage.getItem('notaR333_savedSession'));
+        if (!quizState) return;
+        if (quizState.mode === 'exam_sim') startTimer(quizState.timeLeft);
         clearSavedSession();
         checkForSavedSession();
         showScreen('quiz');
@@ -164,153 +173,183 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startTimer(duration) {
         clearInterval(timerInterval);
-        timeLeft = duration;
+        quizState.timeLeft = duration;
         timerDisplay.classList.remove('hidden');
         timerInterval = setInterval(() => {
-            timeLeft--;
-            let minutes = Math.floor(timeLeft / 60);
-            let seconds = timeLeft % 60;
+            quizState.timeLeft--;
+            let minutes = Math.floor(quizState.timeLeft / 60);
+            let seconds = quizState.timeLeft % 60;
             timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                showResults();
-            }
+            if (quizState.timeLeft <= 0) { clearInterval(timerInterval); showResults(); }
         }, 1000);
     }
-
-    function pauseTimer() {
-        clearInterval(timerInterval);
-    }
-    
-    function resumeTimer() {
-        if (quizMode === 'exam_sim' && timeLeft > 0) {
-            startTimer(timeLeft);
-        }
-    }
+    function pauseTimer() { clearInterval(timerInterval); }
+    function resumeTimer() { if (quizState.mode === 'exam_sim' && quizState.timeLeft > 0) startTimer(quizState.timeLeft); }
 
     function loadQuestion() {
         while (answerButtons.firstChild) answerButtons.removeChild(answerButtons.firstChild);
-        
-        const q = currentQuestions[currentQuestionIndex];
-        progressText.textContent = `Question ${currentQuestionIndex + 1}/${currentQuestions.length}`;
-        progressBar.style.width = `${((currentQuestionIndex + 1) / currentQuestions.length) * 100}%`;
-        qEmoji.textContent = q.emoji;
-        qText.textContent = q.question;
-        weakSpotIndicator.textContent = weakSpotIds.includes(q.id) ? ' [!]' : '';
-
+        const q = quizState.questions[quizState.currentIndex];
+        progressText.textContent = `Question ${quizState.currentIndex + 1}/${quizState.questions.length}`;
+        progressBar.style.width = `${((quizState.currentIndex + 1) / quizState.questions.length) * 100}%`;
+        qEmoji.textContent = q.emoji; qText.textContent = q.question;
+        weakSpotIndicator.textContent = state.weakSpotIds.includes(q.id) ? ' [!]' : '';
         q.options.forEach((option, index) => {
             const button = document.createElement('button');
             button.innerHTML = option;
             button.classList.add('btn', 'answer-btn');
             button.dataset.index = index;
-            button.addEventListener('click', selectAnswer);
             answerButtons.appendChild(button);
         });
     }
 
-    function selectAnswer(e) {
-        playSound('click');
+    function selectAnswer(selectedIndex) {
         pauseTimer();
-        const selectedBtn = e.target;
-        const selectedIndex = parseInt(selectedBtn.dataset.index, 10);
-        const q = currentQuestions[currentQuestionIndex];
-        Array.from(answerButtons.children).forEach(btn => btn.disabled = true);
-
+        const q = quizState.questions[quizState.currentIndex];
         const isCorrect = selectedIndex === q.correct;
         if (isCorrect) {
             playSound('correct');
-            sessionPoints += q.points;
-            weakSpotIds = weakSpotIds.filter(id => id !== q.id);
+            quizState.sessionPoints += q.points;
+            state.weakSpotIds = state.weakSpotIds.filter(id => id !== q.id);
+            if (!state.masteredIds.includes(q.id)) state.masteredIds.push(q.id);
             explanationTitle.textContent = `Correct! (+${q.points} pts)`;
             explanationTitle.style.color = 'var(--success-color)';
         } else {
             playSound('incorrect');
-            weakSpotIds.push(q.id);
-            currentIncorrectQuestions.push({ ...q, selectedAnswerIndex: selectedIndex });
+            if (!state.weakSpotIds.includes(q.id)) state.weakSpotIds.push(q.id);
+            quizState.incorrectQuestions.push({ ...q, selectedAnswerIndex: selectedIndex });
+            state.questionStats[q.id] = { wrong: (state.questionStats[q.id]?.wrong || 0) + 1 };
             explanationTitle.textContent = `Incorrect!`;
             explanationTitle.style.color = 'var(--error-color)';
         }
         explanationText.textContent = q.explanation;
-        explanationPopup.classList.remove('hidden');
+        popups.explanation.classList.remove('hidden');
     }
 
     function handleNextQuestion() {
-        explanationPopup.classList.add('hidden');
-        currentQuestionIndex++;
-        if (currentQuestionIndex < currentQuestions.length) {
-            loadQuestion();
-            resumeTimer();
+        popups.explanation.classList.add('hidden');
+        quizState.currentIndex++;
+        if (quizState.currentIndex < quizState.questions.length) {
+            loadQuestion(); resumeTimer();
         } else {
             showResults();
         }
     }
 
     function showResults() {
-        pauseTimer();
-        totalPoints += sessionPoints;
-        saveState();
-        updateStatsUI();
+        clearSavedSession(); pauseTimer();
+        state.totalPoints += quizState.sessionPoints;
+        const score = quizState.questions.length - quizState.incorrectQuestions.length;
+        if(score > state.stats.personalBestScore) state.stats.personalBestScore = score;
+        saveState(); updateStatsUI();
         
-        resultsSummaryText.textContent = `You scored ${currentQuestions.length - currentIncorrectQuestions.length} out of ${currentQuestions.length}`;
-        pointsEarnedText.textContent = `+${sessionPoints} Points!`;
-        if (sessionPoints > 0) playSound('win');
+        resultsSummaryText.textContent = `You scored ${score} out of ${quizState.questions.length}`;
+        pointsEarnedText.textContent = `+${quizState.sessionPoints} Points!`;
+        if (quizState.sessionPoints > 0) playSound('win');
 
-        const percentage = (currentQuestions.length - currentIncorrectQuestions.length) / currentQuestions.length;
-        if (percentage >= 0.9) {
-            finalMascotArt.textContent = "🎉(>ω<)🎉"; finalMascotText.textContent = "Flawless execution! You're a cyber ninja!";
-        } else if (percentage >= 0.7) {
-            finalMascotArt.textContent = "(^ ω ^)"; finalMascotText.textContent = "Mission successful! Great work.";
-        } else {
-            finalMascotArt.textContent = "ᕙ(⇀_⇀)ᕗ"; finalMascotText.textContent = "Good effort. Review the mission logs and try again!";
-        }
-        reviewMissionBtn.classList.toggle('hidden', currentIncorrectQuestions.length === 0);
+        const percentage = score / quizState.questions.length;
+        if (percentage >= 0.9) { finalMascotArt.textContent = "🎉(>ω<)🎉"; finalMascotText.textContent = "Flawless execution! You're a cyber ninja!"; }
+        else if (percentage >= 0.7) { finalMascotArt.textContent = "(^ ω ^)"; finalMascotText.textContent = "Mission successful! Great work."; }
+        else { finalMascotArt.textContent = "ᕙ(⇀_⇀)ᕗ"; finalMascotText.textContent = "Good effort. Review the mission logs and try again!"; }
+        reviewMissionBtn.classList.toggle('hidden', quizState.incorrectQuestions.length === 0);
         showScreen('results');
     }
 
     // --- Review Logic ---
-    function startReview() {
-        playSound('click');
-        currentReviewIndex = 0;
-        loadReviewItem();
-        showScreen('review');
+    function startReview() { quizState.reviewIndex = 0; loadReviewItem(); showScreen('review'); }
+    function loadReviewItem() {
+        const item = quizState.incorrectQuestions[quizState.reviewIndex];
+        reviewContent.innerHTML = `<div class="review-item"><h3>${item.emoji} ${item.question}</h3><p class="review-your-answer"><strong>Your Answer:</strong> ${item.options[item.selectedAnswerIndex]}</p><p class="review-correct-answer"><strong>Correct Answer:</strong> ${item.options[item.correct]}</p><div class="review-explanation"><strong>Explanation:</strong> ${item.explanation}</div></div>`;
+        reviewCounter.textContent = `${quizState.reviewIndex + 1} / ${quizState.incorrectQuestions.length}`;
+        prevReviewBtn.disabled = quizState.reviewIndex === 0;
+        nextReviewBtn.disabled = quizState.reviewIndex === quizState.incorrectQuestions.length - 1;
+    }
+
+    // --- Dashboard & Settings Logic ---
+    function openDashboard() { renderMasteryChart(); renderPersonalBests(); renderNemesisQuestion(); showScreen('dashboard'); }
+    function openSettings() {
+        themeSelector.innerHTML = '';
+        ['theme-pink', 'theme-green', 'theme-orange'].forEach(theme => {
+            const btn = document.createElement('button');
+            btn.className = 'theme-select-btn';
+            const colors = { 'theme-pink': '#ff00ff', 'theme-green': '#00ff7f', 'theme-orange': '#ff8c00' };
+            btn.style.backgroundColor = colors[theme];
+            btn.classList.toggle('active', state.settings.theme === theme);
+            btn.onclick = () => { playSound('click'); state.settings.theme = theme; applySettings(); saveState(); openSettings(); };
+            themeSelector.appendChild(btn);
+        });
+        popups.settings.classList.remove('hidden');
     }
     
-    function loadReviewItem() {
-        const item = currentIncorrectQuestions[currentReviewIndex];
-        reviewContent.innerHTML = `
-            <div class="review-item">
-                <h3>${item.emoji} ${item.question}</h3>
-                <p class="review-your-answer"><strong>Your Answer:</strong> ${item.options[item.selectedAnswerIndex]}</p>
-                <p class="review-correct-answer"><strong>Correct Answer:</strong> ${item.options[item.correct]}</p>
-                <div class="review-explanation"><strong>Explanation:</strong> ${item.explanation}</div>
-            </div>`;
-        reviewCounter.textContent = `${currentReviewIndex + 1} / ${currentIncorrectQuestions.length}`;
-        prevReviewBtn.disabled = currentReviewIndex === 0;
-        nextReviewBtn.disabled = currentReviewIndex === currentIncorrectQuestions.length - 1;
+    function renderMasteryChart() {
+        masteryChartContainer.innerHTML = '';
+        const categories = [...new Set(quizData.map(q => q.category))];
+        categories.forEach(cat => {
+            const total = quizData.filter(q => q.category === cat).length;
+            const mastered = state.masteredIds.filter(id => quizData.find(q=>q.id===id)?.category === cat).length;
+            const masteryPercent = total > 0 ? (mastered / total) * 100 : 0;
+            const item = document.createElement('div');
+            item.className = 'chart-bar-item';
+            item.innerHTML = `<span class="chart-bar-label">${cat}</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width: ${masteryPercent}%"></div></div>`;
+            masteryChartContainer.appendChild(item);
+        });
+    }
+    function renderPersonalBests() { personalBestsContainer.innerHTML = `<p><strong>Best Score:</strong> ${state.stats.personalBestScore} questions correct.</p>`; }
+    function renderNemesisQuestion() {
+        let nemesisId = null, maxWrong = 0;
+        for (const qid in state.questionStats) {
+            if (state.questionStats[qid].wrong > maxWrong) {
+                maxWrong = state.questionStats[qid].wrong;
+                nemesisId = qid;
+            }
+        }
+        if (nemesisId) {
+            const q = quizData.find(q => q.id == nemesisId);
+            nemesisQuestionContainer.innerHTML = `<p>You've struggled with this one (${maxWrong} times):</p><strong>${q.question}</strong>`;
+        } else {
+            nemesisQuestionContainer.innerHTML = `<p>No nemesis identified. Keep up the great work!</p>`;
+        }
     }
 
     // --- Event Listeners ---
-    themeSwitcherBtn.addEventListener('click', () => { playSound('click'); currentThemeIndex = (currentThemeIndex + 1) % themes.length; body.className = themes[currentThemeIndex]; saveState(); });
-    startDrillBtn.addEventListener('click', () => startQuiz('drill', 20));
-    startExamSimBtn.addEventListener('click', () => startQuiz('exam_sim', 40));
-    reviewWeakSpotsBtn.addEventListener('click', () => startQuiz('weak_spots'));
-    resumeSessionBtn.addEventListener('click', () => { playSound('click'); resumeSavedQuiz(); });
-    discardSessionBtn.addEventListener('click', () => { playSound('click'); clearSavedSession(); checkForSavedSession(); });
-    continueQuizBtn.addEventListener('click', handleNextQuestion);
-    pauseQuizBtn.addEventListener('click', () => { playSound('pause'); pauseTimer(); pauseModal.classList.remove('hidden'); });
-    resumeQuizBtn.addEventListener('click', () => { playSound('click'); pauseModal.classList.add('hidden'); resumeTimer(); });
-    saveExitBtn.addEventListener('click', () => { saveSession(); showHomeScreen(); });
-    abandonExitBtn.addEventListener('click', () => { clearSavedSession(); showHomeScreen(); });
-    reviewMissionBtn.addEventListener('click', startReview);
-    prevReviewBtn.addEventListener('click', () => { if (currentReviewIndex > 0) { playSound('click'); currentReviewIndex--; loadReviewItem(); } });
-    nextReviewBtn.addEventListener('click', () => { if (currentReviewIndex < currentIncorrectQuestions.length - 1) { playSound('click'); currentReviewIndex++; loadReviewItem(); } });
-    const showHomeScreen = () => { playSound('click'); pauseModal.classList.add('hidden'); pauseTimer(); checkForSavedSession(); updateWeakSpotsUI(); showScreen('home'); };
-    backToHomeBtn.addEventListener('click', showHomeScreen);
-    finishReviewBtn.addEventListener('click', showHomeScreen);
+    function addEventListeners() {
+        // Main Navigation
+        settingsBtn.addEventListener('click', () => { playSound('open'); openSettings(); });
+        dashboardBtn.addEventListener('click', () => { playSound('open'); openDashboard(); });
+        const goHome = () => { playSound('click'); checkForSavedSession(); updateStatsUI(); showScreen('home'); };
+        backToHomeFromResultsBtn.addEventListener('click', goHome);
+        backToHomeFromDashBtn.addEventListener('click', goHome);
+        finishReviewBtn.addEventListener('click', goHome);
+        // Home Screen
+        startDrillBtn.addEventListener('click', () => startQuiz('drill', 20));
+        startExamSimBtn.addEventListener('click', () => startQuiz('exam_sim', 40));
+        reviewWeakSpotsBtn.addEventListener('click', () => startQuiz('weak_spots'));
+        resumeSessionBtn.addEventListener('click', () => { playSound('click'); resumeSavedQuiz(); });
+        discardSessionBtn.addEventListener('click', () => { playSound('click'); if (confirm('Discard your saved session?')) { clearSavedSession(); checkForSavedSession(); } });
+        // Quiz Screen
+        pauseQuizBtn.addEventListener('click', () => { playSound('pause'); pauseTimer(); popups.pause.classList.remove('hidden'); });
+        answerButtons.addEventListener('click', e => { if (e.target.matches('.answer-btn')) selectAnswer(parseInt(e.target.dataset.index)); });
+        // Popups
+        continueQuizBtn.addEventListener('click', handleNextQuestion);
+        resumeQuizBtn.addEventListener('click', () => { playSound('click'); popups.pause.classList.add('hidden'); resumeTimer(); });
+        saveExitBtn.addEventListener('click', () => { playSound('click'); saveSession(); goHome(); popups.pause.classList.add('hidden'); });
+        abandonExitBtn.addEventListener('click', () => { playSound('click'); if (confirm('Abandon this quiz attempt?')) { clearSavedSession(); goHome(); popups.pause.classList.add('hidden'); } });
+        // Review Screen
+        prevReviewBtn.addEventListener('click', () => { playSound('click'); if (quizState.reviewIndex > 0) { quizState.reviewIndex--; loadReviewItem(); } });
+        nextReviewBtn.addEventListener('click', () => { playSound('click'); if (quizState.reviewIndex < quizState.incorrectQuestions.length - 1) { quizState.reviewIndex++; loadReviewItem(); } });
+        // Settings
+        closeSettingsBtn.addEventListener('click', () => { playSound('click'); popups.settings.classList.add('hidden'); });
+        audioToggle.addEventListener('click', () => { state.settings.audio = !state.settings.audio; applySettings(); saveState(); playSound('click'); });
+        lowPowerToggle.addEventListener('click', () => { playSound('click'); state.settings.lowPower = !state.settings.lowPower; applySettings(); saveState(); });
+        fontSizeSelector.addEventListener('click', e => { if (e.target.matches('.font-btn')) { playSound('click'); state.settings.fontSize = e.target.dataset.size; applySettings(); saveState(); } });
+        clearWeakSpotsBtn.addEventListener('click', () => { if (confirm('Are you sure you want to clear your weak spots list?')) { playSound('click'); state.weakSpotIds = []; saveState(); updateStatsUI(); alert('Weak spots cleared.'); } });
+        factoryResetBtn.addEventListener('click', () => { if (confirm('DANGER: Reset all points, ranks, and stats? This cannot be undone.')) { playSound('click'); localStorage.removeItem('notaR333_state'); localStorage.removeItem('notaR333_savedSession'); loadState(); applySettings(); updateStatsUI(); checkForSavedSession(); alert('System reset to default.'); } });
+        fullscreenToggle.addEventListener('click', () => {
+            playSound('click');
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(err => alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`));
+            else document.exitFullscreen();
+        });
+    }
 
-    // --- Screen Management ---
-    function showScreen(screenName) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(`${screenName}-screen`).classList.add('active'); }
-
-    // --- Kick things off ---
+    // --- Let's Go ---
     initialize();
 });
