@@ -210,6 +210,14 @@
 
         </div>
     </div>
-
+    <script>
+        try {
+            const savedState = JSON.parse(localStorage.getItem('notaR333_state'));
+            const theme = savedState?.settings?.theme || 'pink';
+            document.body.classList.add('theme-' + theme);
+        } catch (e) {
+            document.body.classList.add('theme-pink');
+        }
+    </script>
 </body>
 </html>

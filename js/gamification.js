@@ -1,11 +1,14 @@
-// NotaR333_OS - Gamification Engine v3.2 (FX Update)
+// NotaR333_OS - Gamification Engine v3.5 (Sequential Unlocks)
+
+// --- NEW: Queue system for achievements ---
+let cheevoUnlockQueue = [];
+let isQueueProcessing = false;
 
 function getCurrentRank() {
     return ranks.slice().reverse().find(r => state.totalPoints >= r.points);
 }
 
 function triggerRankUp(newRank) {
-    // --- INTEGRATE REFINED HAPTICS AND CONFETTI ---
     triggerVibration('rankUp');
     domElements.rankUpText.textContent = `You are now a ${newRank.name}!`;
     togglePopup('rankUp', true);
@@ -58,6 +61,8 @@ function checkAllCheevos() {
             }
         }
     });
+    // After checking all, start processing the queue
+    processCheevoQueue();
 }
 
 function checkMidQuizCheevos(type) {
@@ -68,32 +73,72 @@ function checkMidQuizCheevos(type) {
 
     if (cheevoId && !state.unlockedCheevos.includes(cheevoId)) {
         const condition = cheevoConditions[cheevoId];
-        if (condition && condition()) unlockCheevo(cheevoId);
+        if (condition && condition()) {
+            unlockCheevo(cheevoId);
+            processCheevoQueue(); // Start processing immediately for mid-quiz unlocks
+        }
     }
 }
 
 function checkDirectActionCheevo(cheevoId) {
     if (!state.unlockedCheevos.includes(cheevoId)) {
         unlockCheevo(cheevoId);
+        processCheevoQueue();
     }
 }
 
+/**
+ * Updates state for an unlocked cheevo and adds it to the notification queue.
+ * @param {string} cheevoId - The ID of the cheevo to unlock.
+ */
 function unlockCheevo(cheevoId) {
     const cheevo = cheevoData.find(c => c.id === cheevoId);
     if (!cheevo || state.unlockedCheevos.includes(cheevoId)) return;
 
+    // Immediately update state so other checks don't re-trigger it
     state.unlockedCheevos.push(cheevoId);
     state.totalPoints += cheevo.points;
-    if (cheevo.catImage && !state.unlockedCats.includes(cheevo.catImage)) {
-        state.unlockedCats.push(cheevo.catImage);
+    if (cheevo.catImage) {
+        if (!state.unlockedCats.includes(cheevo.catImage)) {
+            state.unlockedCats.push(cheevo.catImage);
+        }
+        // Add to the "newly unlocked" list for the notification dot
+        if (!state.newlyUnlockedCats.includes(cheevo.catImage)) {
+            state.newlyUnlockedCats.push(cheevo.catImage);
+        }
+    }
+    
+    // Add to the queue instead of showing immediately
+    if (!cheevoUnlockQueue.includes(cheevoId)) {
+       cheevoUnlockQueue.push(cheevoId);
     }
 
-    // --- INTEGRATE REFINED HAPTICS AND CONFETTI ---
-    const toastMessage = `${cheevo.icon} Achievement: ${cheevo.title}!`;
-    showToast(toastMessage);
-    triggerVibration('cheevoUnlock');
-    triggerConfetti({ sourceElement: domElements.toastNotification, count: 40 });
+    console.log(`Queued: ${cheevo.title}`);
+}
 
-    updateAllUI();
-    console.log(`Unlocked: ${cheevo.title}`);
+/**
+ * Processes the next achievement in the queue, showing its notification.
+ */
+function processCheevoQueue() {
+    if (isQueueProcessing || cheevoUnlockQueue.length === 0) {
+        return; // Don't run if already running or if queue is empty
+    }
+    isQueueProcessing = true;
+
+    const cheevoId = cheevoUnlockQueue.shift(); // Get the first item
+    const cheevo = cheevoData.find(c => c.id === cheevoId);
+    
+    if (cheevo) {
+        const toastMessage = `${cheevo.icon} Achievement: ${cheevo.title}!`;
+        showToast(toastMessage);
+        triggerVibration('cheevoUnlock');
+        triggerConfetti({ sourceElement: domElements.toastNotification, count: 40 });
+        updateAllUI(); // Update UI for point changes
+    }
+    
+    // Set a timeout to process the next item after the toast fades
+    setTimeout(() => {
+        isQueueProcessing = false;
+        processCheevoQueue(); // Try to process the next item
+    }, 3500);
 }

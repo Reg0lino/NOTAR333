@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NotaR333</title>
+    <title>NotaR333_OS</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,14 +24,14 @@
                     <!-- Cat images will be dynamically inserted here by ui.js -->
                 </div>
                 <div class="header-icons">
+                    <!-- Cheevos button removed -->
                     <a href="general.html" target="_blank" id="study-guide-btn" class="icon-btn" title="Study Guide">📖</a>
-                    <button id="cheevos-btn" class="icon-btn" title="Achievements">🏆</button>
                     <button id="dashboard-btn" class="icon-btn" title="Dashboard">📊</button>
                     <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
                 </div>
             </div>
 
-            <h1 id="main-title" class="shimmer">NotaR333</h1>
+            <h1 id="main-title" class="shimmer">NotaR333_OS</h1>
             <div id="user-stats">
                 <span id="rank-display">//Rank: Novice Notary</span>
                 <span id="score-display">//Points: 0</span>
@@ -132,8 +132,9 @@
                 <h3>// System Preferences</h3>
                 <div class="settings-section">
                     <h4>AUDIO / VISUAL</h4>
+                    <!-- Low-Power Mode removed, Haptics toggle added -->
+                    <div class="setting-item"><label for="haptics-toggle">Haptic Feedback</label><button id="haptics-toggle" class="toggle-btn" data-setting="haptics">📳</button></div>
                     <div class="setting-item"><label for="fullscreen-toggle">Fullscreen</label><button id="fullscreen-toggle" class="toggle-btn">[ ]</button></div>
-                    <div class="setting-item"><label for="low-power-toggle">Low-Power Mode</label><button id="low-power-toggle" class="toggle-btn" data-setting="lowPower">⚡</button></div>
                     <div class="setting-item"><label>Theme</label><div id="theme-selector"></div></div>
                 </div>
                 <div class="settings-section">
@@ -157,20 +158,11 @@
         </div>
 
         <!-- Gamification Modals -->
-        <div id="cheevos-modal" class="popup-overlay">
-            <div class="popup-content">
-                <h3>// Achievements</h3>
-                <div id="cheevos-grid" class="cheevos-grid">
-                    <!-- Cheevo icons will be dynamically inserted here by ui.js -->
-                </div>
-                <button id="close-cheevos-btn" class="btn btn-primary">> Close</button>
-            </div>
-        </div>
-
+        <!-- Cheevos Modal has been completely removed -->
         <div id="catalog-modal" class="popup-overlay">
             <div class="popup-content">
                 <h3>// Cat-alog</h3>
-                <p class="info-text">Click a cat to view details. Select up to 3 for your crew!</p>
+                <p class="info-text">Click an icon (ⓘ) to view details. Click the image to select for your crew!</p>
                 <div id="catalog-grid" class="catalog-grid">
                      <!-- Cat images for selection will be dynamically inserted here by ui.js -->
                 </div>
@@ -178,7 +170,6 @@
             </div>
         </div>
 
-        <!-- NEW: Reward Details Modal -->
         <div id="reward-modal" class="popup-overlay">
             <div class="popup-content reward-popup">
                 <img id="reward-image" src="" alt="Reward Image">
