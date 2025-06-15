@@ -1,10 +1,10 @@
-// NotaR333_OS - Main Application Controller v3.6 (Final)
+// NotaR333_OS - Main Application Controller v3.7 (Final)
 
 const domElements = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // DOM Element Population
+    // --- DOM Element Population ---
     const ids = [
         'home-screen', 'quiz-screen', 'results-screen', 'review-screen', 'dashboard-screen', 'explanation-popup', 'pause-modal', 
         'settings-modal', 'rank-up-modal', 'catalog-modal', 'reward-modal', 'mascot-container', 'top-catz-bar', 
@@ -18,7 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'personal-bests-container', 'nemesis-question-container', 'back-to-home-from-dash-btn', 'close-settings-btn', 
         'fullscreen-toggle', 'haptics-toggle', 'theme-selector', 'clear-weak-spots-btn', 'factory-reset-btn', 
         'catalog-grid', 'close-catalog-btn', 'toast-notification', 'toast-text', 'rank-up-text', 'reward-image', 
-        'reward-title', 'reward-description', 'reward-select-btn', 'reward-close-btn'
+        'reward-title', 'reward-description', 'reward-select-btn', 'reward-close-btn',
+        // --- ADDED FOR CELEBRATION EFFECTS ---
+        'particle-celebration-container', 'rank-up-content'
     ];
     domElements.body = document.body;
     ids.forEach(id => {
@@ -29,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     domElements.popups = { explanation: domElements.explanationPopup, pause: domElements.pauseModal, settings: domElements.settingsModal, rankUp: domElements.rankUpModal, catalog: domElements.catalogModal, reward: domElements.rewardModal };
 
     function initialize() {
-        console.log("App: Initializing...");
         loadState();
         buildThemeSelector();
         addEventListeners();
@@ -37,11 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAllUI();
         checkForSavedSession();
         showScreen('home');
-        console.log("NotaR333_OS v3.6 Initialized and Ready.");
+        console.log("NotaR333 v3.7 Initialized and Ready.");
     }
 
     function addEventListeners() {
-        console.log("Listeners: Attaching event listeners...");
         document.addEventListener('keyup', (e) => {
             if (e.key.toLowerCase() === 'd' && domElements.quizScreen.classList.contains('active')) {
                 const btn = domElements.answerButtons.querySelector('[data-correct="true"]');
@@ -57,14 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.startDrillBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('drill', 20); });
         domElements.startExamSimBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('exam_sim', 40); });
         domElements.reviewWeakSpotsBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('weak_spots'); });
+        
         domElements.resumeSessionBtn.addEventListener('click', () => {
             triggerVibration('click');
             quizState = loadSavedSession();
             if (quizState) { clearSavedSession(); checkForSavedSession(); showScreen('quiz'); loadQuestion(); resumeTimer(); }
         });
         domElements.discardSessionBtn.addEventListener('click', () => {
-            triggerVibration('click');
-            if (confirm('Discard your saved session?')) { clearSavedSession(); checkForSavedSession(); }
+            if (confirm('Discard your saved session?')) { triggerVibration('click'); clearSavedSession(); checkForSavedSession(); }
         });
 
         domElements.pauseQuizBtn.addEventListener('click', () => { triggerVibration('open'); pauseTimer(); togglePopup('pause', true); });
@@ -83,13 +83,12 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.dashboardBtn.addEventListener('click', () => { triggerVibration('open'); openDashboard(); });
         domElements.settingsBtn.addEventListener('click', () => { triggerVibration('open'); togglePopup('settings', true); });
         
-        // --- UPDATED: Clear notification dot when opening catalog ---
         domElements.topCatzBar.addEventListener('click', () => { 
             triggerVibration('open'); 
             if (state.newlyUnlockedCats.length > 0) {
                 state.newlyUnlockedCats = [];
                 saveState();
-                updateNotificationIndicator(); // Instantly remove the dot
+                updateNotificationIndicator();
             }
             openCatalogModal(); 
         });
@@ -160,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTopCatz();
             togglePopup('reward', false);
         });
-        console.log("Listeners: All event listeners attached.");
     }
 
     function buildThemeSelector() {

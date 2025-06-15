@@ -1,6 +1,5 @@
-// NotaR333_OS - Gamification Engine v3.5 (Sequential Unlocks)
+// NotaR333_OS - Gamification Engine v3.7 (Final)
 
-// --- NEW: Queue system for achievements ---
 let cheevoUnlockQueue = [];
 let isQueueProcessing = false;
 
@@ -13,9 +12,13 @@ function triggerRankUp(newRank) {
     domElements.rankUpText.textContent = `You are now a ${newRank.name}!`;
     togglePopup('rankUp', true);
     
-    const container = domElements.rankUpModal.querySelector('.rank-up-content');
-    if (container) {
-        triggerConfetti({ sourceElement: container, count: 50 });
+    // --- FIX: Target the correct particle container inside the modal ---
+    if (domElements.particleCelebrationContainer) {
+        triggerConfetti({ 
+            sourceElement: domElements.rankUpContent, // Burst from the center of the content
+            count: 60, // More particles for a big event
+            container: domElements.particleCelebrationContainer // Use the modal's container
+        });
     }
     
     setTimeout(() => {
@@ -23,7 +26,7 @@ function triggerRankUp(newRank) {
     }, 4000);
 }
 
-// --- CHEEVO (ACHIEVEMENT) LOGIC ---
+// --- CHEEVO LOGIC (unchanged) ---
 const cheevoConditions = {
     firstSession: () => state.stats.completedQuizCount >= 1,
     first100: () => state.totalPoints >= 100,
@@ -43,102 +46,70 @@ const cheevoConditions = {
     masterCategoryProhibited: () => checkCategoryMastery('Prohibited Conduct'),
     masterAll: () => state.masteredIds.length === quizData.length,
     changeTheme: () => true,
-    checkCheevos: () => true,
     customizeCrew: () => true,
 };
-
 function checkCategoryMastery(categoryName) {
     const categoryQuestions = quizData.filter(q => q.category === categoryName);
     return categoryQuestions.every(q => state.masteredIds.includes(q.id));
 }
-
 function checkAllCheevos() {
     cheevoData.forEach(cheevo => {
         if (!state.unlockedCheevos.includes(cheevo.id)) {
             const condition = cheevoConditions[cheevo.id];
-            if (condition && condition()) {
-                unlockCheevo(cheevo.id);
-            }
+            if (condition && condition()) unlockCheevo(cheevo.id);
         }
     });
-    // After checking all, start processing the queue
     processCheevoQueue();
 }
-
 function checkMidQuizCheevos(type) {
     let cheevoId;
     if (type === 'streak') cheevoId = 'streak5';
     else if (type === 'weakness_eliminated') cheevoId = 'weaknessEliminated';
     else if (type === 'first_weak_spot') cheevoId = 'firstWeakSpot';
-
     if (cheevoId && !state.unlockedCheevos.includes(cheevoId)) {
         const condition = cheevoConditions[cheevoId];
-        if (condition && condition()) {
-            unlockCheevo(cheevoId);
-            processCheevoQueue(); // Start processing immediately for mid-quiz unlocks
-        }
+        if (condition && condition()) { unlockCheevo(cheevoId); processCheevoQueue(); }
     }
 }
-
 function checkDirectActionCheevo(cheevoId) {
+    if (cheevoId === 'checkCheevos') return; // Do nothing for this, as the modal is removed.
     if (!state.unlockedCheevos.includes(cheevoId)) {
         unlockCheevo(cheevoId);
         processCheevoQueue();
     }
 }
-
-/**
- * Updates state for an unlocked cheevo and adds it to the notification queue.
- * @param {string} cheevoId - The ID of the cheevo to unlock.
- */
 function unlockCheevo(cheevoId) {
     const cheevo = cheevoData.find(c => c.id === cheevoId);
     if (!cheevo || state.unlockedCheevos.includes(cheevoId)) return;
-
-    // Immediately update state so other checks don't re-trigger it
     state.unlockedCheevos.push(cheevoId);
     state.totalPoints += cheevo.points;
     if (cheevo.catImage) {
         if (!state.unlockedCats.includes(cheevo.catImage)) {
             state.unlockedCats.push(cheevo.catImage);
         }
-        // Add to the "newly unlocked" list for the notification dot
         if (!state.newlyUnlockedCats.includes(cheevo.catImage)) {
             state.newlyUnlockedCats.push(cheevo.catImage);
         }
     }
-    
-    // Add to the queue instead of showing immediately
     if (!cheevoUnlockQueue.includes(cheevoId)) {
        cheevoUnlockQueue.push(cheevoId);
     }
-
     console.log(`Queued: ${cheevo.title}`);
 }
-
-/**
- * Processes the next achievement in the queue, showing its notification.
- */
 function processCheevoQueue() {
-    if (isQueueProcessing || cheevoUnlockQueue.length === 0) {
-        return; // Don't run if already running or if queue is empty
-    }
+    if (isQueueProcessing || cheevoUnlockQueue.length === 0) return;
     isQueueProcessing = true;
-
-    const cheevoId = cheevoUnlockQueue.shift(); // Get the first item
+    const cheevoId = cheevoUnlockQueue.shift();
     const cheevo = cheevoData.find(c => c.id === cheevoId);
-    
     if (cheevo) {
         const toastMessage = `${cheevo.icon} Achievement: ${cheevo.title}!`;
         showToast(toastMessage);
         triggerVibration('cheevoUnlock');
         triggerConfetti({ sourceElement: domElements.toastNotification, count: 40 });
-        updateAllUI(); // Update UI for point changes
+        updateAllUI();
     }
-    
-    // Set a timeout to process the next item after the toast fades
     setTimeout(() => {
         isQueueProcessing = false;
-        processCheevoQueue(); // Try to process the next item
+        processCheevoQueue();
     }, 3500);
 }
