@@ -1,4 +1,4 @@
-// NotaR333_OS - Gamification Engine v4.3 (Final Fix)
+// NotaR333_OS - Gamification Engine v4.6 (Final)
 
 let celebrationQueue = [];
 let isProcessingCelebration = false;
@@ -12,7 +12,6 @@ function displayRankUpModal(rankData) {
     triggerVibration('rankUp');
     domElements.rankUpText.textContent = `You are now a ${rankData.name}!`;
     togglePopup('rankUp', true);
-
     if (domElements.particleCelebrationContainer) {
         triggerConfetti({ 
             sourceElement: domElements.rankUpContent,
@@ -20,7 +19,6 @@ function displayRankUpModal(rankData) {
             container: domElements.particleCelebrationContainer
         });
     }
-    
     setTimeout(() => {
         togglePopup('rankUp', false);
     }, 4000);
@@ -29,7 +27,6 @@ function displayRankUpModal(rankData) {
 function displayCheevoNotification(cheevoId) {
     const cheevo = cheevoData.find(c => c.id === cheevoId);
     if (!cheevo) return;
-    
     console.log(`CELEBRATION: Displaying Cheevo toast for ${cheevo.title}`);
     const toastMessage = `${cheevo.icon} Achievement: ${cheevo.title}!`;
     showToast(toastMessage);
@@ -44,10 +41,8 @@ function processCelebrationQueue() {
         return;
     }
     isProcessingCelebration = true;
-
     const event = celebrationQueue.shift();
     console.log(`QUEUE: Processing event type "${event.type}"`);
-    
     if (event.type === 'rankup') {
         displayRankUpModal(event.rank);
         setTimeout(() => {
@@ -81,6 +76,10 @@ const cheevoConditions = {
     masterCategoryREN: () => checkCategoryMastery('Electronic Notarization'),
     masterCategoryProhibited: () => checkCategoryMastery('Prohibited Conduct'),
     masterAll: () => state.masteredIds.length === quizData.length,
+    // Conditions for meta achievements are just 'true' because they are triggered by a direct action.
+    changeTheme: () => true,
+    customizeCrew: () => true,
+    viewReward: () => true,
 };
 
 function checkCategoryMastery(categoryName) {
@@ -108,6 +107,18 @@ function checkMidQuizCheevos(type) {
             unlockCheevo(cheevoId);
             processCelebrationQueue();
         }
+    }
+}
+
+// --- FUNCTION RESTORED ---
+/**
+ * Checks for achievements triggered by a direct user action.
+ * @param {string} cheevoId The ID of the achievement to check.
+ */
+function checkDirectActionCheevo(cheevoId) {
+    if (!state.unlockedCheevos.includes(cheevoId)) {
+        unlockCheevo(cheevoId);
+        processCelebrationQueue();
     }
 }
 

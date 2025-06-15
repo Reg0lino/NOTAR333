@@ -1,4 +1,4 @@
-// NotaR333 - Main Application Controller v4.3 (Final Logic Fix)
+// NotaR333 - Main Application Controller v4.6 (Final)
 
 const domElements = {};
 
@@ -37,9 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAllUI();
         checkForSavedSession();
         showScreen('home');
-        // --- FIX: Call this one last time to ensure dot visibility is correct on load ---
         updateNotificationIndicator();
-        console.log("NotaR333 v4.3 Initialized and Ready.");
+        console.log("NotaR333 v4.6 Initialized and Ready.");
     }
 
     function addEventListeners() {
@@ -53,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("DEBUG: +1000 points added.");
                 const previousRank = getCurrentRank();
                 state.totalPoints += 1000;
-                updateAllUI(); // Update UI to show points change immediately
+                updateAllUI();
                 const newRank = getCurrentRank();
                 if (newRank.name !== previousRank.name) {
                     celebrationQueue.unshift({ type: 'rankup', rank: newRank });
@@ -67,9 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.backToHomeFromResultsBtn.addEventListener('click', goHome);
         domElements.backToHomeFromDashBtn.addEventListener('click', goHome);
         domElements.finishReviewBtn.addEventListener('click', goHome);
+
         domElements.startDrillBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('drill', 20); });
         domElements.startExamSimBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('exam_sim', 40); });
         domElements.reviewWeakSpotsBtn.addEventListener('click', () => { triggerVibration('click'); startQuiz('weak_spots'); });
+        
         domElements.resumeSessionBtn.addEventListener('click', () => {
             triggerVibration('click');
             quizState = loadSavedSession();
@@ -78,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.discardSessionBtn.addEventListener('click', () => {
             if (confirm('Discard your saved session?')) { triggerVibration('click'); clearSavedSession(); checkForSavedSession(); }
         });
+
         domElements.pauseQuizBtn.addEventListener('click', () => { triggerVibration('open'); pauseTimer(); togglePopup('pause', true); });
         domElements.answerButtons.addEventListener('click', e => { if (e.target.matches('.answer-btn')) selectAnswer(e.target); });
         domElements.continueQuizBtn.addEventListener('click', () => { triggerVibration('click'); handleNextQuestion(); });
@@ -86,11 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements.abandonExitBtn.addEventListener('click', () => {
             if (confirm('Abandon this quiz attempt?')) { triggerVibration('click'); clearSavedSession(); goHome(); togglePopup('pause', false); }
         });
+
         domElements.reviewMissionBtn.addEventListener('click', () => { triggerVibration('click'); startReview(); });
         domElements.prevReviewBtn.addEventListener('click', () => { if (quizState.reviewIndex > 0) { triggerVibration('click'); quizState.reviewIndex--; loadReviewItem(); } });
         domElements.nextReviewBtn.addEventListener('click', () => { if (quizState.reviewIndex < quizState.incorrectQuestions.length - 1) { triggerVibration('click'); quizState.reviewIndex++; loadReviewItem(); } });
+        
         domElements.dashboardBtn.addEventListener('click', () => { triggerVibration('open'); openDashboard(); });
         domElements.settingsBtn.addEventListener('click', () => { triggerVibration('open'); togglePopup('settings', true); });
+        
         domElements.topCatzWrapper.addEventListener('click', () => { 
             triggerVibration('open'); 
             if (state.newlyUnlockedCats.length > 0) {
@@ -98,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             openCatalogModal(); 
         });
+
         domElements.closeSettingsBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('settings', false); });
         domElements.hapticsToggle.addEventListener('click', () => {
             state.settings.haptics = !state.settings.haptics;
@@ -117,46 +123,67 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(err => alert(`Error: ${err.message}`));
             else document.exitFullscreen();
         });
+
         domElements.closeCatalogBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('catalog', false); });
         domElements.rewardCloseBtn.addEventListener('click', () => { triggerVibration('click'); togglePopup('reward', false); });
+        
+        // --- FINALIZED: Catalog Grid Event Listener ---
         domElements.catalogGrid.addEventListener('click', (e) => {
-            const target = e.target;
-            const catFile = target.dataset.catfile;
-            if (!catFile) return;
-            if (state.newlyUnlockedCats.includes(catFile)) {
-                state.newlyUnlockedCats = state.newlyUnlockedCats.filter(c => c !== catFile);
-                saveState();
-                const wrapper = target.closest('.catalog-item-wrapper');
-                if (wrapper) wrapper.classList.remove('is-new');
-            }
-            if (target.matches('.info-icon')) {
-                e.stopPropagation();
+            const wrapper = e.target.closest('.catalog-item-wrapper');
+            if (!wrapper) return;
+            const img = wrapper.querySelector('.catalog-item');
+            const catFile = img.dataset.catfile;
+
+            const viewRewardDetails = () => {
                 triggerVibration('open');
+                // Clear the "new" status for this specific item upon viewing
+                if (state.newlyUnlockedCats.includes(catFile)) {
+                    state.newlyUnlockedCats = state.newlyUnlockedCats.filter(c => c !== catFile);
+                    saveState();
+                    wrapper.classList.remove('is-new');
+                }
                 showRewardDetails(catFile);
+            };
+
+            // If a locked item is clicked, always show its requirements
+            if (img.classList.contains('locked')) {
+                checkDirectActionCheevo('viewReward');
+                viewRewardDetails();
                 return;
             }
-            if (target.matches('.catalog-item') && !target.matches('.locked')) {
+
+            // If the info icon on an unlocked item is clicked
+            if (e.target.matches('.info-icon')) {
+                e.stopPropagation();
+                viewRewardDetails();
+                return;
+            }
+
+            // If the image of an unlocked item is clicked (for selection)
+            if (e.target.matches('.catalog-item')) {
                 triggerVibration('click');
                 const selectedIndex = state.selectedCats.indexOf(catFile);
                 if (selectedIndex > -1) {
                     state.selectedCats[selectedIndex] = null;
                 } else {
                     const emptySlotIndex = state.selectedCats.indexOf(null);
-                    if (emptySlotIndex > -1) state.selectedCats[emptySlotIndex] = catFile;
-                    else showToast("Crew is full! Deselect another cat first.");
+                    if (emptySlotIndex > -1) {
+                        state.selectedCats[emptySlotIndex] = catFile;
+                    } else {
+                        showToast("Crew is full! Deselect another cat first.");
+                    }
                 }
+                checkDirectActionCheevo('customizeCrew');
                 saveState();
                 renderTopCatz();
-                openCatalogModal();
+                openCatalogModal(); // Redraw to update selection state
             }
         });
+        
         domElements.rewardSelectBtn.addEventListener('click', (e) => {
             triggerVibration('click');
             const catFile = e.target.dataset.catfile;
             if (!catFile) return;
-            if (state.newlyUnlockedCats.includes(catFile)) {
-                state.newlyUnlockedCats = state.newlyUnlockedCats.filter(c => c !== catFile);
-            }
             const selectedIndex = state.selectedCats.indexOf(catFile);
             if (selectedIndex === -1) { 
                 const emptySlotIndex = state.selectedCats.indexOf(null);
@@ -179,35 +206,35 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.className = 'theme-select-btn';
             btn.dataset.theme = themeName;
             btn.style.backgroundColor = colors[themeName];
-            btn.onclick = () => { triggerVibration('click'); state.settings.theme = themeName; applySettings(); saveState(); };
+            btn.onclick = () => { triggerVibration('click'); state.settings.theme = themeName; applySettings(); checkDirectActionCheevo('changeTheme'); saveState(); };
             domElements.themeSelector.appendChild(btn);
-        });
-    }
-    function openDashboard() { renderMasteryChart(); renderPersonalBests(); renderNemesisQuestion(); showScreen('dashboard'); }
-    function renderMasteryChart() { 
-        domElements.masteryChartContainer.innerHTML = ''; 
-        const categories = [...new Set(quizData.map(q => q.category))].sort(); 
-        categories.forEach(cat => { 
-            const total = quizData.filter(q => q.category === cat).length; 
-            const mastered = state.masteredIds.filter(id => quizData.find(q=>q.id===id)?.category === cat).length; 
-            const masteryPercent = total > 0 ? (mastered / total) * 100 : 0; 
-            const item = document.createElement('div'); 
-            item.className = 'chart-bar-item'; 
-            item.innerHTML = `<span class="chart-bar-label">${cat}</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width: ${masteryPercent}%"></div></div>`; 
-            domElements.masteryChartContainer.appendChild(item); 
-        }); 
-    }
-    function renderPersonalBests() { domElements.personalBestsContainer.innerHTML = `<p><strong>Best Score:</strong> ${state.stats.personalBestScore} questions correct.</p>`; }
-    function renderNemesisQuestion() { 
-        let nemesisId = null, maxWrong = 0;
-        for (const qid in state.questionStats) { if (state.questionStats[qid].wrong > maxWrong) { maxWrong = state.questionStats[qid].wrong; nemesisId = qid; } } 
-        if (nemesisId) { 
-            const q = quizData.find(q => q.id == nemesisId); 
-            domElements.nemesisQuestionContainer.innerHTML = `<p>You've struggled with this one (${maxWrong} times):</p><strong>${q.question}</strong>`; 
-        } else { 
-            domElements.nemesisQuestionContainer.innerHTML = `<p>No nemesis identified. Keep up the great work!</p>`; 
-        } 
-    }
-    
-    initialize();
+});
+}
+function openDashboard() { renderMasteryChart(); renderPersonalBests(); renderNemesisQuestion(); showScreen('dashboard'); }
+function renderMasteryChart() { 
+    domElements.masteryChartContainer.innerHTML = ''; 
+    const categories = [...new Set(quizData.map(q => q.category))].sort(); 
+    categories.forEach(cat => { 
+        const total = quizData.filter(q => q.category === cat).length; 
+        const mastered = state.masteredIds.filter(id => quizData.find(q=>q.id===id)?.category === cat).length; 
+        const masteryPercent = total > 0 ? (mastered / total) * 100 : 0; 
+        const item = document.createElement('div'); 
+        item.className = 'chart-bar-item'; 
+        item.innerHTML = `<span class="chart-bar-label">${cat}</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width: ${masteryPercent}%"></div></div>`; 
+        domElements.masteryChartContainer.appendChild(item); 
+    }); 
+}
+function renderPersonalBests() { domElements.personalBestsContainer.innerHTML = `<p><strong>Best Score:</strong> ${state.stats.personalBestScore} questions correct.</p>`; }
+function renderNemesisQuestion() { 
+    let nemesisId = null, maxWrong = 0;
+    for (const qid in state.questionStats) { if (state.questionStats[qid].wrong > maxWrong) { maxWrong = state.questionStats[qid].wrong; nemesisId = qid; } } 
+    if (nemesisId) { 
+        const q = quizData.find(q => q.id == nemesisId); 
+        domElements.nemesisQuestionContainer.innerHTML = `<p>You've struggled with this one (${maxWrong} times):</p><strong>${q.question}</strong>`; 
+    } else { 
+        domElements.nemesisQuestionContainer.innerHTML = `<p>No nemesis identified. Keep up the great work!</p>`; 
+    } 
+}
+
+initialize();
 });

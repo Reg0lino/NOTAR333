@@ -1,4 +1,4 @@
-// NotaR333_OS - UI Management v4.3 (Final Fix)
+// NotaR333_OS - UI Management v4.5 (Final)
 
 function showScreen(screenName) {
     for (const key in domElements.screens) {
@@ -15,7 +15,6 @@ function applySettings() {
     domElements.body.className = `theme-${state.settings.theme}`;
     domElements.hapticsToggle.classList.toggle('active', state.settings.haptics);
     domElements.hapticsToggle.textContent = state.settings.haptics ? '📳' : '📴';
-
     const themeButtons = domElements.themeSelector.children;
     for(const btn of themeButtons) {
         btn.classList.toggle('active', btn.dataset.theme === state.settings.theme);
@@ -24,11 +23,9 @@ function applySettings() {
 
 function updateNotificationIndicator() {
     const hasNew = state.newlyUnlockedCats && state.newlyUnlockedCats.length > 0;
-    // --- FIX: Target the wrapper, not the bar itself ---
     if (domElements.topCatzWrapper) {
         domElements.topCatzWrapper.classList.toggle('has-new-rewards', hasNew);
     }
-    console.log(`UI: Notification indicator updated. Has new rewards: ${hasNew}`);
 }
 
 function updateAllUI() {
@@ -61,18 +58,14 @@ function updateXpBar() {
 
 function updateWeakSpotsCounter() {
     const count = state.weakSpotIds.length;
-    domElements.weakSpotsCounter.textContent = count > 0 
-        ? `You have ${count} weak spot(s) to review.` 
-        : "Your weak spots list is clear! Great job!";
+    domElements.weakSpotsCounter.textContent = count > 0 ? `You have ${count} weak spot(s) to review.` : "Your weak spots list is clear! Great job!";
     domElements.reviewWeakSpotsBtn.classList.toggle('hidden', count === 0);
 }
 
 function showToast(message) {
     domElements.toastText.innerHTML = message;
     domElements.toastNotification.className = "show";
-    setTimeout(() => {
-        domElements.toastNotification.className = domElements.toastNotification.className.replace("show", "");
-    }, 3000);
+    setTimeout(() => { domElements.toastNotification.className = domElements.toastNotification.className.replace("show", ""); }, 3000);
 }
 
 function renderTopCatz() {
@@ -84,9 +77,7 @@ function renderTopCatz() {
         img.src = catSrc ? `images/${catSrc}` : 'images/placeholder_empty.png';
         img.alt = `Custom Mascot ${i + 1}`;
         img.className = 'top-cat';
-        if (!catSrc) {
-            img.classList.add('empty-slot');
-        }
+        if (!catSrc) img.classList.add('empty-slot');
         catzBar.appendChild(img);
     }
 }
@@ -98,22 +89,16 @@ function openCatalogModal() {
         const isUnlocked = state.unlockedCats.includes(catFile);
         const wrapper = document.createElement('div');
         wrapper.className = 'catalog-item-wrapper';
-
-        // --- FIX: Add individual notification dot logic ---
         if (state.newlyUnlockedCats.includes(catFile)) {
             wrapper.classList.add('is-new');
         }
-
         const img = document.createElement('img');
         img.src = `images/${catFile}`;
         img.className = 'catalog-item';
         img.dataset.catfile = catFile;
         wrapper.appendChild(img);
-
         if (isUnlocked) {
-            if (state.selectedCats.includes(catFile)) {
-                img.classList.add('selected');
-            }
+            if (state.selectedCats.includes(catFile)) img.classList.add('selected');
             const infoIcon = document.createElement('span');
             infoIcon.className = 'info-icon';
             infoIcon.textContent = 'ⓘ';
@@ -127,12 +112,31 @@ function openCatalogModal() {
     togglePopup('catalog', true);
 }
 
+/**
+ * Shows the reward details modal for any cat, locked or unlocked.
+ * @param {string} catFile - The filename of the cat image.
+ */
 function showRewardDetails(catFile) {
     const cheevo = cheevoData.find(c => c.catImage === catFile);
     if (!cheevo) return;
-    domElements.rewardImage.src = `images/${catFile}`;
+
+    const isUnlocked = state.unlockedCats.includes(catFile);
+    
+    // --- NEW LOGIC: Show real image or blurred placeholder ---
+    if (isUnlocked) {
+        domElements.rewardImage.src = `images/${catFile}`;
+        domElements.rewardImage.classList.remove('locked');
+    } else {
+        domElements.rewardImage.src = 'images/placeholder_locked.png';
+        domElements.rewardImage.classList.add('locked');
+    }
+
     domElements.rewardTitle.textContent = cheevo.title;
     domElements.rewardDescription.textContent = cheevo.description;
     domElements.rewardSelectBtn.dataset.catfile = catFile;
+
+    // --- NEW LOGIC: Hide select button if locked ---
+    domElements.rewardSelectBtn.classList.toggle('hidden', !isUnlocked);
+    
     togglePopup('reward', true);
 }

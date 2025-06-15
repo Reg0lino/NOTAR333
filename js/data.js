@@ -1,4 +1,4 @@
-// NotaR333_OS - Gamification & App Data v4.2 (Final Streamlined)
+// NotaR333_OS - Gamification & App Data v4.5 (Content Restored)
 
 // --- RANK DATA ---
 const ranks = [
@@ -15,19 +15,19 @@ const puns = [
     "Keep it up!", "That was purr-fect!", "You're as sharp as a cactus!"
 ];
 
-
 // --- CAT-ALOG DATA ---
+// Restored to include all 20 cat images.
 const allCatGifs = [
     'cat_welcome.png', 'cat_coins.png', 'cat_thinking.png', 'cat_goggles.png',
     'cat_sergeant.png', 'cat_certificate.png', 'cat_ace.png', 'cat_streak.png',
     'cat_ninja.png', 'cat_wizard.png', 'cat_zen.png', 'cat_study.png',
     'cat_roman.png', 'cat_architect.png', 'cat_cyborg.png', 'cat_judge.png',
-    'cat_galaxy.png' // Removed the meta-cheevo cats
+    'cat_galaxy.png', 'cat_painter.png', 'cat_detective.png', 'cat_manager.png'
 ];
 
 
 // --- CHEEVO (ACHIEVEMENT) DATA ---
-// Simplified list - only performance-based achievements remain.
+// Restored to include all 20 achievements, including the "meta" ones.
 const cheevoData = [
     // Tier 1
     { id: 'firstSession', title: 'First Steps', description: 'Complete your first quiz session.', icon: '🏁', points: 25, catImage: 'cat_welcome.png' },
@@ -53,4 +53,9 @@ const cheevoData = [
     { id: 'masterCategoryREN', title: 'Digital Deacon', description: 'Master every question in the "Electronic Notarization" category.', icon: '💻', points: 150, catImage: 'cat_cyborg.png' },
     { id: 'masterCategoryProhibited', title: 'Guardian of the Law', description: 'Master every question in the "Prohibited Conduct" category.', icon: '⚖️', points: 150, catImage: 'cat_judge.png' },
     { id: 'masterAll', title: 'Notary Prime', description: 'Master every single question in the database.', icon: '👑', points: 1000, catImage: 'cat_galaxy.png' },
+
+    // Tier 5 (Meta)
+    { id: 'changeTheme', title: 'Interior Decorator', description: 'Change your color theme for the first time.', icon: '🎨', points: 25, catImage: 'cat_painter.png' },
+    { id: 'customizeCrew', title: 'Crew Manager', description: 'Customize your "Top Catz" crew for the first time.', icon: '🧑‍✈️', points: 25, catImage: 'cat_manager.png' },
+    { id: 'viewReward', title: 'Window Shopper', description: 'Check the requirements for a locked reward.', icon: '❓', points: 10, catImage: 'cat_detective.png' },
 ];

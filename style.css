@@ -131,6 +131,17 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
 .answer-btn.debug-correct-answer { box-shadow: 0 0 12px var(--success-color), inset 0 0 10px var(--success-color); border-color: var(--success-color); }
 .confetti-particle { position: absolute; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; animation: confetti-blast 1.2s ease-out forwards; }
 @keyframes confetti-blast { 0% { transform: translate(0, 0) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--x-end), var(--y-end)) rotate(720deg); opacity: 0; } }
-.top-catz-wrapper.has-new-rewards::after { content: '●'; position: absolute; top: -5px; right: -5px; font-size: 1.5rem; color: var(--accent-color); text-shadow: 0 0 8px var(--accent-color); animation: pulse-glow 1.5s infinite ease-in-out; }
+/* Find and replace the existing rule with this new one */
+.top-catz-wrapper.has-new-rewards::after {
+    content: '●';
+    position: absolute;
+    top: -8px; /* Position it slightly above the bar */
+    left: 50%; /* Move its left edge to the center of the wrapper */
+    transform: translateX(-50%); /* Shift it left by half its own width to be perfectly centered */
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    text-shadow: 0 0 8px var(--accent-color);
+    animation: pulse-glow 1.5s infinite ease-in-out;
+}
 @keyframes pulse-glow { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 .catalog-item-wrapper.is-new::after { content: '●'; position: absolute; top: 2px; right: 2px; font-size: 1.2rem; color: var(--accent-color); text-shadow: 0 0 5px var(--accent-color); z-index: 5; }
