@@ -1,4 +1,4 @@
-// NotaR333_OS - Gamification Engine v4.6 (Final)
+// NotaR333 - Gamification Engine v5.0 (Instant UI Update)
 
 let celebrationQueue = [];
 let isProcessingCelebration = false;
@@ -8,7 +8,7 @@ function getCurrentRank() {
 }
 
 function displayRankUpModal(rankData) {
-    console.log(`CELEBRATION: Displaying Rank Up for ${rankData.name} with celebrating_cat.gif`);
+    console.log(`CELEBRATION: Displaying Rank Up for ${rankData.name}`);
     triggerVibration('rankUp');
     domElements.rankUpText.textContent = `You are now a ${rankData.name}!`;
     togglePopup('rankUp', true);
@@ -76,17 +76,14 @@ const cheevoConditions = {
     masterCategoryREN: () => checkCategoryMastery('Electronic Notarization'),
     masterCategoryProhibited: () => checkCategoryMastery('Prohibited Conduct'),
     masterAll: () => state.masteredIds.length === quizData.length,
-    // Conditions for meta achievements are just 'true' because they are triggered by a direct action.
     changeTheme: () => true,
     customizeCrew: () => true,
     viewReward: () => true,
 };
-
 function checkCategoryMastery(categoryName) {
     const categoryQuestions = quizData.filter(q => q.category === categoryName);
     return categoryQuestions.every(q => state.masteredIds.includes(q.id));
 }
-
 function checkAllCheevos() {
     cheevoData.forEach(cheevo => {
         if (!state.unlockedCheevos.includes(cheevo.id)) {
@@ -95,7 +92,6 @@ function checkAllCheevos() {
         }
     });
 }
-
 function checkMidQuizCheevos(type) {
     let cheevoId;
     if (type === 'streak') cheevoId = 'streak5';
@@ -109,12 +105,6 @@ function checkMidQuizCheevos(type) {
         }
     }
 }
-
-// --- FUNCTION RESTORED ---
-/**
- * Checks for achievements triggered by a direct user action.
- * @param {string} cheevoId The ID of the achievement to check.
- */
 function checkDirectActionCheevo(cheevoId) {
     if (!state.unlockedCheevos.includes(cheevoId)) {
         unlockCheevo(cheevoId);
@@ -135,6 +125,12 @@ function unlockCheevo(cheevoId) {
         if (!state.newlyUnlockedCats.includes(cheevo.catImage)) {
             state.newlyUnlockedCats.push(cheevo.catImage);
         }
+    }
+    
+    // --- NEW: Immediately redraw the catalog if it's open ---
+    if (domElements.catalogModal && domElements.catalogModal.classList.contains('visible')) {
+        console.log("UI: Catalog is open, redrawing to show new unlock.");
+        openCatalogModal();
     }
     
     celebrationQueue.push({ type: 'cheevo', id: cheevoId });

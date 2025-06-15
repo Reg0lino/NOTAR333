@@ -1,34 +1,11 @@
-// NotaR333 - Main Application Controller v4.7
+// NotaR333 - Main Application Controller v5.0 (Final)
 
-const domElements = {};
+// The global domElements object is now defined and populated in js/dom.js
 
 document.addEventListener('DOMContentLoaded', () => {
+    // This listener now waits for the DOM elements to be ready
+    // and then initializes the application logic.
     
-    const ids = [
-        'home-screen', 'quiz-screen', 'results-screen', 'review-screen', 'dashboard-screen', 'explanation-popup', 'pause-modal', 
-        'settings-modal', 'rank-up-modal', 'catalog-modal', 'reward-modal', 'mascot-container', 'top-catz-bar', 
-        'study-guide-btn', 'dashboard-btn', 'settings-btn', 'rank-display', 'score-display', 'xp-bar-container', 
-        'xp-bar-label', 'xp-bar-fill', 'xp-bar-text', 'resume-session-container', 'new-session-container', 'resume-session-btn', 
-        'discard-session-btn', 'start-drill-btn', 'start-exam-sim-btn', 'review-weak-spots-btn', 'weak-spots-counter', 
-        'pause-quiz-btn', 'progress-text', 'timer-display', 'progress-bar', 'q-emoji', 'q-text', 'weak-spot-indicator', 
-        'answer-buttons', 'explanation-title', 'explanation-text', 'continue-quiz-btn', 'save-exit-btn', 'abandon-exit-btn', 
-        'resume-quiz-btn', 'results-summary-text', 'points-earned-text', 'review-mission-btn', 'back-to-home-from-results-btn', 
-        'review-content', 'prev-review-btn', 'next-review-btn', 'review-counter', 'finish-review-btn', 'mastery-chart-container', 
-        'personal-bests-container', 'nemesis-question-container', 'back-to-home-from-dash-btn', 'close-settings-btn', 
-        'fullscreen-toggle', 'haptics-toggle', 'theme-selector', 'clear-weak-spots-btn', 'factory-reset-btn', 
-        'catalog-grid', 'close-catalog-btn', 'toast-notification', 'toast-text', 'rank-up-text', 'reward-image', 
-        'reward-title', 'reward-description', 'reward-select-btn', 'reward-close-btn', 'particle-celebration-container'
-    ];
-    domElements.body = document.body;
-    ids.forEach(id => {
-        const camelCaseId = id.replace(/-(\w)/g, (_, letter) => letter.toUpperCase());
-        domElements[camelCaseId] = document.getElementById(id);
-    });
-    domElements.topCatzWrapper = document.querySelector('.top-catz-wrapper');
-    domElements.rankUpContent = document.querySelector('.rank-up-content');
-    domElements.screens = { home: domElements.homeScreen, quiz: domElements.quizScreen, results: domElements.resultsScreen, review: domElements.reviewScreen, dashboard: domElements.dashboardScreen };
-    domElements.popups = { explanation: domElements.explanationPopup, pause: domElements.pauseModal, settings: domElements.settingsModal, rankUp: domElements.rankUpModal, catalog: domElements.catalogModal, reward: domElements.rewardModal };
-
     function initialize() {
         loadState();
         buildThemeSelector();
@@ -38,8 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         checkForSavedSession();
         showScreen('home');
         updateNotificationIndicator();
-        initializeStarfield();
-        console.log("NotaR333 v4.7 Initialized and Ready.");
+        console.log("NotaR333 v5.0 Initialized and Ready.");
     }
 
     function addEventListeners() {
@@ -123,7 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = wrapper.querySelector('.catalog-item');
             const catFile = img.dataset.catfile;
             const isLocked = img.classList.contains('locked');
-            const viewRewardDetails = () => {
+            
+            const viewRewardDetailsAndClear = () => {
                 triggerVibration('open');
                 if (state.newlyUnlockedCats.includes(catFile)) {
                     state.newlyUnlockedCats = state.newlyUnlockedCats.filter(c => c !== catFile);
@@ -132,14 +109,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 showRewardDetails(catFile);
             };
+
             if (isLocked) {
                 checkDirectActionCheevo('viewReward');
-                viewRewardDetails();
+                viewRewardDetailsAndClear();
                 return;
             }
             if (e.target.matches('.info-icon')) {
                 e.stopPropagation();
-                viewRewardDetails();
+                viewRewardDetailsAndClear();
                 return;
             }
             if (e.target.matches('.catalog-item')) {
@@ -149,12 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.selectedCats[selectedIndex] = null;
                 } else {
                     const emptySlotIndex = state.selectedCats.indexOf(null);
-                    if (emptySlotIndex > -1) {
-                        state.selectedCats[emptySlotIndex] = catFile;
-                    } else {
-                        // --- MODIFIED: Updated toast message ---
-                        showToast("Crew is full (5 max)! Deselect another cat first.");
-                    }
+                    if (emptySlotIndex > -1) state.selectedCats[emptySlotIndex] = catFile;
+                    else showToast("Crew is full (5 max)! Deselect another cat first.");
                 }
                 checkDirectActionCheevo('customizeCrew');
                 saveState();
@@ -172,11 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const emptySlotIndex = state.selectedCats.indexOf(null);
                 if (emptySlotIndex > -1) {
                     state.selectedCats[emptySlotIndex] = catFile;
-                } else { 
-                    // --- MODIFIED: Updated toast message ---
-                    showToast("Crew is full (5 max)! Deselect another cat first."); 
-                    return; 
-                }
+                } else { showToast("Crew is full (5 max)! Deselect another cat first."); return; }
             }
             checkDirectActionCheevo('customizeCrew');
             saveState();
@@ -184,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             togglePopup('reward', false);
         });
     }
+
     function buildThemeSelector() {
         domElements.themeSelector.innerHTML = '';
         const themeNames = ['pink', 'green', 'orange', 'blue', 'solar', 'matrix'];
@@ -199,43 +170,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openDashboard() { renderMasteryChart(); renderPersonalBests(); renderNemesisQuestion(); showScreen('dashboard'); }
-
-    function renderMasteryChart() {
-        domElements.masteryChartContainer.innerHTML = ''; // Clear previous chart
+    function renderMasteryChart() { 
+        domElements.masteryChartContainer.innerHTML = '';
         const categories = [...new Set(quizData.map(q => q.category))].sort();
         categories.forEach(cat => {
-            // --- Create elements one by one ---
             const item = document.createElement('div');
             item.className = 'chart-bar-item';
-    
             const label = document.createElement('span');
             label.className = 'chart-bar-label';
             label.textContent = cat;
-    
             const barBg = document.createElement('div');
             barBg.className = 'chart-bar-bg';
-    
             const barFill = document.createElement('div');
             barFill.className = 'chart-bar-fill';
-            barFill.style.width = '0%'; // Start at 0 for animation
-    
-            // --- Assemble the elements ---
+            barFill.style.width = '0%';
             barBg.appendChild(barFill);
             item.appendChild(label);
             item.appendChild(barBg);
-    
-            // --- Append to the DOM ---
             domElements.masteryChartContainer.appendChild(item);
-    
-            // --- Calculate and Animate ---
             const total = quizData.filter(q => q.category === cat).length;
             const mastered = state.masteredIds.filter(id => quizData.find(q=>q.id===id)?.category === cat).length;
             const masteryPercent = total > 0 ? (mastered / total) * 100 : 0;
-            
-            // Use setTimeout to allow the element to render before animating the width
-            setTimeout(() => {
-                barFill.style.width = `${masteryPercent}%`;
-            }, 100);
+            setTimeout(() => { barFill.style.width = `${masteryPercent}%`; }, 100);
         });
     }
     function renderPersonalBests() { domElements.personalBestsContainer.innerHTML = `<p><strong>Best Score:</strong> ${state.stats.personalBestScore} questions correct.</p>`; }
@@ -249,5 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
             domElements.nemesisQuestionContainer.innerHTML = `<p>No nemesis identified. Keep up the great work!</p>`; 
         } 
     }
+    
     initialize();
-    });
+});
