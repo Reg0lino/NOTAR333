@@ -10,12 +10,12 @@
     --font-question: 'Exo 2', sans-serif;
 }
 
-body.theme-pink { --bg-color: #0d0514; --primary-neon: #ff00ff; --secondary-neon: #00ffc6; --text-color: #f0f0f0; --accent-color: #ffff00; --error-color: #ff3366; --success-color: #66ff66; --container-bg: rgba(18, 16, 25, 0.7); }
-body.theme-green { --bg-color: #0d1a14; --primary-neon: #00ff7f; --secondary-neon: #faff00; --text-color: #e0f5e9; --accent-color: #ff8c00; --error-color: #ff4757; --success-color: #2ed573; --container-bg: rgba(13, 26, 20, 0.7); }
-body.theme-orange { --bg-color: #1a100a; --primary-neon: #ff8c00; --secondary-neon: #a96bff; --text-color: #ffe8d6; --accent-color: #00e5ff; --error-color: #ff4d4d; --success-color: #7dff8e; --container-bg: rgba(26, 16, 10, 0.7); }
-body.theme-blue { --bg-color: #0a0f1f; --primary-neon: #00bfff; --secondary-neon: #d900ff; --text-color: #e0e8ff; --accent-color: #ffd700; --error-color: #ff3366; --success-color: #39ff14; --container-bg: rgba(10, 15, 31, 0.7); }
-body.theme-solar { --bg-color: #1f0a0a; --primary-neon: #ff4500; --secondary-neon: #ffff00; --text-color: #fff0e0; --accent-color: #00ffff; --error-color: #ff1100; --success-color: #adff2f; --container-bg: rgba(31, 10, 10, 0.7); }
-body.theme-matrix { --bg-color: #050a05; --primary-neon: #00ff41; --secondary-neon: #abff00; --text-color: #dfffe5; --accent-color: #ffffff; --error-color: #ff4757; --success-color: #00ff41; --container-bg: rgba(5, 15, 5, 0.7); }
+body.theme-pink { --bg-color: #0d0514; --primary-neon: #ff00ff; --secondary-neon: #00ffc6; --text-color: #f0f0f0; --accent-color: #ffff00; --error-color: #ff3366; --success-color: #66ff66; --container-bg: rgba(18, 16, 25, 0.6); }
+body.theme-green { --bg-color: #0d1a14; --primary-neon: #00ff7f; --secondary-neon: #faff00; --text-color: #e0f5e9; --accent-color: #ff8c00; --error-color: #ff4757; --success-color: #2ed573; --container-bg: rgba(13, 26, 20, 0.6); }
+body.theme-orange { --bg-color: #1a100a; --primary-neon: #ff8c00; --secondary-neon: #a96bff; --text-color: #ffe8d6; --accent-color: #00e5ff; --error-color: #ff4d4d; --success-color: #7dff8e; --container-bg: rgba(26, 16, 10, 0.6); }
+body.theme-blue { --bg-color: #0a0f1f; --primary-neon: #00bfff; --secondary-neon: #d900ff; --text-color: #e0e8ff; --accent-color: #ffd700; --error-color: #ff3366; --success-color: #39ff14; --container-bg: rgba(10, 15, 31, 0.6); }
+body.theme-solar { --bg-color: #1f0a0a; --primary-neon: #ff4500; --secondary-neon: #ffff00; --text-color: #fff0e0; --accent-color: #00ffff; --error-color: #ff1100; --success-color: #adff2f; --container-bg: rgba(31, 10, 10, 0.6); }
+body.theme-matrix { --bg-color: #050a05; --primary-neon: #00ff41; --secondary-neon: #abff00; --text-color: #dfffe5; --accent-color: #ffffff; --error-color: #ff4757; --success-color: #00ff41; --container-bg: rgba(5, 15, 5, 0.6); }
 
 /* ==========================================================================
    2. Base & Global Styles
