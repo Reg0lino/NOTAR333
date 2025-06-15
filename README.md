@@ -6,7 +6,7 @@
 
 <div align="center">
 
-# ➤ [**Launch the NotaR333 Study App**](https://reg0lino.github.io/NOTAR333/)
+# ➤ [**Launch the NotaREEE Study App**](https://reg0lino.github.io/NOTAR333/)
 
 **Click the link above to start studying immediately. No sign-up required. Works on mobile and desktop.**
 
